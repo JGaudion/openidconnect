@@ -1,13 +1,14 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using IdentityServer3.Core.Configuration;
-using IdentityServer3.Core.Services.InMemory;
 using System.Collections.Generic;
 using IdentityServer3.Core.Models;
 using System.Linq;
 using IdentityAdmin.Configuration;
 using IdentityAdmin.Core;
 using OpenIDConnect.Host.InMemoryService;
+using IdentityManager.Configuration;
+using IdentityManager;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
@@ -29,13 +30,14 @@ namespace OpenIDConnect.Host
                 coreApp.UseIdentityServer(options);
             });
 
+            var rand = new System.Random();
+
             app.Map("/admin", adminApp => {
                 var factory = new IdentityAdminServiceFactory
                 {
-                    IdentityAdminService = new IdentityAdmin.Configuration.Registration<IIdentityAdminService, InMemoryIdentityManagerService>()
+                    IdentityAdminService = new IdentityAdmin.Configuration.Registration<IIdentityAdminService, InMemoryIdentityAdminService>()
                 };
 
-                var rand = new System.Random();
                 var clients = ClientSeeder.Get(rand.Next(1000, 3000));
                 var scopes = ScopeSeeder.Get(rand.Next(15));
                 factory.Register(new IdentityAdmin.Configuration.Registration<ICollection<InMemoryScope>>(scopes));
@@ -45,11 +47,29 @@ namespace OpenIDConnect.Host
                     Factory = factory
                 });
             });
+
+            app.Map("/manage", manageApp =>
+            {
+                var factory = new IdentityManagerServiceFactory
+                {
+                    IdentityManagerService = new IdentityManager.Configuration.Registration<IIdentityManagerService, InMemoryIdentityManagerService>()
+                };
+
+                var users = UserSeeder.Get(rand.Next(1000, 3000));
+                var roles = RoleSeeder.Get(rand.Next(15));
+                factory.Register(new IdentityManager.Configuration.Registration<ICollection<InMemoryService.InMemoryUser>>(users));
+                factory.Register(new IdentityManager.Configuration.Registration<ICollection<InMemoryService.InMemoryRole>>(roles));
+
+                manageApp.UseIdentityManager(new IdentityManagerOptions
+                {
+                    Factory = factory
+                });
+            });
         }
 
-        private IEnumerable<InMemoryUser> GetUsers()
+        private IEnumerable<IdentityServer3.Core.Services.InMemory.InMemoryUser> GetUsers()
         {
-            yield return new InMemoryUser
+            yield return new IdentityServer3.Core.Services.InMemory.InMemoryUser
             {
                 Enabled = true,
                 Username = "test",
