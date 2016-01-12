@@ -2,7 +2,7 @@
 
 namespace OpenIDConnect.Host
 {
-    internal interface IServerOptionsService
+    public interface IServerOptionsService
     {
         IdentityServerOptions GetServerOptions();
     }

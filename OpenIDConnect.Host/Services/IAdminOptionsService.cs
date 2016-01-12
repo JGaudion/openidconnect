@@ -2,7 +2,7 @@
 
 namespace OpenIDConnect.Host
 {
-    internal interface IAdminOptionsService
+    public interface IAdminOptionsService
     {
         IdentityAdminOptions GetAdminOptions();
     }

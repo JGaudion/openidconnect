@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2014 Dominick Baier, Brock Allen, Bert Hoorne
+ * Copyright 2014 Dominick Baier, Brock Allen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,908 +18,500 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityAdmin.Core;
-using IdentityAdmin.Core.Client;
-using IdentityAdmin.Core.Metadata;
-using IdentityAdmin.Core.Scope;
-using IdentityAdmin.Extensions;
-using AutoMapper;
-using IdentityServer3.Core.Models;
+using IdentityManager.Extensions;
+using IdentityManager;
 
 namespace OpenIDConnect.Host.InMemoryService
 {
-    internal class InMemoryIdentityManagerService : IIdentityAdminService
+    class InMemoryIdentityManagerService : IIdentityManagerService
     {
-        private ICollection<InMemoryClient> _clients;
-        private ICollection<InMemoryScope> _scopes;
-
-        public InMemoryIdentityManagerService(ICollection<InMemoryScope> scopes, ICollection<InMemoryClient> clients)
+        ICollection<InMemoryUser> users;
+        ICollection<InMemoryRole> roles;
+        public InMemoryIdentityManagerService(ICollection<InMemoryUser> users, ICollection<InMemoryRole> roles)
         {
-            this._clients = clients;
-            this._scopes = scopes;
-            Mapper.CreateMap<InMemoryClientClaim, ClientClaimValue>();
-            Mapper.CreateMap<ClientClaimValue, InMemoryClientClaim>();
-            Mapper.CreateMap<InMemoryClientSecret, ClientSecretValue>();
-            Mapper.CreateMap<ClientSecretValue, InMemoryClientSecret>();
-            Mapper.CreateMap<InMemoryClientIdPRestriction, ClientIdPRestrictionValue>();
-            Mapper.CreateMap<ClientIdPRestrictionValue, InMemoryClientIdPRestriction>();
-            Mapper.CreateMap<InMemoryClientPostLogoutRedirectUri, ClientPostLogoutRedirectUriValue>();
-            Mapper.CreateMap<ClientPostLogoutRedirectUriValue, InMemoryClientPostLogoutRedirectUri>();
-            Mapper.CreateMap<InMemoryClientRedirectUri, ClientRedirectUriValue>();
-            Mapper.CreateMap<ClientRedirectUriValue, InMemoryClientRedirectUri>();
-            Mapper.CreateMap<InMemoryClientCorsOrigin, ClientCorsOriginValue>();
-            Mapper.CreateMap<ClientCorsOriginValue, InMemoryClientCorsOrigin>();
-            Mapper.CreateMap<InMemoryClientCustomGrantType, ClientCustomGrantTypeValue>();
-            Mapper.CreateMap<ClientCustomGrantTypeValue, InMemoryClientCustomGrantType>();
-            Mapper.CreateMap<InMemoryClientScope, ClientScopeValue>();
-            Mapper.CreateMap<ClientScopeValue, InMemoryClientScope>();
-            Mapper.CreateMap<InMemoryScopeClaim, ScopeClaimValue>();
-            Mapper.CreateMap<ScopeClaimValue, InMemoryScopeClaim>();
-            Mapper.CreateMap<InMemoryScope, Scope>();
-            Mapper.CreateMap<Scope, InMemoryScope>();
+            this.users = users;
+            this.roles = roles;
         }
 
 
-        private IdentityAdminMetadata _metadata;
+        IdentityManagerMetadata metadata;
 
-        private IdentityAdminMetadata GetMetadata()
+        IdentityManagerMetadata GetMetadata()
         {
-            if (_metadata == null)
+            if (metadata == null)
             {
-                var updateClient = new List<PropertyMetadata>();
-                updateClient.AddRange(PropertyMetadata.FromType<InMemoryClient>());
-
-                var createClient = new List<PropertyMetadata>
+                var createprops = new List<PropertyMetadata>()
                 {
-                    PropertyMetadata.FromProperty<InMemoryClient>(x => x.ClientName, "ClientName", required: true),
-                    PropertyMetadata.FromProperty<InMemoryClient>(x => x.ClientId, "ClientId", required: true),
+                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username, required:true),
                 };
 
-                var client = new ClientMetaData
+                var updateprops = new List<PropertyMetadata>();
+                updateprops.AddRange(new PropertyMetadata[]{
+                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username, required:true),
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Password", type:Constants.ClaimTypes.Password, required:true),
+                    PropertyMetadata.FromFunctions<InMemoryUser, string>(Constants.ClaimTypes.Name, this.GetName, this.SetName, name:"Name", required:true),
+                });
+                updateprops.AddRange(PropertyMetadata.FromType<InMemoryUser>());
+                updateprops.AddRange(new PropertyMetadata[]{
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Mobile"),
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Email", dataType:PropertyDataType.Email),
+                    new PropertyMetadata {
+                        Name = "Is Administrator",
+                        Type = "role.admin",
+                        DataType = PropertyDataType.Boolean,
+                        Required = true,
+                    },
+                    new PropertyMetadata {
+                        Name = "Gravatar Url",
+                        Type = "gravatar",
+                        DataType = PropertyDataType.Url,
+                    }
+                });
+
+                var roleCreateProps = new List<PropertyMetadata>();
+                roleCreateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x => x.Name));
+                var roleUpdateProps = new List<PropertyMetadata>();
+                roleUpdateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x => x.Description, type: "description"));
+
+                metadata = new IdentityManagerMetadata()
                 {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = createClient,
-                    UpdateProperties = updateClient
+                    UserMetadata = new UserMetadata
+                    {
+                        SupportsCreate = true,
+                        SupportsDelete = true,
+                        SupportsClaims = true,
+                        CreateProperties = createprops,
+                        UpdateProperties = updateprops
+                    },
+                    RoleMetadata = new RoleMetadata
+                    {
+                        RoleClaimType = Constants.ClaimTypes.Role,
+                        SupportsCreate = true,
+                        SupportsDelete = true,
+                        CreateProperties = roleCreateProps,
+                        UpdateProperties = roleUpdateProps
+                    }
                 };
-
-
-                var updateScope = new List<PropertyMetadata>();
-                updateScope.AddRange(PropertyMetadata.FromType<InMemoryScope>());
-
-                var createScope = new List<PropertyMetadata>
-                {
-                    PropertyMetadata.FromProperty<InMemoryScope>(x => x.Name, "ScopeName", required: true),
-                };
-
-                var scope = new ScopeMetaData
-                {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = createScope,
-                    UpdateProperties = updateScope
-                };
-
-
-                _metadata = new IdentityAdminMetadata
-                {
-                    ClientMetaData = client,
-                    ScopeMetaData = scope
-                };
             }
-            return _metadata;
+            return metadata;
         }
 
-        #region scopes
-
-        public Task<IdentityAdminResult<ScopeDetail>> GetScopeAsync(string subject)
+        #region Users
+        private string GetName(InMemoryUser user)
         {
-            int parsedId;
-            if (int.TryParse(subject, out parsedId))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedId);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult<ScopeDetail>((ScopeDetail) null));
-                }
-            
-                var result = new ScopeDetail
-                {
-                    Subject = subject,
-                    Name = inMemoryScope.Name,
-                    Description = inMemoryScope.Description,
-                };
-
-                var metadata = GetMetadata();
-                var props = from prop in metadata.ScopeMetaData.UpdateProperties
-                    select new PropertyValue
-                    {
-                        Type = prop.Type,
-                        Value = GetScopeProperty(prop, inMemoryScope),
-                    };
-
-                result.Properties = props.ToArray();
-                result.ScopeClaimValues = new List<ScopeClaimValue>();
-                Mapper.Map(inMemoryScope.ScopeClaims.ToList(), result.ScopeClaimValues);
-                return Task.FromResult(new IdentityAdminResult<ScopeDetail>(result));
-            }
-            return Task.FromResult(new IdentityAdminResult<ScopeDetail>((ScopeDetail) null));
+            return user.Claims.GetValue(Constants.ClaimTypes.Name);
         }
 
-        public Task<IdentityAdminResult<QueryResult<ScopeSummary>>> QueryScopesAsync(string filter, int start, int count)
+        private IdentityManagerResult SetName(InMemoryUser user, string value)
         {
-            var query = from scope in _scopes orderby scope.Name select scope;
-
-            if (!String.IsNullOrWhiteSpace(filter))
-            {
-                query =
-                    from scope in query
-                    where scope.Name.Contains(filter)
-                    orderby scope.Name
-                    select scope;
-            }
-
-            int total = query.Count();
-            var scopes = query.Skip(start).Take(count).ToArray();
-
-            var result = new QueryResult<ScopeSummary>
-            {
-                Start = start,
-                Count = count,
-                Total = total,
-                Filter = filter,
-                Items = scopes.Select(x =>
-                {
-                    var scope = new ScopeSummary
-                    {
-                        Subject = x.Id.ToString(),
-                        Name = x.Name,
-                        Description = x.Name
-                    };
-
-                    return scope;
-                }).ToArray()
-            };
-
-            return Task.FromResult(new IdentityAdminResult<QueryResult<ScopeSummary>>(result));
+            user.Claims.SetValue(Constants.ClaimTypes.Name, value);
+            return IdentityManagerResult.Success;
         }
 
-        public Task<IdentityAdminResult<CreateResult>> CreateScopeAsync(IEnumerable<PropertyValue> properties)
-        {
-            var errors = ValidateRoleProperties(properties);
-            if (errors.Any())
-            {
-                return Task.FromResult(new IdentityAdminResult<CreateResult>(errors.ToArray()));
-            }
-
-            var scope = new InMemoryScope();
-            var createPropsMeta = GetMetadata().ScopeMetaData.CreateProperties;
-            foreach (var prop in properties)
-            {
-                var result = SetScopeProperty(createPropsMeta, scope, prop.Type, prop.Value);
-                if (!result.IsSuccess)
-                {
-                    return Task.FromResult(new IdentityAdminResult<CreateResult>(result.Errors.ToArray()));
-                }
-            }
-
-            if (_scopes.Any(x => x.Name.Equals(scope.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                return Task.FromResult(new IdentityAdminResult<CreateResult>("Role name already in use."));
-            }
-
-            _scopes.Add(scope);
-
-            return
-                Task.FromResult(new IdentityAdminResult<CreateResult>(new CreateResult {Subject = scope.Id.ToString()}));
-        }
-
-        public Task<IdentityAdminResult> SetScopePropertyAsync(string subject, string type, string value)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var meta = GetMetadata();
-
-                SetScopeProperty(meta.ScopeMetaData.UpdateProperties, inMemoryScope, type, value);
-
-
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> DeleteScopeAsync(string subject)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                _scopes.Remove(inMemoryScope);
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> AddScopeClaimAsync(string subject, string name, string description,
-            bool alwaysIncludeInIdToken)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaims = inMemoryScope.ScopeClaims;
-                if (!existingClaims.Any(x => x.Name == name && x.Description == description))
-                {
-                    inMemoryScope.ScopeClaims.Add(new InMemoryScopeClaim
-                    {
-                        Id = inMemoryScope.ScopeClaims.Count + 1,
-                        Name = name,
-                        Description = description,
-                        AlwaysIncludeInIdToken = alwaysIncludeInIdToken
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveScopeClaimAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedScopeId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId))
-            {
-                var scope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (scope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaim = scope.ScopeClaims.FirstOrDefault(p => p.Id == parsedScopeId);
-                if (existingClaim != null)
-                {
-                    scope.ScopeClaims.Remove(existingClaim);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        #endregion
-
-        #region Clients
-
-        public Task<IdentityAdminResult<ClientDetail>> GetClientAsync(string subject)
-        {
-            int parsedId;
-            if (int.TryParse(subject, out parsedId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedId);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult<ClientDetail>((ClientDetail) null));
-                }
-
-                var result = new ClientDetail
-                {
-                    Subject = subject,
-                    ClientId = inMemoryClient.ClientId,
-                    ClientName = inMemoryClient.ClientName,
-                };
-                result.AllowedCorsOrigins = new List<ClientCorsOriginValue>();
-                Mapper.Map(inMemoryClient.AllowedCorsOrigins.ToList(), result.AllowedCorsOrigins);
-                result.AllowedCustomGrantTypes = new List<ClientCustomGrantTypeValue>();
-                Mapper.Map(inMemoryClient.AllowedCustomGrantTypes.ToList(), result.AllowedCustomGrantTypes);
-                result.AllowedScopes = new List<ClientScopeValue>();
-                Mapper.Map(inMemoryClient.AllowedScopes.ToList(), result.AllowedScopes);
-                result.Claims = new List<ClientClaimValue>();
-                Mapper.Map(inMemoryClient.Claims.ToList(), result.Claims);
-                result.ClientSecrets = new List<ClientSecretValue>();
-                Mapper.Map(inMemoryClient.ClientSecrets.ToList(), result.ClientSecrets);
-                result.IdentityProviderRestrictions = new List<ClientIdPRestrictionValue>();
-                Mapper.Map(inMemoryClient.IdentityProviderRestrictions.ToList(), result.IdentityProviderRestrictions);
-                result.PostLogoutRedirectUris = new List<ClientPostLogoutRedirectUriValue>();
-                Mapper.Map(inMemoryClient.PostLogoutRedirectUris.ToList(), result.PostLogoutRedirectUris);
-                result.RedirectUris = new List<ClientRedirectUriValue>();
-                Mapper.Map(inMemoryClient.RedirectUris.ToList(), result.RedirectUris);
-
-                var metadata = GetMetadata();
-                var props = from prop in metadata.ClientMetaData.UpdateProperties
-                    select new PropertyValue
-                    {
-                        Type = prop.Type,
-                        Value = GetClientProperty(prop, inMemoryClient),
-                    };
-
-                result.Properties = props.ToArray();
-                return Task.FromResult(new IdentityAdminResult<ClientDetail>(result));
-            }
-            return Task.FromResult(new IdentityAdminResult<ClientDetail>((ClientDetail) null));
-        }
-
-        public Task<IdentityAdminResult> DeleteClientAsync(string subject)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var client = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (client == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                _clients.Remove(client);
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult<QueryResult<ClientSummary>>> QueryClientsAsync(string filter, int start,
-            int count)
-        {
-            var query =
-                from client in _clients
-                orderby client.ClientName
-                select client;
-
-            if (!String.IsNullOrWhiteSpace(filter))
-            {
-                query =
-                    from client in query
-                    where client.ClientName.Contains(filter)
-                    orderby client.ClientName
-                    select client;
-            }
-
-            int total = query.Count();
-            var clients = query.Skip(start).Take(count).ToArray();
-
-            var result = new QueryResult<ClientSummary>();
-            result.Start = start;
-            result.Count = count;
-            result.Total = total;
-            result.Filter = filter;
-            result.Items = clients.Select(x =>
-            {
-                var client = new ClientSummary
-                {
-                    Subject = x.Id.ToString(),
-                    ClientName = x.ClientName,
-                    ClientId = x.ClientId
-                };
-
-                return client;
-            }).ToArray();
-
-            return Task.FromResult(new IdentityAdminResult<QueryResult<ClientSummary>>(result));
-        }
-
-        public Task<IdentityAdminResult<CreateResult>> CreateClientAsync(IEnumerable<PropertyValue> properties)
-        {
-            var clientNameClaim = properties.Single(x => x.Type == "ClientName");
-            var clientIdClaim = properties.Single(x => x.Type == "ClientId");
-
-            var clientId = clientNameClaim.Value;
-            var clientName = clientIdClaim.Value;
-
-            string[] exclude = new string[] {"ClientName", "ClientId"};
-            var otherProperties = properties.Where(x => !exclude.Contains(x.Type)).ToArray();
-
-            var metadata = GetMetadata();
-            var createProps = metadata.ClientMetaData.CreateProperties;
-            var client  = new Client();
-            var inMemoryClient = new InMemoryClient
-            {
-                ClientId = clientId,
-                ClientName = clientName,
-                Id = _clients.Count + 1,
-                AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime,
-                AccessTokenLifetime = client.AccessTokenLifetime,
-                IdentityTokenLifetime = client.IdentityTokenLifetime,
-                SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime,
-                Enabled =  true,
-                EnableLocalLogin =  true,
-
-            };
-
-            foreach (var prop in otherProperties)
-            {
-                var propertyResult = SetClientProperty(createProps, inMemoryClient, prop.Type, prop.Value);
-                if (!propertyResult.IsSuccess)
-                {
-                    return Task.FromResult(new IdentityAdminResult<CreateResult>(propertyResult.Errors.ToArray()));
-                }
-            }
-
-            _clients.Add(inMemoryClient);
-            return
-                Task.FromResult(
-                    new IdentityAdminResult<CreateResult>(new CreateResult {Subject = inMemoryClient.Id.ToString()}));
-        }
-
-        public Task<IdentityAdminResult> SetClientPropertyAsync(string subject, string type, string value)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var meta = GetMetadata();
-
-                SetClientProperty(meta.ClientMetaData.UpdateProperties, inMemoryClient, type, value);
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        #region Client claim
-
-        public Task<IdentityAdminResult> AddClientClaimAsync(string subject, string type, string value)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaims = inMemoryClient.Claims;
-                if (!existingClaims.Any(x => x.Type == type && x.Value == value))
-                {
-                    inMemoryClient.Claims.Add(new InMemoryClientClaim()
-                    {
-                        Type = type,
-                        Value = value
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientClaimAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedClientId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedClientId))
-            {
-                var client = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (client == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaim = client.Claims.FirstOrDefault(p => p.Id == parsedClientId);
-                if (existingClaim != null)
-                {
-                    client.Claims.Remove(existingClaim);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        #endregion
-
-        #region Client Secret
-
-        public Task<IdentityAdminResult> AddClientSecretAsync(string subject, string type, string value)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingSecrets = inMemoryClient.ClientSecrets;
-                if (!existingSecrets.Any(x => x.Type == type && x.Value == value))
-                {
-                    inMemoryClient.ClientSecrets.Add(new InMemoryClientSecret
-                    {
-                        Type = type,
-                        Value = value
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientSecretAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClientSecret = inMemoryClient.ClientSecrets.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingClientSecret != null)
-                {
-                    inMemoryClient.ClientSecrets.Remove(existingClientSecret);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region ClientIdPRestriction
-
-        public Task<IdentityAdminResult> AddClientIdPRestrictionAsync(string subject, string provider)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingIdentityProviderRestrictions = inMemoryClient.IdentityProviderRestrictions;
-                if (existingIdentityProviderRestrictions.All(x => x.Provider != provider))
-                {
-                    inMemoryClient.IdentityProviderRestrictions.Add(new InMemoryClientIdPRestriction
-                    {
-                        Provider = provider,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientIdPRestrictionAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingIdentityProviderRestrictions =
-                    inMemoryClient.IdentityProviderRestrictions.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingIdentityProviderRestrictions != null)
-                {
-                    inMemoryClient.IdentityProviderRestrictions.Remove(existingIdentityProviderRestrictions);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region PostLogoutRedirectUri
-
-        public Task<IdentityAdminResult> AddPostLogoutRedirectUriAsync(string subject, string uri)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var client = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (client == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingPostLogoutRedirectUris = client.PostLogoutRedirectUris;
-                if (existingPostLogoutRedirectUris.All(x => x.Uri != uri))
-                {
-                    client.PostLogoutRedirectUris.Add(new InMemoryClientPostLogoutRedirectUri
-                    {
-                        Uri = uri,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemovePostLogoutRedirectUriAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-
-                var existingPostLogoutRedirectUris =
-                    inMemoryClient.PostLogoutRedirectUris.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingPostLogoutRedirectUris != null)
-                {
-                    inMemoryClient.PostLogoutRedirectUris.Remove(existingPostLogoutRedirectUris);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region ClientRedirectUri
-
-        public Task<IdentityAdminResult> AddClientRedirectUriAsync(string subject, string uri)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var client = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (client == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingRedirectUris = client.RedirectUris;
-                if (existingRedirectUris.All(x => x.Uri != uri))
-                {
-                    client.RedirectUris.Add(new InMemoryClientRedirectUri
-                    {
-                        Uri = uri,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientRedirectUriAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingRedirectUris = inMemoryClient.RedirectUris.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingRedirectUris != null)
-                {
-                    inMemoryClient.RedirectUris.Remove(existingRedirectUris);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region ClientCorsOrigin
-
-        public Task<IdentityAdminResult> AddClientCorsOriginAsync(string subject, string origin)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingCorsOrigins = inMemoryClient.AllowedCorsOrigins;
-                if (existingCorsOrigins.All(x => x.Origin != origin))
-                {
-                    inMemoryClient.AllowedCorsOrigins.Add(new InMemoryClientCorsOrigin
-                    {
-                        Origin = origin,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientCorsOriginAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingCorsOrigins = inMemoryClient.AllowedCorsOrigins.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingCorsOrigins != null)
-                {
-                    inMemoryClient.AllowedCorsOrigins.Remove(existingCorsOrigins);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region ClientCustomGrantType
-
-        public Task<IdentityAdminResult> AddClientCustomGrantTypeAsync(string subject, string grantType)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingGrantTypes = inMemoryClient.AllowedCustomGrantTypes;
-                if (existingGrantTypes.All(x => x.GrantType != grantType))
-                {
-                    inMemoryClient.AllowedCustomGrantTypes.Add(new InMemoryClientCustomGrantType
-                    {
-                        GrantType = grantType,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientCustomGrantTypeAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingGrantTypes =
-                    inMemoryClient.AllowedCustomGrantTypes.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingGrantTypes != null)
-                {
-                    inMemoryClient.AllowedCustomGrantTypes.Remove(existingGrantTypes);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #region ClientScope
-
-        public Task<IdentityAdminResult> AddClientScopeAsync(string subject, string scope)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingScopes = inMemoryClient.AllowedScopes;
-                if (existingScopes.All(x => x.Scope != scope))
-                {
-                    inMemoryClient.AllowedScopes.Add(new InMemoryClientScope
-                    {
-                        Scope = scope,
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveClientScopeAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedObjectId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedObjectId))
-            {
-                var inMemoryClient = _clients.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryClient == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingScopes = inMemoryClient.AllowedScopes.FirstOrDefault(p => p.Id == parsedObjectId);
-                if (existingScopes != null)
-                {
-                    inMemoryClient.AllowedScopes.Remove(existingScopes);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject or secretId"));
-        }
-
-        #endregion
-
-        #endregion
-
-        Task<IdentityAdminMetadata> IIdentityAdminService.GetMetadataAsync()
+        public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
         {
             return Task.FromResult(GetMetadata());
         }
 
-        #region helperMethods
-
-        protected IdentityAdminResult SetClientProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryClient client,
-            string type, string value)
+        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<PropertyValue> properties)
         {
-            IdentityAdminResult result;
-            if (propsMeta.TrySet(client, type, value, out result))
+            var errors = ValidateUserProperties(properties);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
+            }
+
+            var user = new InMemoryUser();
+            var createPropsMeta = GetMetadata().UserMetadata.GetCreateProperties();
+            foreach (var prop in properties)
+            {
+                var result = SetUserProperty(createPropsMeta, user, prop.Type, prop.Value);
+                if (!result.IsSuccess)
+                {
+                    return Task.FromResult(new IdentityManagerResult<CreateResult>(result.Errors.ToArray()));
+                }
+            }
+
+            users.Add(user);
+
+            return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = user.Subject }));
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult> DeleteUserAsync(string subject)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user != null)
+            {
+                users.Remove(user);
+            }
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
+        {
+            var query =
+                from u in users
+                select u;
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                filter = filter.ToLower();
+                query =
+                    from u in query
+                    let names = (from c in u.Claims where c.Type == Constants.ClaimTypes.Name select c.Value.ToLower())
+                    where
+                        u.Username.ToLower().Contains(filter) ||
+                        names.Contains(filter)
+                    select u;
+            }
+
+            var items =
+                from u in query.Distinct()
+                select new UserSummary
+                {
+                    Subject = u.Subject,
+                    Username = u.Username,
+                    Name = u.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).FirstOrDefault(),
+                };
+            var total = items.Count();
+
+            var result = items.Skip(start).Take(count);
+            return Task.FromResult(new IdentityManagerResult<QueryResult<UserSummary>>(new QueryResult<UserSummary>
+            {
+                Filter = filter,
+                Start = start,
+                Count = result.Count(),
+                Items = result,
+                Total = total,
+            }));
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult<UserDetail>> GetUserAsync(string subject)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user == null)
+            {
+                return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
+            }
+
+            var props = new List<PropertyValue>();
+            foreach (var prop in GetMetadata().UserMetadata.UpdateProperties)
+            {
+                props.Add(new PropertyValue
+                {
+                    Type = prop.Type,
+                    Value = GetUserProperty(prop, user)
+                });
+            }
+
+            var claims = user.Claims.Select(x => new ClaimValue { Type = x.Type, Value = x.Value });
+
+            return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
+            {
+                Subject = user.Subject,
+                Username = user.Username,
+                Name = user.Claims.GetValue(Constants.ClaimTypes.Name),
+                Properties = props,
+                Claims = claims
+            }));
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult> SetUserPropertyAsync(string subject, string type, string value)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No user found"));
+            }
+
+            var errors = ValidateUserProperty(type, value);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
+            }
+
+            var result = SetUserProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
+            return Task.FromResult(result);
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult> AddUserClaimAsync(string subject, string type, string value)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No user found"));
+            }
+
+            user.Claims.AddClaim(type, value);
+
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        public System.Threading.Tasks.Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No user found"));
+            }
+
+            user.Claims.RemoveClaims(type, value);
+
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        private string GetUserProperty(PropertyMetadata property, InMemoryUser user)
+        {
+            string value;
+            if (property.TryGet(user, out value))
+            {
+                return value;
+            }
+
+            switch (property.Type)
+            {
+                case "role.admin":
+                    return user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower();
+                case "gravatar":
+                    return user.Claims.GetValue("gravatar");
+            }
+
+            throw new Exception("Invalid property type " + property.Type);
+        }
+
+        private IdentityManagerResult SetUserProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
+        {
+            IdentityManagerResult result;
+            if (propsMeta.TrySet(user, type, value, out result))
             {
                 return result;
             }
 
-            throw new Exception("Invalid property type " + type);
-        }
-
-        protected string GetClientProperty(PropertyMetadata propMetadata, InMemoryClient client)
-        {
-            string val;
-            if (propMetadata.TryGet(client, out val))
+            switch (type)
             {
-                return val;
+                case "role.admin":
+                    {
+                        var val = Boolean.Parse(value);
+                        if (val)
+                        {
+                            user.Claims.AddClaim(Constants.ClaimTypes.Role, "admin");
+                        }
+                        else
+                        {
+                            user.Claims.RemoveClaim(Constants.ClaimTypes.Role, "admin");
+                        }
+                    }
+                    break;
+                case "gravatar":
+                    {
+                        user.Claims.SetValue("gravatar", value);
+                    }
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid Property Type : " + type);
             }
-            throw new Exception("Invalid property type " + propMetadata.Type);
+
+            return IdentityManagerResult.Success;
         }
 
-        protected IdentityAdminResult SetScopeProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryScope scope,
-            string type, string value)
+        IEnumerable<string> ValidateUserProperties(IEnumerable<PropertyValue> properties)
         {
-            IdentityAdminResult result;
-            if (propsMeta.TrySet(scope, type, value, out result))
+            return properties.Select(x => ValidateUserProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
+        }
+
+        private IEnumerable<string> ValidateUserProperty(string type, string value)
+        {
+            switch (type)
+            {
+                case Constants.ClaimTypes.Username:
+                    {
+                        if (this.users.Any(x => x.Username == value))
+                        {
+                            return new string[] { "That Username is already in use" };
+                        }
+                    }
+                    break;
+                case Constants.ClaimTypes.Password:
+                    {
+                        if (value.Length < 3)
+                        {
+                            return new string[] { "Password must have at least 3 characters" };
+                        }
+                    }
+                    break;
+            }
+
+            return Enumerable.Empty<string>();
+        }
+
+        #endregion
+
+        #region Roles
+
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<PropertyValue> properties)
+        {
+            var errors = ValidateRoleProperties(properties);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
+            }
+
+            var role = new InMemoryRole();
+            var createPropsMeta = GetMetadata().RoleMetadata.GetCreateProperties();
+            foreach (var prop in properties)
+            {
+                var result = SetRoleProperty(createPropsMeta, role, prop.Type, prop.Value);
+                if (!result.IsSuccess)
+                {
+                    return Task.FromResult(new IdentityManagerResult<CreateResult>(result.Errors.ToArray()));
+                }
+            }
+
+            if (roles.Any(x => x.Name.Equals(role.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>("Role name already in use."));
+            }
+
+            roles.Add(role);
+
+            return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = role.ID }));
+        }
+
+        public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
+        {
+            var role = roles.SingleOrDefault(x => x.ID == subject);
+            if (role != null)
+            {
+                roles.Remove(role);
+            }
+
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
+        {
+            var query =
+                from r in roles
+                select r;
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                filter = filter.ToLower();
+                query =
+                    from r in query
+                    where
+                        r.Name.ToLower().Contains(filter) ||
+                        (r.Description != null && r.Description.ToLower().Contains(filter))
+                    select r;
+            }
+
+            var items =
+                from r in query.Distinct()
+                select new RoleSummary
+                {
+                    Subject = r.ID,
+                    Name = r.Name,
+                    Description = r.Description
+                };
+            var total = items.Count();
+
+            var result = items;
+            if (start >= 0 && count >= 0)
+            {
+                result = items.Skip(start).Take(count);
+                count = result.Count();
+            }
+            else
+            {
+                start = 0;
+                count = total;
+            }
+
+            return Task.FromResult(new IdentityManagerResult<QueryResult<RoleSummary>>(new QueryResult<RoleSummary>
+            {
+                Filter = filter,
+                Start = start,
+                Count = count,
+                Items = result,
+                Total = total,
+            }));
+        }
+
+        public Task<IdentityManagerResult<RoleDetail>> GetRoleAsync(string subject)
+        {
+            var role = this.roles.SingleOrDefault(x => x.ID == subject);
+            if (role == null)
+            {
+                return Task.FromResult(new IdentityManagerResult<RoleDetail>((RoleDetail)null));
+            }
+
+            var props = new List<PropertyValue>();
+            foreach (var prop in GetMetadata().RoleMetadata.UpdateProperties)
+            {
+                props.Add(new PropertyValue
+                {
+                    Type = prop.Type,
+                    Value = GetRoleProperty(prop, role)
+                });
+            }
+
+            var detail = new RoleDetail
+            {
+                Subject = role.ID,
+                Name = role.Name,
+                Description = role.Description,
+                Properties = props
+            };
+
+            return Task.FromResult(new IdentityManagerResult<RoleDetail>(detail));
+        }
+
+        public Task<IdentityManagerResult> SetRolePropertyAsync(string subject, string type, string value)
+        {
+            var role = roles.SingleOrDefault(x => x.ID == subject);
+            if (role == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No role found"));
+            }
+
+            var errors = ValidateRoleProperty(type, value);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
+            }
+
+            var result = SetRoleProperty(GetMetadata().RoleMetadata.UpdateProperties, role, type, value);
+            return Task.FromResult(result);
+        }
+
+        private string GetRoleProperty(PropertyMetadata property, InMemoryRole role)
+        {
+            string value;
+            if (property.TryGet(role, out value))
+            {
+                return value;
+            }
+
+            throw new Exception("Invalid property type " + property.Type);
+        }
+
+        private IdentityManagerResult SetRoleProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryRole role, string type, string value)
+        {
+            IdentityManagerResult result;
+            if (propsMeta.TrySet(role, type, value, out result))
             {
                 return result;
             }
 
-            throw new Exception("Invalid property type " + type);
+            throw new InvalidOperationException("Invalid Property Type : " + type);
         }
 
-        protected string GetScopeProperty(PropertyMetadata propMetadata, InMemoryScope scope)
-        {
-            string val;
-            if (propMetadata.TryGet(scope, out val))
-            {
-                return val;
-            }
-            throw new Exception("Invalid property type " + propMetadata.Type);
-        }
-
-        private IEnumerable<string> ValidateRoleProperties(IEnumerable<PropertyValue> properties)
+        IEnumerable<string> ValidateRoleProperties(IEnumerable<PropertyValue> properties)
         {
             return properties.Select(x => ValidateRoleProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
         }
 
         private IEnumerable<string> ValidateRoleProperty(string type, string value)
         {
+
             return Enumerable.Empty<string>();
         }
 

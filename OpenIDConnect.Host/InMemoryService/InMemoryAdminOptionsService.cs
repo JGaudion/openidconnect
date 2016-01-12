@@ -11,7 +11,7 @@ namespace OpenIDConnect.Host
         {
             var factory = new IdentityAdminServiceFactory
             {
-                IdentityAdminService = new Registration<IIdentityAdminService, InMemoryIdentityManagerService>()
+                IdentityAdminService = new Registration<IIdentityAdminService, InMemoryIdentityAdminService>()
             };
 
             var rand = new System.Random();

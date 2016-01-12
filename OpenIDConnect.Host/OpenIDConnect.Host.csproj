@@ -59,6 +59,10 @@
     <Reference Include="IdentityAdmin">
       <HintPath>..\packages\IdentityServer3.Admin.1.0.0-beta4\IdentityAdmin.dll</HintPath>
     </Reference>
+    <Reference Include="IdentityManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityManager.1.0.0-beta5-5\lib\net45\IdentityManager.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="IdentityServer3, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IdentityServer3.2.3.0\lib\net45\IdentityServer3.dll</HintPath>
       <Private>True</Private>
@@ -157,14 +161,21 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InMemoryService\InMemoryManagerOptionsService.cs" />
     <Compile Include="Services\IAdminOptionsService.cs" />
     <Compile Include="InMemoryService\InMemoryAdminOptionsService.cs" />
     <Compile Include="InMemoryService\InMemoryServerOptionsService.cs" />
     <Compile Include="InMemoryService\ClientSeeder.cs" />
     <Compile Include="InMemoryService\InMemoryClient.cs" />
+    <Compile Include="InMemoryService\InMemoryIdentityAdminService.cs" />
     <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
+    <Compile Include="InMemoryService\InMemoryRole.cs" />
     <Compile Include="InMemoryService\InMemoryScope.cs" />
+    <Compile Include="InMemoryService\InMemoryUser.cs" />
+    <Compile Include="InMemoryService\RoleSeeder.cs" />
     <Compile Include="InMemoryService\ScopeSeeder.cs" />
+    <Compile Include="InMemoryService\UserSeeder.cs" />
+    <Compile Include="Services\IManagerOptionsService.cs" />
     <Compile Include="Services\IServerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

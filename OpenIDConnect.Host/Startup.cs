@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using OpenIDConnect.Host.InMemoryService;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
@@ -12,23 +13,33 @@ namespace OpenIDConnect.Host
             this.Configuration(
                 app, 
                 serverOptionsService: new InMemoryServerOptionsService(),
-                adminOptionsService: new InMemoryAdminOptionsService());
+                adminOptionsService: new InMemoryAdminOptionsService(),
+                managerOptionsService: new InMemoryManagerOptionsService());
         }
 
         private void Configuration(
             IAppBuilder app, 
             IServerOptionsService serverOptionsService,
-            IAdminOptionsService adminOptionsService)
+            IAdminOptionsService adminOptionsService,
+            IManagerOptionsService managerOptionsService)
         {
             app.Map("/core", coreApp => {
                 var options = serverOptionsService.GetServerOptions();
                 coreApp.UseIdentityServer(options);
             });
 
+            var rand = new System.Random();
+
             app.Map("/admin", adminApp => {
                 var options = adminOptionsService.GetAdminOptions();
                 adminApp.UseIdentityAdmin(options);
             });
-        }        
+
+            app.Map("/manage", manageApp =>
+            {
+                var options = managerOptionsService.GetManagerOptions();
+                manageApp.UseIdentityManager(options);
+            });
+        }
     }
 }
