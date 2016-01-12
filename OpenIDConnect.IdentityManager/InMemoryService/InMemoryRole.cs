@@ -17,7 +17,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace OpenIDConnect.Host.InMemoryService
+namespace OpenIDConnect.IdentityManager
 {
     public class InMemoryRole
     {

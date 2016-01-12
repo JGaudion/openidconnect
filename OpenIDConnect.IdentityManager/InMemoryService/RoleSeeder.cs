@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OpenIDConnect.Host.InMemoryService
+namespace OpenIDConnect.IdentityManager
 {
     public class RoleSeeder
     {

@@ -3,9 +3,9 @@ using IdentityAdmin.Core;
 using OpenIDConnect.Host.InMemoryService;
 using System.Collections.Generic;
 
-namespace OpenIDConnect.Host
+namespace OpenIDConnect.IdentityAdmin
 {
-    internal class InMemoryAdminOptionsService : IAdminOptionsService
+    internal class InMemoryAdminOptionsService
     {
         public IdentityAdminOptions GetAdminOptions()
         {

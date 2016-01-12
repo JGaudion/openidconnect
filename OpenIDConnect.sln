@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Host", "OpenI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityAdmin.EntityFramework", "OpenIDConnect.IdentityAdmin.EntityFramework\OpenIDConnect.IdentityAdmin.EntityFramework.csproj", "{902B6193-74FE-45A5-98EE-DF7F9F3A43BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer", "OpenIDConnect.IdentityServer\OpenIDConnect.IdentityServer.csproj", "{9CCB9A14-0569-4F04-98EE-FEB5D0B30FF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Core", "OpenIDConnect.Core\OpenIDConnect.Core.csproj", "{219E72F8-F1A0-43AE-9037-104C2F00476D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityAdmin", "OpenIDConnect.IdentityAdmin\OpenIDConnect.IdentityAdmin.csproj", "{A1CE20F2-9822-4440-A27C-80DD92D68D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityManager", "OpenIDConnect.IdentityManager\OpenIDConnect.IdentityManager.csproj", "{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +29,22 @@ Global
 		{902B6193-74FE-45A5-98EE-DF7F9F3A43BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{902B6193-74FE-45A5-98EE-DF7F9F3A43BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{902B6193-74FE-45A5-98EE-DF7F9F3A43BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CCB9A14-0569-4F04-98EE-FEB5D0B30FF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CCB9A14-0569-4F04-98EE-FEB5D0B30FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CCB9A14-0569-4F04-98EE-FEB5D0B30FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CCB9A14-0569-4F04-98EE-FEB5D0B30FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1CE20F2-9822-4440-A27C-80DD92D68D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1CE20F2-9822-4440-A27C-80DD92D68D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1CE20F2-9822-4440-A27C-80DD92D68D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1CE20F2-9822-4440-A27C-80DD92D68D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

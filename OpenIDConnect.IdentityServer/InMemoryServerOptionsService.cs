@@ -4,14 +4,14 @@ using IdentityServer3.Core.Services.InMemory;
 using IdentityServer3.Core.Models;
 using System.Linq;
 
-namespace OpenIDConnect.Host
+namespace OpenIDConnect.IdentityServer
 {
-    internal class InMemoryServerOptionsService : IServerOptionsService
+    internal class InMemoryServerOptionsService
     {
         public IdentityServerOptions GetServerOptions()
         {
             return new IdentityServerOptions
-            {
+            {                
                 Factory = new IdentityServerServiceFactory()
                    .UseInMemoryClients(this.Clients)
                    .UseInMemoryScopes(this.GetScopes())

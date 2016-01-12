@@ -3,9 +3,9 @@ using IdentityManager.Configuration;
 using System.Collections.Generic;
 using IdentityManager;
 
-namespace OpenIDConnect.Host.InMemoryService
+namespace OpenIDConnect.IdentityManager
 {
-    internal class InMemoryManagerOptionsService : IManagerOptionsService
+    internal class InMemoryManagerOptionsService
     {
         public IdentityManagerOptions GetManagerOptions()
         {

@@ -21,9 +21,9 @@ using System.Threading.Tasks;
 using IdentityManager.Extensions;
 using IdentityManager;
 
-namespace OpenIDConnect.Host.InMemoryService
+namespace OpenIDConnect.IdentityManager
 {
-    class InMemoryIdentityManagerService : IIdentityManagerService
+    public class InMemoryIdentityManagerService : IIdentityManagerService
     {
         ICollection<InMemoryUser> users;
         ICollection<InMemoryRole> roles;
