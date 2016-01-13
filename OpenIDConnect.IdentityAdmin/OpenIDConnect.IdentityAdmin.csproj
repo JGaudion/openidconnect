@@ -76,9 +76,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityFrameworkAdminOptionsService.cs" />
-    <Compile Include="IdentityAdminBootstrapper.cs" />
-    <Compile Include="InMemoryAdminOptionsService.cs" />
+    <Compile Include="Services\EntityFrameworkAdminOptionsService.cs" />
+    <Compile Include="Bootstrap\IdentityAdminBootstrapper.cs" />
+    <Compile Include="Services\InMemoryAdminOptionsService.cs" />
     <Compile Include="InMemoryService\ClientSeeder.cs" />
     <Compile Include="InMemoryService\InMemoryClient.cs" />
     <Compile Include="InMemoryService\InMemoryIdentityAdminService.cs" />

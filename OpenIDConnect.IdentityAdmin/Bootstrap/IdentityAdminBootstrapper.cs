@@ -7,7 +7,7 @@ namespace OpenIDConnect.IdentityAdmin
     {
         public void Run(IAppBuilder app)
         {
-            var options = new InMemoryAdminOptionsService().GetAdminOptions();
+            var options = new EntityFrameworkAdminOptionsService().GetAdminOptions();
             app.UseIdentityAdmin(options);
         }
     }
