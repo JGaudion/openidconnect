@@ -161,19 +161,6 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InMemoryService\InMemoryManagerOptionsService.cs" />
-    <Compile Include="InMemoryService\InMemoryAdminOptionsService.cs" />
-    <Compile Include="InMemoryService\InMemoryServerOptionsService.cs" />
-    <Compile Include="InMemoryService\ClientSeeder.cs" />
-    <Compile Include="InMemoryService\InMemoryClient.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityAdminService.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
-    <Compile Include="InMemoryService\InMemoryRole.cs" />
-    <Compile Include="InMemoryService\InMemoryScope.cs" />
-    <Compile Include="InMemoryService\InMemoryUser.cs" />
-    <Compile Include="InMemoryService\RoleSeeder.cs" />
-    <Compile Include="InMemoryService\ScopeSeeder.cs" />
-    <Compile Include="InMemoryService\UserSeeder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -181,6 +168,10 @@
     <ProjectReference Include="..\Interfaces\OpenIDConnect.Host.Interfaces.csproj">
       <Project>{88551d9b-e59e-483a-91b1-eee4cac55677}</Project>
       <Name>OpenIDConnect.Host.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
+      <Project>{219e72f8-f1a0-43ae-9037-104c2f00476d}</Project>
+      <Name>OpenIDConnect.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\OpenIDConnect.Host.AspNet\OpenIDConnect.Host.AspNet.csproj">
       <Project>{90a2804d-3319-452f-930a-f7aec97f437e}</Project>

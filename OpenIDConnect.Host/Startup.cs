@@ -1,6 +1,5 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using OpenIDConnect.Host.InMemoryService;
 using OpenIDConnect.Host.Interfaces;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
