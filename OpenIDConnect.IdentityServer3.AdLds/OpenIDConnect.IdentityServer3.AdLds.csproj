@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7A98F4F1-2AA0-4256-8E72-F5E315D3A59E}</ProjectGuid>
+    <ProjectGuid>{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenIDConnect.IdentityManager</RootNamespace>
-    <AssemblyName>OpenIDConnect.IdentityManager</AssemblyName>
+    <RootNamespace>OpenIDConnect.IdentityServer3.AdLds</RootNamespace>
+    <AssemblyName>OpenIDConnect.IdentityServer3.AdLds</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IdentityManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityManager.1.0.0-beta5-5\lib\net45\IdentityManager.dll</HintPath>
+    <Reference Include="IdentityServer3, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IdentityServer3.2.3.0\lib\net45\IdentityServer3.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -40,8 +39,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,24 +50,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IdentityManagerBootstrapper.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
-    <Compile Include="InMemoryService\InMemoryManagerOptionsService.cs" />
-    <Compile Include="InMemoryService\InMemoryRole.cs" />
-    <Compile Include="InMemoryService\InMemoryUser.cs" />
+    <Compile Include="Contexts\AdLdsDirectoryContext.cs" />
+    <Compile Include="Contexts\IDirectoryContext.cs" />
+    <Compile Include="Extensions\DirectoryEntryDisposable.cs" />
+    <Compile Include="Factories\AdLdsDirectoryContextFactory.cs" />
+    <Compile Include="Factories\IDirectoryContextFactory.cs" />
+    <Compile Include="Models\AdLdsUser.cs" />
+    <Compile Include="Models\DirectoryConnectionConfig.cs" />
+    <Compile Include="Models\DirectoryQuery.cs" />
+    <Compile Include="Services\AdLdsUserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="InMemoryService\RoleSeeder.cs" />
-    <Compile Include="InMemoryService\UserSeeder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
-      <Project>{219e72f8-f1a0-43ae-9037-104c2f00476d}</Project>
-      <Name>OpenIDConnect.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
