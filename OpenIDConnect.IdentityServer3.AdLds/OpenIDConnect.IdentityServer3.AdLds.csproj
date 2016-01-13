@@ -49,9 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdLdsUser.cs" />
-    <Compile Include="AdLdsUserService.cs" />
+    <Compile Include="Contexts\AdLdsDirectoryContext.cs" />
+    <Compile Include="Contexts\IDirectoryContext.cs" />
+    <Compile Include="Factories\AdLdsDirectoryContextFactory.cs" />
+    <Compile Include="Factories\IDirectoryContextFactory.cs" />
+    <Compile Include="Models\AdLdsUser.cs" />
+    <Compile Include="Models\DirectoryConnectionConfig.cs" />
+    <Compile Include="Models\DirectoryQuery.cs" />
+    <Compile Include="Services\AdLdsUserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Contexts\ValidateLocalCredentialsContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

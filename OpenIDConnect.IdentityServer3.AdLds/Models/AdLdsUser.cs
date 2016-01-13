@@ -1,11 +1,11 @@
 ﻿using System;
-using System.DirectoryServices;
 
-namespace OpenIDConnect.IdentityServer3.AdLds
+namespace OpenIDConnect.IdentityServer3.AdLds.Models
 {
     public class AdLdsUser
     {
-        public AdLdsUser(string id,
+        public AdLdsUser(
+            string id,
             string name,
             string email)
         {

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityAdmin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer3.AdLds", "OpenIDConnect.IdentityServer3.AdLds\OpenIDConnect.IdentityServer3.AdLds.csproj", "{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdConnect.Host.AdLds", "OpenIdConnect.Host.AdLds\OpenIdConnect.Host.AdLds.csproj", "{D0B78E8F-51E5-4350-8256-CFB56E87BD71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0B78E8F-51E5-4350-8256-CFB56E87BD71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0B78E8F-51E5-4350-8256-CFB56E87BD71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0B78E8F-51E5-4350-8256-CFB56E87BD71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0B78E8F-51E5-4350-8256-CFB56E87BD71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

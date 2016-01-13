@@ -7,32 +7,21 @@ using IdentityServer3.Core.Extensions;
 using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityServer3.Core;
+using OpenIDConnect.IdentityServer3.AdLds.Contexts;
+using OpenIDConnect.IdentityServer3.AdLds.Models;
+using OpenIDConnect.IdentityServer3.AdLds.Factories;
 
-namespace OpenIDConnect.IdentityServer3.AdLds
+namespace OpenIDConnect.IdentityServer3.AdLds.Services
 {
     public class AdLdsUserService : UserServiceBase
     {
-        private readonly DirectoryEntry directoryEntry;
+        private readonly IDirectoryContext directoryContext;
 
-        public AdLdsUserService()
+        public AdLdsUserService(IDirectoryContextFactory contextFactory)
         {
-            string server = "localhost";
-            string port = "389";
-            string objectName = "CN=ADLDSUsers,DC=ScottLogic,DC=local";
-            string path = "LDAP://";
+            var connectionConfig = new DirectoryConnectionConfig("localhost", "389", "LDAP://", "CN=ADLDSUsers,DC=ScottLogic,DC=local");
 
-            path = $"{path}{server}:{port}/{objectName}";
-
-            try
-            {
-                directoryEntry = new DirectoryEntry(path);
-                directoryEntry.RefreshCache();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error: directory bind for path {path} failed. Exception: {e}");
-                throw;
-            }
+            this.directoryContext = contextFactory.CreateDirectoryContext(connectionConfig);
         }
 
         public async override Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -84,7 +73,7 @@ namespace OpenIDConnect.IdentityServer3.AdLds
 
             context.IsActive = account != null;
         }
-
+        
         private async Task<bool> ValidateLocalCredentials(ValidateLocalCredentialsContext context)
         {
             var result = await GetUserByName(context.UserName);
@@ -111,34 +100,20 @@ namespace OpenIDConnect.IdentityServer3.AdLds
             }
         }
 
-        private Task<SearchResult> GetUserByName(string name)
+        private async Task<SearchResult> GetUserByName(string name)
         {
-            string query = $"(&(objectClass=user)(cn={name}))";
+            string filter = $"(&(objectClass=user)(cn={name}))";
 
-            SearchResultCollection searchResults;
+            var query = new DirectoryQuery(filter);
 
-            return Task.Run(() =>
+            var searchResults = await this.directoryContext.FindAllAsync(query);
+
+            if (searchResults.Count > 1)
             {
-                try
-                {
-                    var searcher = new DirectorySearcher(directoryEntry);
-                    searcher.Filter = query;
-                    searcher.SearchScope = SearchScope.Subtree;
-                    searchResults = searcher.FindAll();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error: query \"{query}\" failed with exception {e}");
-                    throw;
-                }
+                throw new InvalidOperationException($"Too many results for query {query}");
+            }
 
-                if (searchResults.Count > 1)
-                {
-                    throw new InvalidOperationException($"Too many results for query {query}");
-                }
-
-                return searchResults.Count > 0 ? searchResults[0] : null;
-            });
+            return searchResults.Count > 0 ? searchResults[0] : null;
         }
     }
 

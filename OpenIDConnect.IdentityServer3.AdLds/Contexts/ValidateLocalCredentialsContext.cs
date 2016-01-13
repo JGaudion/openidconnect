@@ -1,6 +1,7 @@
-﻿using System;
+﻿using OpenIDConnect.IdentityServer3.AdLds.Models;
+using System;
 
-namespace OpenIDConnect.IdentityServer3.AdLds
+namespace OpenIDConnect.IdentityServer3.AdLds.Contexts
 {
     public class ValidateLocalCredentialsContext
     {
