@@ -6,6 +6,8 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Contexts
 {
     public interface IDirectoryContext
     {
-        Task<SearchResultCollection> FindAllAsync(DirectoryQuery query);
+        Task<AdLdsUser> ValidateCredentialsAsync(string username, string password);
+
+        Task<AdLdsUser> FindUserByNameAsync(string username);
     }
 }

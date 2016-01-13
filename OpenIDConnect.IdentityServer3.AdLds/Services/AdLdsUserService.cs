@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services.Default;
-using System.DirectoryServices;
 using System;
 using IdentityServer3.Core.Extensions;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
             var principal = context.Subject;
             var requestedClaimTypes = context.RequestedClaimTypes;
 
-            var user = (await GetUserByName(principal.Identity.GetName())).ToAdLdsUser();
+            var user = await directoryContext.FindUserByNameAsync(principal.Identity.GetName());
 
             var claims = GetClaimsForResult(user);
         }
@@ -41,10 +40,10 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
 
             try
             {
-                var validateContext = new ValidateLocalCredentialsContext(username, password);
-                if (await ValidateLocalCredentials(validateContext))
+                var user = await ValidateLocalCredentials(username, password);
+                if (user != null)
                 {
-                    result = new AuthenticateResult(validateContext.User.Id, validateContext.User.Name);
+                    result = new AuthenticateResult(user.Id, user.Name);
                 }
                 else
                 {
@@ -56,6 +55,8 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
                 Console.WriteLine($"Exception occurred while authenticating user {username}: {e}");
                 throw;
             }
+
+            context.AuthenticateResult = result;
         }
 
         public override Task AuthenticateExternalAsync(ExternalAuthenticationContext context)
@@ -67,24 +68,14 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
         {
             var subject = context.Subject;
 
-            var account = await GetUserByName(subject.Identity.GetName());
+            var account = await directoryContext.FindUserByNameAsync(subject.Identity.GetName());
 
             context.IsActive = account != null;
         }
         
-        private async Task<bool> ValidateLocalCredentials(ValidateLocalCredentialsContext context)
+        private async Task<AdLdsUser> ValidateLocalCredentials(string username, string password)
         {
-            var result = await GetUserByName(context.UserName);
-
-            var passwordResult = result.Properties["userPassword"]?.ToString();
-
-            if (context.Password == passwordResult)
-            {
-                context.User = result.ToAdLdsUser();
-                return true;
-            }
-
-            return false;
+            return await directoryContext.ValidateCredentialsAsync(username, password);
         }
 
         private IEnumerable<Claim> GetClaimsForResult(AdLdsUser user)
@@ -96,50 +87,6 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
             {
                 yield return new Claim(Constants.ClaimTypes.Email, user.Email);
             }
-        }
-
-        private async Task<SearchResult> GetUserByName(string name)
-        {
-            string filter = $"(&(objectClass=user)(cn={name}))";
-
-            var query = new DirectoryQuery(filter);
-
-            var searchResults = await this.directoryContext.FindAllAsync(query);
-
-            if (searchResults.Count > 1)
-            {
-                throw new InvalidOperationException($"Too many results for query {query}");
-            }
-
-            return searchResults.Count > 0 ? searchResults[0] : null;
-        }
-    }
-
-    static class Extensions
-    {
-        public static Guid ToGuid(this string s)
-        {
-            Guid g;
-            if (Guid.TryParse(s, out g))
-            {
-                return g;
-            }
-
-            return Guid.Empty;
-        }
-
-        public static AdLdsUser ToAdLdsUser(this SearchResult result)
-        {
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result));
-            }
-
-            var id = result.Properties["cn"]?.ToString();
-            var name = result.Properties["Name"]?.ToString();
-            var email = result.Properties["mail"]?.ToString();
-
-            return new AdLdsUser(id, name, email);
         }
     }
 }
