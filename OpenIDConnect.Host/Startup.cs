@@ -1,44 +1,28 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using OpenIDConnect.Host.InMemoryService;
+using OpenIDConnect.IdentityServer;
+using OpenIDConnect.IdentityAdmin;
+using OpenIDConnect.IdentityManager;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
 namespace OpenIDConnect.Host
 {
     public class Startup
-    {
+    {        
         public void Configuration(IAppBuilder app)
         {
-            this.Configuration(
-                app, 
-                serverOptionsService: new InMemoryServerOptionsService(),
-                adminOptionsService: new InMemoryAdminOptionsService(),
-                managerOptionsService: new InMemoryManagerOptionsService());
-        }
-
-        private void Configuration(
-            IAppBuilder app, 
-            IServerOptionsService serverOptionsService,
-            IAdminOptionsService adminOptionsService,
-            IManagerOptionsService managerOptionsService)
-        {
             app.Map("/core", coreApp => {
-                var options = serverOptionsService.GetServerOptions();
-                coreApp.UseIdentityServer(options);
+                new IdentityServerBootstrapper().Run(coreApp);
             });
 
-            var rand = new System.Random();
-
             app.Map("/admin", adminApp => {
-                var options = adminOptionsService.GetAdminOptions();
-                adminApp.UseIdentityAdmin(options);
+                new IdentityAdminBootstrapper().Run(adminApp);                
             });
 
             app.Map("/manage", manageApp =>
             {
-                var options = managerOptionsService.GetManagerOptions();
-                manageApp.UseIdentityManager(options);
+                new IdentityManagerBootstrapper().Run(manageApp);                
             });
         }
     }

@@ -52,20 +52,8 @@
       <HintPath>..\packages\Autofac.WebApi2.3.4.0\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="IdentityAdmin">
       <HintPath>..\packages\IdentityServer3.Admin.1.0.0-beta4\IdentityAdmin.dll</HintPath>
-    </Reference>
-    <Reference Include="IdentityManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityManager.1.0.0-beta5-5\lib\net45\IdentityManager.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="IdentityServer3, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityServer3.2.3.0\lib\net45\IdentityServer3.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -161,24 +149,22 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InMemoryService\InMemoryManagerOptionsService.cs" />
-    <Compile Include="Services\IAdminOptionsService.cs" />
-    <Compile Include="InMemoryService\InMemoryAdminOptionsService.cs" />
-    <Compile Include="InMemoryService\InMemoryServerOptionsService.cs" />
-    <Compile Include="InMemoryService\ClientSeeder.cs" />
-    <Compile Include="InMemoryService\InMemoryClient.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityAdminService.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
-    <Compile Include="InMemoryService\InMemoryRole.cs" />
-    <Compile Include="InMemoryService\InMemoryScope.cs" />
-    <Compile Include="InMemoryService\InMemoryUser.cs" />
-    <Compile Include="InMemoryService\RoleSeeder.cs" />
-    <Compile Include="InMemoryService\ScopeSeeder.cs" />
-    <Compile Include="InMemoryService\UserSeeder.cs" />
-    <Compile Include="Services\IManagerOptionsService.cs" />
-    <Compile Include="Services\IServerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenIDConnect.IdentityAdmin\OpenIDConnect.IdentityAdmin.csproj">
+      <Project>{a1ce20f2-9822-4440-a27c-80dd92d68d3f}</Project>
+      <Name>OpenIDConnect.IdentityAdmin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenIDConnect.IdentityManager\OpenIDConnect.IdentityManager.csproj">
+      <Project>{7a98f4f1-2aa0-4256-8e72-f5e315d3a59e}</Project>
+      <Name>OpenIDConnect.IdentityManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenIDConnect.IdentityServer\OpenIDConnect.IdentityServer.csproj">
+      <Project>{9ccb9a14-0569-4f04-98ee-feb5d0b30ff2}</Project>
+      <Name>OpenIDConnect.IdentityServer</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
