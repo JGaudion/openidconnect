@@ -1,6 +1,7 @@
 ﻿using IdentityAdmin.Configuration;
 using IdentityAdmin.Core;
 using OpenIDConnect.Host.InMemoryService;
+using OpenIDConnect.Host.Interfaces;
 using System.Collections.Generic;
 
 namespace OpenIDConnect.Host

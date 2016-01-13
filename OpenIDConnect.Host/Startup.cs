@@ -1,6 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using OpenIDConnect.Host.InMemoryService;
+using OpenIDConnect.Host.Interfaces;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
@@ -11,17 +12,22 @@ namespace OpenIDConnect.Host
         public void Configuration(IAppBuilder app)
         {
             this.Configuration(
-                app, 
-                serverOptionsService: new InMemoryServerOptionsService(),
-                adminOptionsService: new InMemoryAdminOptionsService(),
-                managerOptionsService: new InMemoryManagerOptionsService());
+                app,
+                serverOptionsService: new AspNet.Services.ASPServerOptionsService(),
+                adminOptionsService: new AspNet.Services.ASPAdminOptionsService(),
+                managerOptionsService: new AspNet.Services.ASPManagerOptionsService()
+                //serverOptionsService: new InMemoryServerOptionsService(),
+                //adminOptionsService: new InMemoryAdminOptionsService(),
+                //managerOptionsService: new InMemoryManagerOptionsService());
+               );
         }
 
         private void Configuration(
-            IAppBuilder app, 
+            IAppBuilder app,        
             IServerOptionsService serverOptionsService,
             IAdminOptionsService adminOptionsService,
-            IManagerOptionsService managerOptionsService)
+            IManagerOptionsService managerOptionsService
+            )
         {
             app.Map("/core", coreApp => {
                 var options = serverOptionsService.GetServerOptions();

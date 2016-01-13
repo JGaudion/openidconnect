@@ -2,6 +2,7 @@
 using IdentityManager.Configuration;
 using System.Collections.Generic;
 using IdentityManager;
+using OpenIDConnect.Host.Interfaces;
 
 namespace OpenIDConnect.Host.InMemoryService
 {

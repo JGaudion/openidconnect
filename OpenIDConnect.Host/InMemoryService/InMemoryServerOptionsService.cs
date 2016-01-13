@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using IdentityServer3.Core.Services.InMemory;
 using IdentityServer3.Core.Models;
 using System.Linq;
+using OpenIDConnect.Host.Interfaces;
 
 namespace OpenIDConnect.Host
 {
