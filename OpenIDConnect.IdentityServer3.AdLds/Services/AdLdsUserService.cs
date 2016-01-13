@@ -17,10 +17,8 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
     {
         private readonly IDirectoryContext directoryContext;
 
-        public AdLdsUserService(IDirectoryContextFactory contextFactory)
+        public AdLdsUserService(IDirectoryContextFactory contextFactory, DirectoryConnectionConfig connectionConfig)
         {
-            var connectionConfig = new DirectoryConnectionConfig("localhost", "389", "LDAP://", "CN=ADLDSUsers,DC=ScottLogic,DC=local");
-
             this.directoryContext = contextFactory.CreateDirectoryContext(connectionConfig);
         }
 
