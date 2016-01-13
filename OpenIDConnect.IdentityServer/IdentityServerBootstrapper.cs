@@ -1,5 +1,4 @@
-﻿
-using OpenIDConnect.Core;
+﻿using OpenIDConnect.Core;
 using Owin;
 
 namespace OpenIDConnect.IdentityServer
