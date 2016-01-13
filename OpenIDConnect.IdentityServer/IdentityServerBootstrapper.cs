@@ -8,7 +8,8 @@ namespace OpenIDConnect.IdentityServer
     {
         public void Run(IAppBuilder app)
         {
-            var options = new InMemoryServerOptionsService().GetServerOptions();
+            var configurationService = new ApplicationSettingsConfigurationService();
+            var options = new InMemoryServerOptionsService(configurationService).GetServerOptions();
             app.UseIdentityServer(options);
         }
     }

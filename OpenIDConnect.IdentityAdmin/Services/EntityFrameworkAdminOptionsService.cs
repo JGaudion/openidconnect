@@ -17,7 +17,14 @@ namespace OpenIDConnect.IdentityAdmin
             factory.Configure();
             return new IdentityAdminOptions
             {
-                Factory = factory
+                Factory = factory,
+                AdminSecurityConfiguration = new AdminHostSecurityConfiguration()
+                {
+                    HostAuthenticationType = "Cookies",
+                    NameClaimType = "name",
+                    RoleClaimType = "role",
+                    AdminRoleName = "IdentityAdminManager"
+                }
             };
         }
     }
