@@ -9,7 +9,7 @@ namespace OpenIDConnect.Host.AspNet.EntitiesAndStores
 {
     public class UserStore :UserStore<User, Role, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public UserStore(Context context) :base(context)
+        public UserStore(NameMattersContext context) :base(context)
         {
 
         }
