@@ -3,19 +3,62 @@ using System.Collections.Generic;
 using IdentityServer3.Core.Services.InMemory;
 using IdentityServer3.Core.Models;
 using System.Linq;
+using OpenIDConnect.Core;
+using System;
+using System.Security.Claims;
+using OpenIDConnect.IdentityServer.Services;
 
 namespace OpenIDConnect.IdentityServer
 {
     internal class InMemoryServerOptionsService
     {
+        private readonly IConfigurationService configurationService;
+
+        private readonly IClientService clientService;
+
+        private readonly IScopeService scopeService;
+
+        public InMemoryServerOptionsService(
+            IConfigurationService configurationService,
+            IClientService clientService,
+            IScopeService scopeService)
+        {
+            if (configurationService == null)
+            {
+                throw new ArgumentNullException("configurationService");
+            }
+
+            if (clientService == null)
+            {
+                throw new ArgumentNullException("clientService");
+            }
+
+            if (scopeService == null)
+            {
+                throw new ArgumentNullException("scopeService");
+            }
+
+            this.configurationService = configurationService;
+            this.clientService = clientService;
+            this.scopeService = scopeService;
+        }
+
         public IdentityServerOptions GetServerOptions()
         {
+            var factory = new IdentityServerServiceFactory()
+                .UseInMemoryClients(this.clientService.GetClients())
+                .UseInMemoryScopes(this.scopeService.GetScopes())
+                .UseInMemoryUsers(this.GetUsers().ToList());            
+
             return new IdentityServerOptions
-            {                
-                Factory = new IdentityServerServiceFactory()
-                   .UseInMemoryClients(this.Clients)
-                   .UseInMemoryScopes(this.GetScopes())
-                   .UseInMemoryUsers(this.GetUsers().ToList())
+            {
+                SiteName = "IdentityServer v3",
+                SigningCertificate = Cert.Load(),
+                Endpoints = new EndpointOptions
+                {
+                    EnableCspReportEndpoint = true
+                },
+                Factory = factory
             };
         }
 
@@ -24,17 +67,14 @@ namespace OpenIDConnect.IdentityServer
             yield return new InMemoryUser
             {
                 Enabled = true,
+                Subject = "123",
                 Username = "test",
-                Password = "test",
-                Subject = "123"
-            };
-        }
-
-        private IEnumerable<Scope> GetScopes()
-        {
-            yield return new Scope
-            {
-                Name = "api1"
+                Password = "test",                
+                Claims = new Claim[]
+                {
+                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Name, "test"),
+                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Role, "IdentityAdminManager")
+                }
             };
         }
 

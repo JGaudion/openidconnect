@@ -1,6 +1,6 @@
 ﻿
-using OpenIdConnect.Host.AdLds.Services;
 using OpenIDConnect.Core;
+using OpenIDConnect.IdentityServer.Services;
 using Owin;
 
 namespace OpenIDConnect.IdentityServer
@@ -9,7 +9,17 @@ namespace OpenIDConnect.IdentityServer
     {
         public void Run(IAppBuilder app)
         {
-            var options = new AdLdsServerOptionsService().GetServerOptions();
+            var configurationService = new ApplicationSettingsConfigurationService();
+
+            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
+            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
+
+            var options =
+                new InMemoryServerOptionsService(
+                    configurationService, 
+                    new DefaultClientService(identityManagerUri, identityAdminUri),
+                    new DefaultScopeService()).GetServerOptions();
+
             app.UseIdentityServer(options);
         }
     }

@@ -49,9 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cert.cs" />
+    <Compile Include="Services\DefaultClientService.cs" />
+    <Compile Include="Services\DefaultScopeService.cs" />
+    <Compile Include="Services\IClientService.cs" />
     <Compile Include="IdentityServerBootstrapper.cs" />
     <Compile Include="InMemoryServerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IScopeService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
@@ -64,6 +69,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Cert\idsrv3test.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
