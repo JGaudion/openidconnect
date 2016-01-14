@@ -22,17 +22,21 @@ namespace OpenIDConnect.Host
 
             var configurationService = new ApplicationSettingsConfigurationService();
 
+            var identityServerUri = configurationService.GetSetting<string>("IdentityServerUri", null);
+            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
+            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
+
             app.Map("/core", coreApp => {
                 new IdentityServerBootstrapper().Run(coreApp);
             });
 
             app.Map("/admin", adminApp => {
-                new IdentityAdminBootstrapper(configurationService).Run(adminApp);                
+                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri).Run(adminApp);
             });
 
             app.Map("/manage", manageApp =>
             {
-                new IdentityManagerBootstrapper().Run(manageApp);                
+                new IdentityManagerBootstrapper(identityServerUri, identityManagerUri).Run(manageApp);
             });
         }
     }

@@ -54,14 +54,15 @@ namespace OpenIDConnect.IdentityServer
             {
                 Enabled = true,
                 Subject = "123",
-                Username = "test",
-                Password = "test",                
+                Username = "admin",
+                Password = "admin",                
                 Claims = new Claim[]
                 {
-                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Name, "test"),
+                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Name, "admin"),
+                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Role, "IdentityManagerAdmin"),
                     new Claim(IdentityServer3.Core.Constants.ClaimTypes.Role, "IdentityAdminManager")
                 }
-            };
+            };            
         }
 
         private IEnumerable<Client> Clients

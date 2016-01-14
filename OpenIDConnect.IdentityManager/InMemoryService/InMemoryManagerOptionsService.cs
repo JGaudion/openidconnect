@@ -23,7 +23,14 @@ namespace OpenIDConnect.IdentityManager
 
             return new IdentityManagerOptions
             {
-                Factory = factory
+                Factory = factory,
+                SecurityConfiguration = new HostSecurityConfiguration
+                {
+                    HostAuthenticationType = "Cookies",
+                    NameClaimType = "name",
+                    RoleClaimType = "role",
+                    AdminRoleName = "IdentityManagerAdmin"
+                }
             };
         }
     }

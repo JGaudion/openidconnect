@@ -11,32 +11,28 @@ namespace OpenIDConnect.IdentityAdmin
 {
     public class IdentityAdminBootstrapper : IOwinBootstrapper
     {
-        private readonly IConfigurationService configurationService;
+        private readonly string identityServerUri;
 
-        public IdentityAdminBootstrapper(IConfigurationService configurationService)
+        private readonly string identityAdminUri;        
+
+        public IdentityAdminBootstrapper(string identityServerUri, string identityAdminUri)
         {
-            if (configurationService == null)
+            if (string.IsNullOrWhiteSpace(identityServerUri))
             {
-                throw new ArgumentNullException("configurationService");
+                throw new ArgumentNullException("No identity server uri specified");
+            }
+            
+            if (string.IsNullOrWhiteSpace(identityAdminUri))
+            {
+                throw new ArgumentNullException("No identity admin uri specified");
             }
 
-            this.configurationService = configurationService;
+            this.identityServerUri = identityServerUri;
+            this.identityAdminUri = identityAdminUri;
         }
 
         public void Run(IAppBuilder app)
-        {
-            var identityServerUri = this.configurationService.GetSetting<string>("IdentityServerUri", null);
-            if (string.IsNullOrWhiteSpace(identityServerUri))
-            {
-                throw new InvalidOperationException("No identity server uri specified");
-            }
-
-            var identityAdminUri = this.configurationService.GetSetting<string>("IdentityAdminUri", null);
-            if (string.IsNullOrWhiteSpace(identityAdminUri))
-            {
-                throw new InvalidOperationException("No identity admin uri specified");
-            }
-
+        {    
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
             app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
             {
@@ -46,9 +42,9 @@ namespace OpenIDConnect.IdentityAdmin
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
             {
                 AuthenticationType = "oidc",
-                Authority = identityServerUri,
+                Authority = this.identityServerUri,
                 ClientId = "idadmin_client",
-                RedirectUri = identityAdminUri,
+                RedirectUri = this.identityAdminUri,
                 ResponseType = "id_token",
                 UseTokenLifetime = false,
                 Scope = "openid idadmin",
@@ -71,7 +67,7 @@ namespace OpenIDConnect.IdentityAdmin
                                 if (id_token != null)
                                 {
                                     n.ProtocolMessage.IdTokenHint = id_token;
-                                    n.ProtocolMessage.PostLogoutRedirectUri = identityAdminUri;
+                                    n.ProtocolMessage.PostLogoutRedirectUri = this.identityAdminUri;
                                 }
                             }
                         }
