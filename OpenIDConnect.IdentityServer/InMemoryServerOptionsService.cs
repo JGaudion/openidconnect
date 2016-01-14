@@ -12,43 +12,29 @@ namespace OpenIDConnect.IdentityServer
 {
     internal class InMemoryServerOptionsService
     {
-        private readonly IConfigurationService configurationService;
-
-        private readonly IClientService clientService;
-
-        private readonly IScopeService scopeService;
+        private readonly IConfigurationService configurationService;        
 
         public InMemoryServerOptionsService(
-            IConfigurationService configurationService,
-            IClientService clientService,
-            IScopeService scopeService)
+            IConfigurationService configurationService)
         {
             if (configurationService == null)
             {
                 throw new ArgumentNullException("configurationService");
             }
 
-            if (clientService == null)
-            {
-                throw new ArgumentNullException("clientService");
-            }
-
-            if (scopeService == null)
-            {
-                throw new ArgumentNullException("scopeService");
-            }
-
             this.configurationService = configurationService;
-            this.clientService = clientService;
-            this.scopeService = scopeService;
         }
 
         public IdentityServerOptions GetServerOptions()
         {
+            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
+            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
+
             var factory = new IdentityServerServiceFactory()
-                .UseInMemoryClients(this.clientService.GetClients())
-                .UseInMemoryScopes(this.scopeService.GetScopes())
-                .UseInMemoryUsers(this.GetUsers().ToList());            
+                .UseInMemoryUsers(this.GetUsers().ToList());
+            
+            factory.ClientStore = new Registration<IdentityServer3.Core.Services.IClientStore>(new KnownClientStore(identityManagerUri, identityAdminUri));
+            factory.ScopeStore = new Registration<IdentityServer3.Core.Services.IScopeStore>(new KnownScopeStore());
 
             return new IdentityServerOptions
             {

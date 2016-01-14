@@ -50,13 +50,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cert.cs" />
-    <Compile Include="Services\DefaultClientService.cs" />
-    <Compile Include="Services\DefaultScopeService.cs" />
-    <Compile Include="Services\IClientService.cs" />
+    <Compile Include="Services\KnownClientStore.cs" />
+    <Compile Include="Services\KnownScopeStore.cs" />
     <Compile Include="IdentityServerBootstrapper.cs" />
     <Compile Include="InMemoryServerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\IScopeService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">

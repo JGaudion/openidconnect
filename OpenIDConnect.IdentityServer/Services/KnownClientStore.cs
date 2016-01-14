@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using IdentityServer3.Core.Models;
 using System;
+using IdentityServer3.Core.Services;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace OpenIDConnect.IdentityServer.Services
 {
-    public class DefaultClientService : IClientService
+    public class KnownClientStore : IClientStore
     {
         private readonly string identityManagerUri;
 
         private readonly string identityAdminUri;
 
-        public DefaultClientService(
+        public KnownClientStore(
             string identityManagerUri,
             string identityAdminUri)
         {
@@ -28,8 +31,14 @@ namespace OpenIDConnect.IdentityServer.Services
             this.identityManagerUri = identityManagerUri;
             this.identityAdminUri = identityAdminUri;
         }
+        
+        public Task<Client> FindClientByIdAsync(string clientId)
+        {
+            var clients = this.GetClients();
+            return Task.FromResult(clients.SingleOrDefault(c => c.ClientId == clientId));
+        }
 
-        public IEnumerable<Client> GetClients()
+        private IEnumerable<Client> GetClients()
         {
             yield return new Client
             {
@@ -54,7 +63,7 @@ namespace OpenIDConnect.IdentityServer.Services
             {
                 Enabled = true,
                 ClientName = "IdentityAdmin",
-                ClientId = "idadmin_client",                
+                ClientId = "idadmin_client",
                 Flow = Flows.Implicit,
                 RequireConsent = false,
                 RedirectUris = new List<string>
