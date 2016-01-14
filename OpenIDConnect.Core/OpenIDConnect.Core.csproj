@@ -49,11 +49,23 @@
     <Compile Include="ApplicationSettingsConfigurationService.cs" />
     <Compile Include="IConfigurationService.cs" />
     <Compile Include="IOwinBootstrapper.cs" />
+    <Compile Include="Models\AccessTokenType.cs" />
+    <Compile Include="Models\AuthenticationResult.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\ExternalIdentity.cs" />
+    <Compile Include="Models\Flows.cs" />
+    <Compile Include="Models\ProfileDataRequest.cs" />
+    <Compile Include="Models\Secret.cs" />
+    <Compile Include="Models\SignInData.cs" />
+    <Compile Include="Models\TokenExpiration.cs" />
+    <Compile Include="Models\TokenUsage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IUserAuthenticationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
