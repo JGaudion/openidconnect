@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.Host.AspNet.EntitiesAndStores
 {
-    public class UserStore :UserStore<User, Role, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class Context :IdentityDbContext<User, Role, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public UserStore(Context context) :base(context)
-        {
-
-        }
+        public Context(string ConnectionString) : base (ConnectionString)
+        { }
     }
 }

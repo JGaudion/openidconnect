@@ -17,7 +17,7 @@ namespace OpenIDConnect.Host.AspNet.EntitiesAndStores
         /// The Context is an implementation of IdentityDbContext<MyUserImplementation> 
         /// </summary>
         /// <param name="ctx"></param>
-        public RoleStore(NameMattersContext ctx) :base (ctx)
+        public RoleStore(Context ctx) :base (ctx)
         {
 
         }
