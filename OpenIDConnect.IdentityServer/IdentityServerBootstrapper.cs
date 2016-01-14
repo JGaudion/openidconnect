@@ -11,8 +11,17 @@ namespace OpenIDConnect.IdentityServer
         {
             var configurationService = new ApplicationSettingsConfigurationService();
 
+            var adminUsername = configurationService.GetSetting<string>("AdminUsername", null);
+            var adminPassword = configurationService.GetSetting<string>("AdminPassword", null);
+            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
+            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
+
             var options =
-                new InMemoryServerOptionsService(configurationService).GetServerOptions();
+                new InMemoryServerOptionsService(
+                    adminUsername, 
+                    adminPassword, 
+                    identityManagerUri, 
+                    identityAdminUri).GetServerOptions();
 
             app.UseIdentityServer(options);
         }

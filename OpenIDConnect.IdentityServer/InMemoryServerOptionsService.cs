@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using IdentityServer3.Core.Services.InMemory;
 using IdentityServer3.Core.Models;
 using System.Linq;
-using OpenIDConnect.Core;
 using System;
 using System.Security.Claims;
 using OpenIDConnect.IdentityServer.Services;
@@ -12,29 +11,53 @@ namespace OpenIDConnect.IdentityServer
 {
     internal class InMemoryServerOptionsService
     {
-        private readonly IConfigurationService configurationService;        
+        private string adminUsername;
+
+        private string adminPassword;
+
+        private readonly string identityManagerUri;
+
+        private readonly string identityAdminUri;        
 
         public InMemoryServerOptionsService(
-            IConfigurationService configurationService)
+            string adminUsername,
+            string adminPassword,
+            string identityManagerUri, 
+            string identityAdminUri)
         {
-            if (configurationService == null)
+            if (string.IsNullOrWhiteSpace(adminUsername))
             {
-                throw new ArgumentNullException("configurationService");
+                throw new ArgumentNullException("adminUsername");
             }
 
-            this.configurationService = configurationService;
+            if (string.IsNullOrWhiteSpace(adminPassword))
+            {
+                throw new ArgumentNullException("adminPassword");
+            }
+
+            if (string.IsNullOrWhiteSpace(identityManagerUri))
+            {
+                throw new ArgumentNullException("identityManagerUri");
+            }            
+
+            if (string.IsNullOrWhiteSpace(identityAdminUri))
+            {
+                throw new ArgumentNullException("identityAdminUri");
+            }
+
+            this.adminUsername = adminUsername;
+            this.adminPassword = adminPassword;
+            this.identityManagerUri = identityManagerUri;
+            this.identityAdminUri = identityAdminUri;
         }
 
         public IdentityServerOptions GetServerOptions()
         {
-            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
-            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
-
-            var factory = new IdentityServerServiceFactory()
-                .UseInMemoryUsers(this.GetUsers().ToList());
-            
+            var factory = new IdentityServerServiceFactory();
+                        
             factory.ClientStore = new Registration<IdentityServer3.Core.Services.IClientStore>(new KnownClientStore(identityManagerUri, identityAdminUri));
             factory.ScopeStore = new Registration<IdentityServer3.Core.Services.IScopeStore>(new KnownScopeStore());
+            factory.UserService = new Registration<IdentityServer3.Core.Services.IUserService>(new KnownUserService(this.adminUsername, this.adminPassword));
 
             return new IdentityServerOptions
             {
@@ -46,23 +69,6 @@ namespace OpenIDConnect.IdentityServer
                 },
                 Factory = factory
             };
-        }
-
-        private IEnumerable<InMemoryUser> GetUsers()
-        {
-            yield return new InMemoryUser
-            {
-                Enabled = true,
-                Subject = "123",
-                Username = "admin",
-                Password = "admin",                
-                Claims = new Claim[]
-                {
-                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Name, "admin"),
-                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Role, "IdentityManagerAdmin"),
-                    new Claim(IdentityServer3.Core.Constants.ClaimTypes.Role, "IdentityAdminManager")
-                }
-            };            
         }
 
         private IEnumerable<Client> Clients
