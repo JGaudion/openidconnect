@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+  <parameter name="IdentityAdminConnectionString" defaultValue="Server=(localdb)\MSSQLLocalDB;Database=IdentityAdmin;Integrated Security=true;MultipleActiveResultSets=true">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/connectionStrings/add[@name='IdentityAdmin']/@connectionString" />
+  </parameter>
+  <parameter name="IdentityServerUri" defaultValue="https://localhost:44302/core">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IdentityServerUri']/@value" />
+  </parameter>
+  <parameter name="IdentityManagerUri" defaultValue="https://localhost:44302/manage">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IdentityManagerUri']/@value" />
+  </parameter>
+  <parameter name="IdentityAdminUri" defaultValue="https://localhost:44302/admin">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IdentityAdminUri']/@value" />
+  </parameter>
+</parameters>
