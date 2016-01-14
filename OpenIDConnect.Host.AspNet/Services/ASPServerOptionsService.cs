@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using IdentityServer3.Core.Configuration;
 using OpenIDConnect.Host.AspNet.IdSvr;
-using OpenIDConnect.Host.Interfaces;
 
 namespace OpenIDConnect.Host.AspNet.Services
 {
-    public class ASPServerOptionsService : IServerOptionsService
+    public class ASPServerOptionsService
     {
         public IdentityServerOptions GetServerOptions()
         {
