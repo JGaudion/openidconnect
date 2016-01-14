@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using IdentityManager.Configuration;
 using OpenIDConnect.Host.AspNet.IdMgr;
 using OpenIDConnect.Host.AspNet.IdSvr;
-using OpenIDConnect.Host.Interfaces;
 
 namespace OpenIDConnect.Host.AspNet.Services
 {
-    public class ASPManagerOptionsService : IManagerOptionsService
+    public class ASPManagerOptionsService
     {
         public IdentityManagerOptions GetManagerOptions()
         {

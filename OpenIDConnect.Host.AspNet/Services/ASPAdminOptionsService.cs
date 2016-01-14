@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IdentityAdmin.Configuration;
-using OpenIDConnect.Host.Interfaces;
 using IdentityManager.Configuration;
 using OpenIDConnect.Host.AspNet.IdSvr;
 
 
 namespace OpenIDConnect.Host.AspNet.Services
 {
-    public class ASPAdminOptionsService : IAdminOptionsService
+    public class ASPAdminOptionsService
     {
         public IdentityAdminOptions GetAdminOptions()
         {

@@ -5,8 +5,8 @@ using IdentityServer3.Core.Models;
 using System.Linq;
 using OpenIDConnect.Core;
 using System;
-using static IdentityServer3.Core.Constants;
 using System.Security.Claims;
+using OpenIDConnect.IdentityServer.Services;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -14,21 +14,40 @@ namespace OpenIDConnect.IdentityServer
     {
         private readonly IConfigurationService configurationService;
 
-        public InMemoryServerOptionsService(IConfigurationService configurationService)
+        private readonly IClientService clientService;
+
+        private readonly IScopeService scopeService;
+
+        public InMemoryServerOptionsService(
+            IConfigurationService configurationService,
+            IClientService clientService,
+            IScopeService scopeService)
         {
             if (configurationService == null)
             {
                 throw new ArgumentNullException("configurationService");
             }
 
+            if (clientService == null)
+            {
+                throw new ArgumentNullException("clientService");
+            }
+
+            if (scopeService == null)
+            {
+                throw new ArgumentNullException("scopeService");
+            }
+
             this.configurationService = configurationService;
+            this.clientService = clientService;
+            this.scopeService = scopeService;
         }
 
         public IdentityServerOptions GetServerOptions()
         {
             var factory = new IdentityServerServiceFactory()
-                .UseInMemoryClients(this.Clients)
-                .UseInMemoryScopes(this.GetScopes())
+                .UseInMemoryClients(this.clientService.GetClients())
+                .UseInMemoryScopes(this.scopeService.GetScopes())
                 .UseInMemoryUsers(this.GetUsers().ToList());            
 
             return new IdentityServerOptions
@@ -59,51 +78,10 @@ namespace OpenIDConnect.IdentityServer
             };
         }
 
-        private IEnumerable<Scope> GetScopes()
-        {
-            yield return IdentityServer3.Core.Models.StandardScopes.OpenId;
-            yield return new Scope
-            {
-                Name = "idadmin",
-                DisplayName = "IdentityAdmin",
-                Description = "Authorization for IdentityAdmin",
-                Type = ScopeType.Identity,
-                Claims = new List<ScopeClaim>{
-                        new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Name),
-                        new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Role)
-                    }
-            };
-        }
-
         private IEnumerable<Client> Clients
         {
             get
             {
-                var identityAdminUri = this.configurationService.GetSetting<string>("IdentityAdminUri", null);
-                if (string.IsNullOrWhiteSpace(identityAdminUri))
-                {
-                    throw new InvalidOperationException("No identity admin uri specified");
-                }
-
-                yield return new Client
-                {
-                    ClientName = "IdentityAdmin",
-                    ClientId = "idadmin_client",
-                    Enabled = true,                    
-                    Flow = Flows.Implicit,
-                    RequireConsent = false,
-                    RedirectUris = new List<string>
-                    {
-                        identityAdminUri
-                    },
-                    IdentityProviderRestrictions = new List<string>() { IdentityServer3.Core.Constants.PrimaryAuthenticationType },
-                    AllowedScopes =
-                    {
-                        IdentityServer3.Core.Constants.StandardScopes.OpenId,
-                        "idadmin"
-                    }
-                };
-
                 yield return new Client
                 {
                     ClientName = "Angular",
