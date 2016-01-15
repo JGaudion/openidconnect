@@ -15,10 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Core", "OpenIDConnect.Core\OpenIDConnect.Core.csproj", "{219E72F8-F1A0-43AE-9037-104C2F00476D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Host.AspNet", "OpenIDConnect.Host.AspNet\OpenIDConnect.Host.AspNet.csproj", "{90A2804D-3319-452F-930A-F7AEC97F437E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Host.Interfaces", "Interfaces\OpenIDConnect.Host.Interfaces.csproj", "{88551D9B-E59E-483A-91B1-EEE4CAC55677}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer.AspNet", "OpenIDConnect.IdentityServer.AspNet\OpenIDConnect.IdentityServer.AspNet.csproj", "{3A27BE93-4C59-4CDD-B7F0-A465E33A6CD3}"
 EndProject
 Global
@@ -51,14 +47,6 @@ Global
 		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{219E72F8-F1A0-43AE-9037-104C2F00476D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{90A2804D-3319-452F-930A-F7AEC97F437E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{90A2804D-3319-452F-930A-F7AEC97F437E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{90A2804D-3319-452F-930A-F7AEC97F437E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{90A2804D-3319-452F-930A-F7AEC97F437E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88551D9B-E59E-483A-91B1-EEE4CAC55677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88551D9B-E59E-483A-91B1-EEE4CAC55677}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88551D9B-E59E-483A-91B1-EEE4CAC55677}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88551D9B-E59E-483A-91B1-EEE4CAC55677}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A27BE93-4C59-4CDD-B7F0-A465E33A6CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A27BE93-4C59-4CDD-B7F0-A465E33A6CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A27BE93-4C59-4CDD-B7F0-A465E33A6CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU

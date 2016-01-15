@@ -182,6 +182,10 @@
       <Project>{7a98f4f1-2aa0-4256-8e72-f5e315d3a59e}</Project>
       <Name>OpenIDConnect.IdentityManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OpenIDConnect.IdentityServer.AspNet\OpenIDConnect.IdentityServer.AspNet.csproj">
+      <Project>{3a27be93-4c59-4cdd-b7f0-a465e33a6cd3}</Project>
+      <Name>OpenIDConnect.IdentityServer.AspNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenIDConnect.IdentityServer\OpenIDConnect.IdentityServer.csproj">
       <Project>{9ccb9a14-0569-4f04-98ee-feb5d0b30ff2}</Project>
       <Name>OpenIDConnect.IdentityServer</Name>

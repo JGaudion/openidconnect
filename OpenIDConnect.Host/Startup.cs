@@ -23,28 +23,27 @@ namespace OpenIDConnect.Host
 
             var builder = new ContainerBuilder();
 
-            Modules.RegisterAll(builder);
+            Modules.Register(builder);
 
             var container = builder.Build();
 
-            var configurationService = new ApplicationSettingsConfigurationService();
-
-            var identityServerUri = configurationService.GetSetting<string>("IdentityServerUri", null);
-            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
-            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
-
-            app.Map("/core", coreApp => {
-                new IdentityServerBootstrapper().Run(coreApp);
-            });
-
-            app.Map("/admin", adminApp => {
-                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri).Run(adminApp);
-            });
-
-            app.Map("/manage", manageApp =>
+            using (var scope = container.BeginLifetimeScope())
             {
-                new IdentityManagerBootstrapper(identityServerUri, identityManagerUri).Run(manageApp);
-            });
+                app.Map("/core", coreApp =>
+                {
+                    scope.Resolve<IdentityServerBootstrapper>().Run(coreApp);
+                });
+
+                app.Map("/admin", adminApp =>
+                {
+                    scope.Resolve<IdentityAdminBootstrapper>().Run(adminApp);
+                });
+
+                app.Map("/manage", manageApp =>
+                {
+                    scope.Resolve<IdentityManagerBootstrapper>().Run(manageApp);
+                });
+            }
         }
     }
 }

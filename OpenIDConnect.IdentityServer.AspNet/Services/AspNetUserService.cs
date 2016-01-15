@@ -1,12 +1,10 @@
-﻿using OpenIDConnect.Core.Services;
+﻿using OpenIDConnect.Core.Models;
+using OpenIDConnect.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenIDConnect.Core.Models;
 using System.Security.Claims;
-using OpenIDConnect.IdentityServer.AspNet.Model;
+using System.Threading.Tasks;
 
 namespace OpenIDConnect.IdentityServer.AspNet.Services
 {
