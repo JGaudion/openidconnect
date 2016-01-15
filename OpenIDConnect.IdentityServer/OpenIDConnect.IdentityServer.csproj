@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="IdentityServer3, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IdentityServer3.2.3.0\lib\net45\IdentityServer3.dll</HintPath>
       <Private>True</Private>
@@ -50,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cert.cs" />
+    <Compile Include="Configuration\MappingConfiguration.cs" />
+    <Compile Include="Services\DomainUserService.cs" />
     <Compile Include="Services\KnownClientStore.cs" />
     <Compile Include="Services\KnownScopeStore.cs" />
     <Compile Include="IdentityServerBootstrapper.cs" />
