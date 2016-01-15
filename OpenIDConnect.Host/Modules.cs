@@ -3,7 +3,6 @@ using OpenIDConnect.AdLds.Factories;
 using OpenIDConnect.AdLds.Models;
 using OpenIDConnect.AdLds.Services;
 using OpenIDConnect.Core;
-using OpenIDConnect.Core.Services;
 using OpenIDConnect.IdentityServer.Factories;
 using System;
 
