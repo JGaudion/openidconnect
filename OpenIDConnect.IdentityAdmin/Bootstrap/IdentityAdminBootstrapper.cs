@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityModel.Extensions;
+using Thinktecture.IdentityModel.Owin;
+using System.IdentityModel.Selectors;
 
 namespace OpenIDConnect.IdentityAdmin
 {
@@ -34,11 +37,15 @@ namespace OpenIDConnect.IdentityAdmin
         public void Run(IAppBuilder app)
         {    
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+            
+            // If the request has a cookie, then the user is already authenticated, so build the ClaimsIdentity
             app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
             {
-                AuthenticationType = "Cookies",
+                AuthenticationType = "Cookies"                      
             });
 
+            // This middleware checks the SignInAsAuthenticationType to build the ClaimsIdentity
+            // and if not authenticated
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
             {
                 AuthenticationType = "oidc",
