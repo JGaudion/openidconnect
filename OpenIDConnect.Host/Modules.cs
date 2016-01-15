@@ -3,6 +3,7 @@ using OpenIDConnect.AdLds.Factories;
 using OpenIDConnect.AdLds.Models;
 using OpenIDConnect.AdLds.Services;
 using OpenIDConnect.Core;
+using OpenIDConnect.Core.Services;
 using OpenIDConnect.IdentityAdmin;
 using OpenIDConnect.IdentityManager;
 using OpenIDConnect.IdentityServer;
@@ -63,7 +64,7 @@ namespace OpenIDConnect.Host
 
         private static void RegisterAdLds(ContainerBuilder builder)
         {
-            builder.RegisterType<AdLdsUserService>();
+            builder.RegisterType<AdLdsUserService>().As<IUserAuthenticationService>();
             builder.RegisterType<AdLdsDirectoryContextFactory>().As<IDirectoryContextFactory>();
             builder.Register(ctx => new DirectoryConnectionConfig("localhost", "389", "LDAP://", "CN=ADLDSUsers,DC=ScottLogic,DC=local"));
         }
@@ -76,12 +77,12 @@ namespace OpenIDConnect.Host
         /// <param name="builder"></param>
         private static void RegisterAspNetIdentity(ContainerBuilder builder)
         {
-            builder.RegisterType<ConcreteAspNetUserService>();
-            builder.RegisterType<UserManager>();
-            builder.RegisterType<RoleManager>();
-            builder.RegisterType<UserStore>();
-            builder.RegisterType<RoleStore>();
-            builder.RegisterType<AspNetUserStore>();
+            builder.RegisterType<ConcreteAspNetUserService>().As<IUserAuthenticationService>().ExternallyOwned();
+            builder.RegisterType<UserManager>().ExternallyOwned();
+            builder.RegisterType<RoleManager>().ExternallyOwned();
+            builder.RegisterType<UserStore>().ExternallyOwned();
+            builder.RegisterType<RoleStore>().ExternallyOwned();
+            builder.RegisterType<AspNetUserStore>().ExternallyOwned();
         }
 
         private static void RegisterMembershipReboot(ContainerBuilder builder)

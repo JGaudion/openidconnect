@@ -49,7 +49,7 @@ namespace OpenIDConnect.AdLds.Services
 
         public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData, AuthenticationResult authenticationResult)
         {
-            return Task.FromResult<AuthenticationResult>(null);
+            return Task.FromResult<AuthenticationResult>(authenticationResult);
         }
 
         public Task<AuthenticationResult> PreAuthenticateAsync(SignInData signInData)

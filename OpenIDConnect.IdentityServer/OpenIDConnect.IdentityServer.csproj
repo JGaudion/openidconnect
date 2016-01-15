@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Cert.cs" />
     <Compile Include="Services\CompositeClientStore.cs" />
+    <Compile Include="Services\CompositeUserService.cs" />
     <Compile Include="Services\IdentityAdminClientStore.cs" />
     <Compile Include="Configuration\MappingConfiguration.cs" />
     <Compile Include="Factories\UserStoreType.cs" />

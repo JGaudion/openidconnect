@@ -71,7 +71,10 @@ namespace OpenIDConnect.IdentityServer
                 }));
 
             factory.ScopeStore = new Registration<IScopeStore>(new KnownScopeStore());
-            factory.UserService = new Registration<IUserService>(new DomainUserService(userAuthenticationService));
+            factory.UserService = new Registration<IUserService>(new CompositeUserService(new IUserService[] {
+                new KnownUserService(this.adminUsername, this.adminPassword),
+                new DomainUserService(userAuthenticationService)
+            }));
 
             return new IdentityServerOptions
             {
