@@ -1,6 +1,7 @@
 ﻿
+using AutoMapper;
 using OpenIDConnect.Core;
-using OpenIDConnect.IdentityServer.Services;
+using OpenIDConnect.IdentityServer.Configuration;
 using Owin;
 
 namespace OpenIDConnect.IdentityServer
@@ -9,6 +10,10 @@ namespace OpenIDConnect.IdentityServer
     {
         public void Run(IAppBuilder app)
         {
+            MappingConfiguration.Configure();
+
+            Mapper.AssertConfigurationIsValid();
+
             var configurationService = new ApplicationSettingsConfigurationService();
 
             var options =

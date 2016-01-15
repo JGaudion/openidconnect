@@ -47,10 +47,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettingsConfigurationService.cs" />
+    <Compile Include="Constants\AuthenticationMethods.cs" />
+    <Compile Include="Constants\AuthenticationTypes.cs" />
+    <Compile Include="Constants\IdentityProviders.cs" />
     <Compile Include="IConfigurationService.cs" />
     <Compile Include="IOwinBootstrapper.cs" />
     <Compile Include="Models\AccessTokenType.cs" />
     <Compile Include="Models\AuthenticationResult.cs" />
+    <Compile Include="Constants\ClaimTypes.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\ExternalIdentity.cs" />
     <Compile Include="Models\Flows.cs" />

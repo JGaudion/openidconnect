@@ -9,7 +9,7 @@ namespace OpenIDConnect.Core.Services
     {
         Task<AuthenticationResult> AuthenticateExternalAsync(ExternalIdentity identity, SignInData signInData);
         Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData);
-        Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData);
+        Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData, AuthenticationResult authenticationResult);
         Task<AuthenticationResult> PreAuthenticateAsync(SignInData signInData);
         Task SignOutAsync(ClaimsPrincipal subject, string clientId);
 
