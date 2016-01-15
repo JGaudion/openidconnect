@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using System.Security.Claims;
 using OpenIDConnect.IdentityServer.Services;
+using IdentityServer3.Core.Services;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -55,9 +56,14 @@ namespace OpenIDConnect.IdentityServer
         {
             var factory = new IdentityServerServiceFactory();
                         
-            factory.ClientStore = new Registration<IdentityServer3.Core.Services.IClientStore>(new KnownClientStore(identityManagerUri, identityAdminUri));
-            factory.ScopeStore = new Registration<IdentityServer3.Core.Services.IScopeStore>(new KnownScopeStore());
-            factory.UserService = new Registration<IdentityServer3.Core.Services.IUserService>(new KnownUserService(this.adminUsername, this.adminPassword));
+            factory.ClientStore = new Registration<IClientStore>(
+                new CompositeClientStore(new IClientStore[] {
+                    new KnownClientStore(identityManagerUri, identityAdminUri),
+                    new IdentityAdminClientStore(this.identityAdminUri)                    
+                }));
+
+            factory.ScopeStore = new Registration<IScopeStore>(new KnownScopeStore());
+            factory.UserService = new Registration<IUserService>(new KnownUserService(this.adminUsername, this.adminPassword));
 
             return new IdentityServerOptions
             {
