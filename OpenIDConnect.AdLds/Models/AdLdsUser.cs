@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Models
+namespace OpenIDConnect.AdLds.Models
 {
     public class AdLdsUser
     {

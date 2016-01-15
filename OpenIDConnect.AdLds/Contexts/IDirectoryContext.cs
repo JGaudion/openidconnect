@@ -1,8 +1,8 @@
-﻿using OpenIDConnect.IdentityServer3.AdLds.Models;
+﻿using OpenIDConnect.AdLds.Models;
 using System.DirectoryServices;
 using System.Threading.Tasks;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Contexts
+namespace OpenIDConnect.AdLds.Contexts
 {
     public interface IDirectoryContext
     {

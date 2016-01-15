@@ -6,11 +6,11 @@ using IdentityServer3.Core.Extensions;
 using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityServer3.Core;
-using OpenIDConnect.IdentityServer3.AdLds.Contexts;
-using OpenIDConnect.IdentityServer3.AdLds.Models;
-using OpenIDConnect.IdentityServer3.AdLds.Factories;
+using OpenIDConnect.AdLds.Contexts;
+using OpenIDConnect.AdLds.Models;
+using OpenIDConnect.AdLds.Factories;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Services
+namespace OpenIDConnect.AdLds.Services
 {
     public class AdLdsUserService : UserServiceBase
     {
@@ -72,7 +72,7 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
 
             context.IsActive = account != null;
         }
-        
+
         private async Task<AdLdsUser> ValidateLocalCredentials(string username, string password)
         {
             return await directoryContext.ValidateCredentialsAsync(username, password);
@@ -82,7 +82,7 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Services
         {
             yield return new Claim(Constants.ClaimTypes.Subject, user.Id);
             yield return new Claim(Constants.ClaimTypes.PreferredUserName, user.Name);
-            
+
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 yield return new Claim(Constants.ClaimTypes.Email, user.Email);

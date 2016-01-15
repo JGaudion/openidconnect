@@ -1,9 +1,9 @@
 ﻿using IdentityServer3.Core.Configuration;
 using IdentityServer3.Core.Models;
 using IdentityServer3.Core.Services;
-using OpenIDConnect.IdentityServer3.AdLds.Factories;
-using OpenIDConnect.IdentityServer3.AdLds.Models;
-using OpenIDConnect.IdentityServer3.AdLds.Services;
+using OpenIDConnect.AdLds.Factories;
+using OpenIDConnect.AdLds.Models;
+using OpenIDConnect.AdLds.Services;
 using System.Collections.Generic;
 
 namespace OpenIdConnect.Host.AdLds.Services

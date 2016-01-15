@@ -1,8 +1,8 @@
 ﻿using System;
-using OpenIDConnect.IdentityServer3.AdLds.Contexts;
-using OpenIDConnect.IdentityServer3.AdLds.Models;
+using OpenIDConnect.AdLds.Contexts;
+using OpenIDConnect.AdLds.Models;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Factories
+namespace OpenIDConnect.AdLds.Factories
 {
     public class AdLdsDirectoryContextFactory : IDirectoryContextFactory
     {

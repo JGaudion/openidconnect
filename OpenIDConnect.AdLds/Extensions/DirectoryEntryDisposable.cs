@@ -1,7 +1,7 @@
 ﻿using System;
 using System.DirectoryServices;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Extensions
+namespace OpenIDConnect.AdLds.Extensions
 {
     internal class DirectoryEntryDisposable : IDisposable
     {
@@ -25,5 +25,5 @@ namespace OpenIDConnect.IdentityServer3.AdLds.Extensions
             return new DirectoryEntryDisposable(entry);
         }
     }
-        
+
 }

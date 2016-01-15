@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Host", "OpenIDConnect.Host\OpenIDConnect.Host.csproj", "{8558BB62-5E10-4D93-8611-0662014308EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer3.AdLds", "OpenIDConnect.IdentityServer3.AdLds\OpenIDConnect.IdentityServer3.AdLds.csproj", "{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.AdLds", "OpenIDConnect.AdLds\OpenIDConnect.AdLds.csproj", "{085D5ECD-AFE8-4377-9C4A-20E29A1DC5AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdConnect.Host.AdLds", "OpenIdConnect.Host.AdLds\OpenIdConnect.Host.AdLds.csproj", "{D0B78E8F-51E5-4350-8256-CFB56E87BD71}"
 EndProject

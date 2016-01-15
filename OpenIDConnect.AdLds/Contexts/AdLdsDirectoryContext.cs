@@ -1,11 +1,11 @@
-﻿using OpenIDConnect.IdentityServer3.AdLds.Extensions;
-using OpenIDConnect.IdentityServer3.AdLds.Models;
+﻿using OpenIDConnect.AdLds.Extensions;
+using OpenIDConnect.AdLds.Models;
 using System;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Threading.Tasks;
 
-namespace OpenIDConnect.IdentityServer3.AdLds.Contexts
+namespace OpenIDConnect.AdLds.Contexts
 {
     public class AdLdsDirectoryContext : IDirectoryContext
     {
