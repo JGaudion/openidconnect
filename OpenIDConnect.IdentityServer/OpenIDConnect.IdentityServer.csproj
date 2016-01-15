@@ -55,6 +55,8 @@
   <ItemGroup>
     <Compile Include="Cert.cs" />
     <Compile Include="Configuration\MappingConfiguration.cs" />
+    <Compile Include="Factories\DefaultUserServiceFactory.cs" />
+    <Compile Include="Factories\UserStoreType.cs" />
     <Compile Include="Services\DomainUserService.cs" />
     <Compile Include="Services\KnownClientStore.cs" />
     <Compile Include="Services\KnownScopeStore.cs" />
@@ -67,10 +69,6 @@
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
       <Project>{219e72f8-f1a0-43ae-9037-104c2f00476d}</Project>
       <Name>OpenIDConnect.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OpenIdConnect.Host.AdLds\OpenIdConnect.Host.AdLds.csproj">
-      <Project>{d0b78e8f-51e5-4350-8256-cfb56e87bd71}</Project>
-      <Name>OpenIdConnect.Host.AdLds</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

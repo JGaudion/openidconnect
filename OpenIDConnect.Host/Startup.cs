@@ -6,6 +6,7 @@ using OpenIDConnect.IdentityManager;
 using OpenIDConnect.Core;
 using IdentityAdmin.Logging;
 using Serilog;
+using Autofac;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
@@ -19,6 +20,12 @@ namespace OpenIDConnect.Host
                 .MinimumLevel.Debug()
                 .WriteTo.Trace()
                 .CreateLogger();
+
+            var builder = new ContainerBuilder();
+
+            Modules.RegisterAll(builder);
+
+            var container = builder.Build();
 
             var configurationService = new ApplicationSettingsConfigurationService();
 
