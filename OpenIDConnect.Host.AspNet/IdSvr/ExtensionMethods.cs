@@ -15,11 +15,17 @@ namespace OpenIDConnect.Host.AspNet.IdSvr
     {
         public static void ConfigureSimpleIdentityManagerService(this IdentityManagerServiceFactory factory, string connectionString)
         {
+            ///This is telling the IdentityManagerServiceFactory which dependencies it needs (using my implementations)
             factory.Register(new IdentityManager.Configuration.Registration<Context>(resolver => new Context(connectionString)));
             factory.Register(new Registration<UserStore>());
             factory.Register(new Registration<RoleStore>());
             factory.Register(new Registration<UserManager>());
             factory.Register(new Registration<RoleManager>());
+            ///Register which identity manager service we are using. The second part (Simple Identity Manager Service) points to our
+            ///actual implementiation. The IIdentityManagerService contains default async methods for things like adding a user
+            ///or getting the user claims etc
+            ///This style of registration means: the first thing is what is dependant, the second is what it is dependant on (the implementation to use)
+            ///e.g. SimpleIdentityManagerService is the concrete version of IIdentityManagerService
             factory.IdentityManagerService = new Registration<IIdentityManagerService, SimpleIdentityManagerService>();
         }
 

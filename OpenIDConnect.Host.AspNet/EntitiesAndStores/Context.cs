@@ -9,7 +9,7 @@ namespace OpenIDConnect.Host.AspNet.EntitiesAndStores
 {
     public class Context : IdentityDbContext<User, Role, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
     {
-        public Context(string connectionString) : base (connectionString)
+        public Context(string ConnectionString) :base (ConnectionString)
         {
 
         }
