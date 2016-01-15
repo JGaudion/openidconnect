@@ -123,7 +123,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)
         {
-            AuthenticationResult r = new AuthenticationResult();
+            
             if (userManager.SupportsUserPassword)
             {
                 var user = await userManager.FindByNameAsync(username);
@@ -142,15 +142,14 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                             {
                                 await userManager.ResetAccessFailedCountAsync(user.Id);
                             }
-                            var result = PostAuthenticateLocalAsync(user, signInData);
+                            var result = await PostAuthenticateLocalAsync(user, signInData);
                             if (result == null)
                             {
-                                var claims = await GetClaimsForAuthenticateResult(user);
-                               // result = new AuthenticationResult(user.Id.ToString(), await GetDisplayNameForAccountAsync(user.Id), claims);
+                               var claims = await GetClaimsForAuthenticateResult(user);
+                               return new AuthenticationResult(user.Id.ToString(), await GetDisplayNameForAccountAsync(user.Id), claims);
                             }
 
-                            //What do I do here?
-                            
+                        return result; 
                         }
                         else if (userManager.SupportsUserLockout)
                         {
@@ -160,7 +159,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 
             }
 
-            return r;
+            return null;
         }
 
         /// <summary>
@@ -186,7 +185,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
             if (subject == null) throw new ArgumentNullException("subject");
 
-            TKey key = ConvertSubjectToKey(subject.Identity.Name);//Not sure about this
+            TKey key = ConvertSubjectToKey(subject.FindFirst(Core.Constants.ClaimTypes.Subject).Value);//Not sure about this
             var acct = await userManager.FindByIdAsync(key);
             if (acct == null)
             {
@@ -243,7 +242,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// </summary>
         /// <param name="signInData"></param>
         /// <returns></returns>
-        public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData)
+        public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData, AuthenticationResult authenticationResult)
         {
             return Task.FromResult<AuthenticationResult>(null);
         }
@@ -359,8 +358,8 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 var createResult = await userManager.CreateAsync(user);
                 if (!createResult.Succeeded)
                 {
-                    //  return new AuthenticationResult(createResult.Errors.First());
-                    return new AuthenticationResult();
+                    return new AuthenticationResult(createResult.Errors.First());
+                    
                 }
             }
 
@@ -368,8 +367,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             var addExternalResult = await userManager.AddLoginAsync(user.Id, externalLogin);
             if (!addExternalResult.Succeeded)
             {
-                // return new AuthenticationResult(addExternalResult.Errors.First());
-                return new AuthenticationResult();
+                return new AuthenticationResult(addExternalResult.Errors.First());
             }
 
             var result = await AccountCreatedFromExternalProviderAsync(user.Id, provider, providerId, claims);
@@ -402,13 +400,13 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             var user = await userManager.FindByIdAsync(userID);
             var claims = await GetClaimsForAuthenticateResult(user);
 
-            //return new AuthenticationResult(
-            //    userID.ToString(),
-            //    await GetDisplayNameForAccountAsync(userID),
-            //    claims,
-            //    authenticationMethod: AuthenticationMethods.External,
-            //    identityProvider: provider);
-            return new AuthenticationResult();
+            return new AuthenticationResult(
+                userID.ToString(),
+                await GetDisplayNameForAccountAsync(userID),
+                claims,
+                authenticationMethod: AuthenticationMethods.External,
+                identityProvider: provider);
+
         }
 
         protected virtual async Task<AuthenticationResult> UpdateAccountFromExternalClaimsAsync(TKey userID, string provider, string providerId, IEnumerable<Claim> claims)
@@ -422,8 +420,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 var result = await userManager.AddClaimAsync(userID, claim);
                 if (!result.Succeeded)
                 {
-                    //return new AuthenticationResult(result.Errors.First());
-                    return new AuthenticationResult();
+                    return new AuthenticationResult(result.Errors.First());
                 }
             }
 
