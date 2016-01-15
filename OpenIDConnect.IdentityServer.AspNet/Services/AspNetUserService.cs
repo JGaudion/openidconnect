@@ -21,6 +21,11 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         protected readonly Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager;
         protected readonly Func<string, TKey> ConvertSubjectToKey;
 
+        /// <summary>
+        /// This constructor will conjure up a UserManager as the Autofac will inject the dependencies
+        /// </summary>
+        /// <param name="manager"></param>
+        /// <param name="parseSubject"></param>
         public AspNetUserService(Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager, Func<string, TKey> parseSubject = null)
         {
             if (userManager == null) throw new ArgumentNullException("userManager");
@@ -80,17 +85,26 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         }
         #endregion
 
-
+        /// <summary>
+        /// External: The user has logged in on some other site
+        /// Either we are supplied a new identity, in which case we add it to our user store
+        /// Or we are supplied an existing identity, in which case we return the claims for this user
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <param name="signInData"></param>
+        /// <returns></returns>
         public async Task<AuthenticationResult> AuthenticateExternalAsync(ExternalIdentity identity, SignInData signInData)
         {
+            //There must be an identity for this to make sense
             if (identity == null)
             {
                 throw new ArgumentNullException("identity");
             }
-
+            //The user manager tries to find a matching user
             var user = await userManager.FindAsync(new Microsoft.AspNet.Identity.UserLoginInfo(identity.Provider, identity.ProviderId));
             if (user == null)
             {
+                //Create a new account
                 return await ProcessNewExternalAccountAsync(identity.Provider, identity.ProviderId, identity.Claims);
             }
             else
@@ -99,6 +113,14 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             }
         }
 
+        /// <summary>
+        /// Authentication from within our control, so we have the username and password.
+        /// Find the user and get the claims. It doesn't seem to automatically create new users here.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="signInData"></param>
+        /// <returns></returns>
         public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)
         {
             AuthenticationResult r = new AuthenticationResult();
@@ -141,11 +163,22 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return r;
         }
 
+        /// <summary>
+        /// Doing nothing
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="signInData"></param>
+        /// <returns></returns>
         protected virtual Task<AuthenticationResult> PostAuthenticateLocalAsync(TUser user, SignInData signInData)
         {
             return Task.FromResult<AuthenticationResult>(null);
         }
 
+        /// <summary>
+        /// Go and get all claims for this user. 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<Claim>> GetProfileDataAsync(ProfileDataRequest request)
         {
             var subject = request.Subject;
@@ -169,6 +202,12 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return claims;
         }
 
+        /// <summary>
+        /// Check if a specific user exists
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         public async Task<bool> IsActiveAsync(ClaimsPrincipal subject, Client client)
         {
            
@@ -199,6 +238,11 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return IsActive;
         }
 
+        /// <summary>
+        /// I'm not using this to do anything
+        /// </summary>
+        /// <param name="signInData"></param>
+        /// <returns></returns>
         public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData)
         {
             return Task.FromResult<AuthenticationResult>(null);
@@ -223,7 +267,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         public Task SignOutAsync(ClaimsPrincipal subject, string clientId)
         {
-           Microsoft.AspNet.Identity.sign
+            throw new NotImplementedException();
         }
 
         #region SupportingMethods
