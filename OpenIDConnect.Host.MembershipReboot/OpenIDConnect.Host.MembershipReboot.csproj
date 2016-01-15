@@ -46,6 +46,14 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="IdentityManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\IdentityManager.1.0.0-beta5-5\lib\net45\IdentityManager.dll</HintPath>
+    </Reference>
+    <Reference Include="IdentityManager.MembershipReboot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\OpenIDConnect.Host\Bin\IdentityManager.MembershipReboot.dll</HintPath>
+    </Reference>
     <Reference Include="IdentityModel.Net45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IdentityModel.1.0.0\lib\net45\IdentityModel.Net45.dll</HintPath>
       <Private>True</Private>
@@ -75,7 +83,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Packages\IdentityServer3.MembershipReboot\IdentityServer3.MembershipReboot.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="WrapperClasses\CustomConfig.cs" />
+    <Compile Include="WrapperClasses\CustomDatabase.cs" />
+    <Compile Include="WrapperClasses\CustomGroup.cs" />
+    <Compile Include="WrapperClasses\CustomIdentityManagerService.cs" />
+    <Compile Include="WrapperClasses\CustomUser.cs" />
+    <Compile Include="MembershipRebootManagerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
