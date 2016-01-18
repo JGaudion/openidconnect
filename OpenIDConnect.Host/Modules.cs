@@ -66,7 +66,7 @@ namespace OpenIDConnect.Host
         {
             builder.RegisterType<AdLdsUserService>().As<IUserAuthenticationService>();
             builder.RegisterType<AdLdsDirectoryContextFactory>().As<IDirectoryContextFactory>();
-            builder.Register(ctx => new DirectoryConnectionConfig("localhost", "389", "LDAP://", "CN=ADLDSUsers,DC=ScottLogic,DC=local"));
+            builder.RegisterType<DirectoryConnectionConfig>();
         }
 
         /// <summary>
