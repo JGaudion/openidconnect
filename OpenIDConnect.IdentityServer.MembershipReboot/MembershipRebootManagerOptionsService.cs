@@ -1,8 +1,8 @@
 ﻿using IdentityManager;
 using IdentityManager.Configuration;
-using OpenIDConnect.Host.MembershipReboot.WrapperClasses;
+using OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses;
 
-namespace OpenIDConnect.Host.MembershipReboot
+namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
     public class MembershipRebootManagerOptionsService
     {

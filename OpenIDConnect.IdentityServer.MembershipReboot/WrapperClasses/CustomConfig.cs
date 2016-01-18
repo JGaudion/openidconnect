@@ -16,7 +16,7 @@
 
 using BrockAllen.MembershipReboot;
 
-namespace OpenIDConnect.Host.MembershipReboot.WrapperClasses
+namespace OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses
 {
     public class CustomConfig : MembershipRebootConfiguration<CustomUser>
     {

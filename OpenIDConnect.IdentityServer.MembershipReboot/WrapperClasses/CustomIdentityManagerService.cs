@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace OpenIDConnect.Host.MembershipReboot.WrapperClasses
+namespace OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses
 {
     public class CustomIdentityManagerService : MembershipRebootIdentityManagerService<CustomUser, CustomGroup>
     {

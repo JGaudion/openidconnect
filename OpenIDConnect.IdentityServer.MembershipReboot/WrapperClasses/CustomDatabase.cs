@@ -16,7 +16,7 @@
 
 using BrockAllen.MembershipReboot.Ef;
 
-namespace OpenIDConnect.Host.MembershipReboot.WrapperClasses
+namespace OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses
 {
     public class CustomDatabase : MembershipRebootDbContext<CustomUser, CustomGroup>
     {

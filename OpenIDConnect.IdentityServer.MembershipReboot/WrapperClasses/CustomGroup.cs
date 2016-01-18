@@ -17,7 +17,7 @@
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Ef;
 
-namespace OpenIDConnect.Host.MembershipReboot.WrapperClasses
+namespace OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses
 {
     public class CustomGroup : RelationalGroup
     {

@@ -19,7 +19,7 @@ using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Ef;
 using BrockAllen.MembershipReboot.Relational;
 
-namespace OpenIDConnect.Host.MembershipReboot.WrapperClasses
+namespace OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses
 {
     public class CustomUser : RelationalUserAccount
     {
