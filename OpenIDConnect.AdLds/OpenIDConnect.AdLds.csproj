@@ -54,7 +54,7 @@
     <Compile Include="Factories\IDirectoryContextFactory.cs" />
     <Compile Include="Models\AdLdsUser.cs" />
     <Compile Include="Models\DirectoryConnectionConfig.cs" />
-    <Compile Include="Services\AdLdsUserService.cs" />
+    <Compile Include="Services\AdLdsUserAuthenticationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
