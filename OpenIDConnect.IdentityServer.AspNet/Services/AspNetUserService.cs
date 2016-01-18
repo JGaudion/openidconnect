@@ -1,12 +1,10 @@
-﻿using OpenIDConnect.Core.Services;
+﻿using OpenIDConnect.Core.Models;
+using OpenIDConnect.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenIDConnect.Core.Models;
 using System.Security.Claims;
-using OpenIDConnect.IdentityServer.AspNet.Model;
+using System.Threading.Tasks;
 
 namespace OpenIDConnect.IdentityServer.AspNet.Services
 {
@@ -18,7 +16,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         public string DisplayNameClaimType { get; set; }
         public bool EnableSecurityStamp { get; set; }
 
-        protected readonly Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager;
+        protected readonly Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager;
         protected readonly Func<string, TKey> ConvertSubjectToKey;
 
         /// <summary>
@@ -28,9 +26,9 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <param name="parseSubject"></param>
         public AspNetUserService(Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager, Func<string, TKey> parseSubject = null)
         {
-            if (userManager == null) throw new ArgumentNullException("userManager");
+            if (manager == null) throw new ArgumentNullException(nameof(manager));
 
-            this.userManager = manager;
+            this.manager = manager;
 
             if (parseSubject != null)
             {
@@ -101,7 +99,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 throw new ArgumentNullException("identity");
             }
             //The user manager tries to find a matching user
-            var user = await userManager.FindAsync(new Microsoft.AspNet.Identity.UserLoginInfo(identity.Provider, identity.ProviderId));
+            var user = await manager.FindAsync(new Microsoft.AspNet.Identity.UserLoginInfo(identity.Provider, identity.ProviderId));
             if (user == null)
             {
                 //Create a new account
@@ -124,23 +122,23 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)
         {
             
-            if (userManager.SupportsUserPassword)
+            if (manager.SupportsUserPassword)
             {
-                var user = await userManager.FindByNameAsync(username);
+                var user = await manager.FindByNameAsync(username);
                                    
                     if (user != null)
                     {
-                        if (userManager.SupportsUserLockout &&
-                            await userManager.IsLockedOutAsync(user.Id))
+                        if (manager.SupportsUserLockout &&
+                            await manager.IsLockedOutAsync(user.Id))
                         {
                             return null;
                         }
 
-                        if (await userManager.CheckPasswordAsync(user, password))
+                        if (await manager.CheckPasswordAsync(user, password))
                         {
-                            if (userManager.SupportsUserLockout)
+                            if (manager.SupportsUserLockout)
                             {
-                                await userManager.ResetAccessFailedCountAsync(user.Id);
+                                await manager.ResetAccessFailedCountAsync(user.Id);
                             }
                             var result = await PostAuthenticateLocalAsync(user, signInData);
                             if (result == null)
@@ -151,9 +149,9 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
                         return result; 
                         }
-                        else if (userManager.SupportsUserLockout)
+                        else if (manager.SupportsUserLockout)
                         {
-                            await userManager.AccessFailedAsync(user.Id);
+                            await manager.AccessFailedAsync(user.Id);
                         }
                     }
                 
@@ -186,7 +184,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             if (subject == null) throw new ArgumentNullException("subject");
 
             TKey key = ConvertSubjectToKey(subject.FindFirst(Core.Constants.ClaimTypes.Subject).Value);//Not sure about this
-            var acct = await userManager.FindByIdAsync(key);
+            var acct = await manager.FindByIdAsync(key);
             if (acct == null)
             {
                 throw new ArgumentException("Invalid subject identifier");
@@ -213,18 +211,18 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             if (subject == null) throw new ArgumentNullException("subject");
 
             //Not sure about this
-            var activeUser = await userManager.FindByNameAsync(subject.Identity.Name);
+            var activeUser = await manager.FindByNameAsync(subject.Identity.Name);
 
             bool IsActive = false;
 
             if (activeUser != null)
             {
-                if (EnableSecurityStamp && userManager.SupportsUserSecurityStamp)
+                if (EnableSecurityStamp && manager.SupportsUserSecurityStamp)
                 {
                     var security_stamp = subject.Claims.Where(x => x.Type == "security_stamp").Select(x => x.Value).SingleOrDefault();
                     if (security_stamp != null)
                     {
-                        var db_security_stamp = await userManager.GetSecurityStampAsync(activeUser.Id);
+                        var db_security_stamp = await manager.GetSecurityStampAsync(activeUser.Id);
                         if (db_security_stamp != security_stamp)
                         {
                             return false; //what do I do here, true or false or error?
@@ -244,7 +242,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData, AuthenticationResult authenticationResult)
         {
-            return Task.FromResult<AuthenticationResult>(null);
+            return Task.FromResult<AuthenticationResult>(authenticationResult);
         }
 
         /// <summary>
@@ -266,16 +264,16 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         public Task SignOutAsync(ClaimsPrincipal subject, string clientId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         #region SupportingMethods
         protected virtual async Task<IEnumerable<Claim>> GetClaimsForAuthenticateResult(TUser user)
         {
             List<Claim> claims = new List<Claim>();
-            if (EnableSecurityStamp && userManager.SupportsUserSecurityStamp)
+            if (EnableSecurityStamp && manager.SupportsUserSecurityStamp)
             {
-                var stamp = await userManager.GetSecurityStampAsync(user.Id);
+                var stamp = await manager.GetSecurityStampAsync(user.Id);
                 if (!String.IsNullOrWhiteSpace(stamp))
                 {
                     claims.Add(new Claim("security_stamp", stamp));
@@ -286,7 +284,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         protected virtual async Task<string> GetDisplayNameForAccountAsync(TKey userID)
         {
-            var user = await userManager.FindByIdAsync(userID);
+            var user = await manager.FindByIdAsync(userID);
             var claims = await GetClaimsFromAccount(user);
 
             Claim nameClaim = null;
@@ -308,37 +306,37 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 new Claim(Claims.ClaimTypes.PreferredUserName, user.UserName),
             };
 
-            if (userManager.SupportsUserEmail)
+            if (manager.SupportsUserEmail)
             {
-                var email = await userManager.GetEmailAsync(user.Id);
+                var email = await manager.GetEmailAsync(user.Id);
                 if (!String.IsNullOrWhiteSpace(email))
                 {
                     claims.Add(new Claim(Claims.ClaimTypes.Email, email));
-                    var verified = await userManager.IsEmailConfirmedAsync(user.Id);
+                    var verified = await manager.IsEmailConfirmedAsync(user.Id);
                     claims.Add(new Claim(Claims.ClaimTypes.EmailVerified, verified ? "true" : "false"));
                 }
             }
 
-            if (userManager.SupportsUserPhoneNumber)
+            if (manager.SupportsUserPhoneNumber)
             {
-                var phone = await userManager.GetPhoneNumberAsync(user.Id);
+                var phone = await manager.GetPhoneNumberAsync(user.Id);
                 if (!String.IsNullOrWhiteSpace(phone))
                 {
                     claims.Add(new Claim(Claims.ClaimTypes.PhoneNumber, phone));
-                    var verified = await userManager.IsPhoneNumberConfirmedAsync(user.Id);
+                    var verified = await manager.IsPhoneNumberConfirmedAsync(user.Id);
                     claims.Add(new Claim(Claims.ClaimTypes.PhoneNumberVerified, verified ? "true" : "false"));
                 }
             }
 
-            if (userManager.SupportsUserClaim)
+            if (manager.SupportsUserClaim)
             {
-                claims.AddRange(await userManager.GetClaimsAsync(user.Id));
+                claims.AddRange(await manager.GetClaimsAsync(user.Id));
             }
 
-            if (userManager.SupportsUserRole)
+            if (manager.SupportsUserRole)
             {
                 var roleClaims =
-                    from role in await userManager.GetRolesAsync(user.Id)
+                    from role in await manager.GetRolesAsync(user.Id)
                     select new Claim(Claims.ClaimTypes.Role, role);
                 claims.AddRange(roleClaims);
             }
@@ -355,7 +353,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 if (user == null)
                     throw new InvalidOperationException("CreateNewAccountFromExternalProvider returned null");
 
-                var createResult = await userManager.CreateAsync(user);
+                var createResult = await manager.CreateAsync(user);
                 if (!createResult.Succeeded)
                 {
                     return new AuthenticationResult(createResult.Errors.First());
@@ -364,7 +362,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             }
 
             var externalLogin = new Microsoft.AspNet.Identity.UserLoginInfo(provider, providerId);
-            var addExternalResult = await userManager.AddLoginAsync(user.Id, externalLogin);
+            var addExternalResult = await manager.AddLoginAsync(user.Id, externalLogin);
             if (!addExternalResult.Succeeded)
             {
                 return new AuthenticationResult(addExternalResult.Errors.First());
@@ -397,7 +395,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         protected virtual async Task<AuthenticationResult> SignInFromExternalProviderAsync(TKey userID, string provider)
         {
-            var user = await userManager.FindByIdAsync(userID);
+            var user = await manager.FindByIdAsync(userID);
             var claims = await GetClaimsForAuthenticateResult(user);
 
             return new AuthenticationResult(
@@ -411,13 +409,13 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         protected virtual async Task<AuthenticationResult> UpdateAccountFromExternalClaimsAsync(TKey userID, string provider, string providerId, IEnumerable<Claim> claims)
         {
-            var existingClaims = await userManager.GetClaimsAsync(userID);
+            var existingClaims = await manager.GetClaimsAsync(userID);
             var intersection = existingClaims.Intersect(claims);
             var newClaims = claims.Except(intersection);
 
             foreach (var claim in newClaims)
             {
-                var result = await userManager.AddClaimAsync(userID, claim);
+                var result = await manager.AddClaimAsync(userID, claim);
                 if (!result.Succeeded)
                 {
                     return new AuthenticationResult(result.Errors.First());
@@ -437,19 +435,19 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             var email = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.Email);
             if (email != null)
             {
-                var userEmail = await userManager.GetEmailAsync(userID);
+                var userEmail = await manager.GetEmailAsync(userID);
                 if (userEmail == null)
                 {
                     // if this fails, then presumably the email is already associated with another account
                     // so ignore the error and let the claim pass thru
-                    var result = await userManager.SetEmailAsync(userID, email.Value);
+                    var result = await manager.SetEmailAsync(userID, email.Value);
                     if (result.Succeeded)
                     {
                         var email_verified = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.EmailVerified);
                         if (email_verified != null && email_verified.Value == "true")
                         {
-                            var token = await userManager.GenerateEmailConfirmationTokenAsync(userID);
-                            await userManager.ConfirmEmailAsync(userID, token);
+                            var token = await manager.GenerateEmailConfirmationTokenAsync(userID);
+                            await manager.ConfirmEmailAsync(userID, token);
                         }
 
                         var emailClaims = new string[] { Claims.ClaimTypes.Email, Claims.ClaimTypes.EmailVerified };
@@ -466,19 +464,19 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             var phone = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.PhoneNumber);
             if (phone != null)
             {
-                var userPhone = await userManager.GetPhoneNumberAsync(userID);
+                var userPhone = await manager.GetPhoneNumberAsync(userID);
                 if (userPhone == null)
                 {
                     // if this fails, then presumably the phone is already associated with another account
                     // so ignore the error and let the claim pass thru
-                    var result = await userManager.SetPhoneNumberAsync(userID, phone.Value);
+                    var result = await manager.SetPhoneNumberAsync(userID, phone.Value);
                     if (result.Succeeded)
                     {
                         var phone_verified = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.PhoneNumberVerified);
                         if (phone_verified != null && phone_verified.Value == "true")
                         {
-                            var token = await userManager.GenerateChangePhoneNumberTokenAsync(userID, phone.Value);
-                            await userManager.ChangePhoneNumberAsync(userID, phone.Value, token);
+                            var token = await manager.GenerateChangePhoneNumberTokenAsync(userID, phone.Value);
+                            await manager.ChangePhoneNumberAsync(userID, phone.Value, token);
                         }
 
                         var phoneClaims = new string[] { Claims.ClaimTypes.PhoneNumber, Claims.ClaimTypes.PhoneNumberVerified };

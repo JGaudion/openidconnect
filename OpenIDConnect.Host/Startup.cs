@@ -6,6 +6,7 @@ using OpenIDConnect.IdentityManager;
 using OpenIDConnect.Core;
 using IdentityAdmin.Logging;
 using Serilog;
+using Autofac;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
@@ -20,24 +21,29 @@ namespace OpenIDConnect.Host
                 .WriteTo.Trace()
                 .CreateLogger();
 
-            var configurationService = new ApplicationSettingsConfigurationService();
+            var builder = new ContainerBuilder();
 
-            var identityServerUri = configurationService.GetSetting<string>("IdentityServerUri", null);
-            var identityManagerUri = configurationService.GetSetting<string>("IdentityManagerUri", null);
-            var identityAdminUri = configurationService.GetSetting<string>("IdentityAdminUri", null);
+            Modules.Register(builder);
 
-            app.Map("/core", coreApp => {
-                new IdentityServerBootstrapper().Run(coreApp);
-            });
+            var container = builder.Build();
 
-            app.Map("/admin", adminApp => {
-                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri).Run(adminApp);
-            });
-
-            app.Map("/manage", manageApp =>
+            using (var scope = container.BeginLifetimeScope())
             {
-                new IdentityManagerBootstrapper(identityServerUri, identityManagerUri).Run(manageApp);
-            });
+                app.Map("/core", coreApp =>
+                {
+                    scope.Resolve<IdentityServerBootstrapper>().Run(coreApp);
+                });
+
+                app.Map("/admin", adminApp =>
+                {
+                    scope.Resolve<IdentityAdminBootstrapper>().Run(adminApp);
+                });
+
+                app.Map("/manage", manageApp =>
+                {
+                    scope.Resolve<IdentityManagerBootstrapper>().Run(manageApp);
+                });
+            }
         }
     }
 }

@@ -56,9 +56,10 @@ namespace OpenIDConnect.IdentityServer.Services
             await this.inMemoryUserService.AuthenticateLocalAsync(context);
         }
 
-        public async Task AuthenticateExternalAsync(ExternalAuthenticationContext context)
+        public Task AuthenticateExternalAsync(ExternalAuthenticationContext context)
         {
-            await this.inMemoryUserService.AuthenticateExternalAsync(context);
+            context.AuthenticateResult = null;
+            return Task.FromResult(0);
         }
 
         public async Task PostAuthenticateAsync(PostAuthenticationContext context)
