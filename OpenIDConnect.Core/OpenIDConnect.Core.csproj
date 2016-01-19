@@ -59,12 +59,24 @@
     <Compile Include="Models\ExternalIdentity.cs" />
     <Compile Include="Models\Flows.cs" />
     <Compile Include="Models\ProfileDataRequest.cs" />
+    <Compile Include="Models\UserManagement\PropertyMetadata.cs" />
+    <Compile Include="Models\UserManagement\QueryResult.cs" />
+    <Compile Include="Models\UserManagement\RoleDetail.cs" />
+    <Compile Include="Models\UserManagement\EntryMetadata.cs" />
+    <Compile Include="Models\UserManagement\RoleMetadata.cs" />
+    <Compile Include="Models\UserManagement\RoleSummary.cs" />
     <Compile Include="Models\Secret.cs" />
     <Compile Include="Models\SignInData.cs" />
     <Compile Include="Models\TokenExpiration.cs" />
     <Compile Include="Models\TokenUsage.cs" />
+    <Compile Include="Models\UserManagement\UserDetail.cs" />
+    <Compile Include="Models\UserManagement\UserManagementMetadata.cs" />
+    <Compile Include="Models\UserManagement\UserManagementResult.cs" />
+    <Compile Include="Models\UserManagement\UserMetadata.cs" />
+    <Compile Include="Models\UserManagement\UserSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IUserAuthenticationService.cs" />
+    <Compile Include="Services\IUserManagementService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
