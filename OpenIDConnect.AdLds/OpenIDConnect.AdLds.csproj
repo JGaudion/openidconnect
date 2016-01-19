@@ -52,10 +52,12 @@
     <Compile Include="Extensions\DirectoryEntryDisposable.cs" />
     <Compile Include="Factories\AdLdsDirectoryContextFactory.cs" />
     <Compile Include="Factories\IDirectoryContextFactory.cs" />
+    <Compile Include="Models\AdLdsRole.cs" />
     <Compile Include="Models\AdLdsUser.cs" />
     <Compile Include="Models\DirectoryConnectionConfig.cs" />
     <Compile Include="Services\AdLdsUserAuthenticationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AdLdsUserManagementService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">

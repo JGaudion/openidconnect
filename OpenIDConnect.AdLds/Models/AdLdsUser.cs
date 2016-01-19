@@ -6,28 +6,25 @@ namespace OpenIDConnect.AdLds.Models
     {
         public AdLdsUser(
             string id,
-            string name,
-            string email)
+            string displayName,
+            string userName)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             this.Id = id;
-            this.Name = name;
-            this.Email = email;
+            this.DisplayName = displayName;
+            this.UserName = userName;
         }
 
         public string Id { get; }
 
-        public string Name { get; }
+        public string DisplayName { get; }
 
-        public string Email { get; }
+        public string UserName { get; }
+
+        public string Email { get; set; }
     }
 }

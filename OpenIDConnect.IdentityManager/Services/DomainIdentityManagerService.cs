@@ -27,7 +27,7 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IM.IdentityManagerResult<IM.CreateResult>> CreateRoleAsync(IEnumerable<IM.PropertyValue> properties)
         {
-            var roleName = properties.First(x => x.Type == ClaimTypes.Name).Value;
+            var roleName = properties.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
             var result = await this.userManagementService.CreateRoleAsync(roleName, properties.Select(p => new Claim(p.Type, p.Value)));
 
             return ToIdentityManagerResult(result, r => new IM.CreateResult { Subject = r });
@@ -35,9 +35,10 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IM.IdentityManagerResult<IM.CreateResult>> CreateUserAsync(IEnumerable<IM.PropertyValue> properties)
         {
-            var userName = properties.First(x => x.Type == ClaimTypes.Name).Value;
-            var password = properties.First(x => x.Type == ClaimTypes.Password).Value;
-            var result = await this.userManagementService.CreateUserAsync(userName, password, properties.Select(p => new Claim(p.Type, p.Value)));
+            var userName = properties.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
+            var password = properties.FirstOrDefault(x => x.Type == ClaimTypes.Password)?.Value ?? string.Empty;
+            var result = await this.userManagementService.CreateUserAsync(userName, password, 
+                properties.Where(p => p.Value != null).Select(p => new Claim(p.Type, p.Value)));
 
             return ToIdentityManagerResult(result, r => new IM.CreateResult { Subject = r });
 
@@ -196,16 +197,16 @@ namespace OpenIDConnect.IdentityManager.Services
                     SupportsCreate = result.UserMetadata.SupportsCreate,
                     SupportsDelete = result.UserMetadata.SupportsDelete,
                     SupportsClaims = result.UserMetadata.SupportsClaims,
-                    CreateProperties = result.UserMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.Type), Type = p.Type, Name = p.Name, Required = p.Required }),
-                    UpdateProperties = result.UserMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.Type), Type = p.Type, Name = p.Name, Required = p.Required })
+                    CreateProperties = result.UserMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
+                    UpdateProperties = result.UserMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
                 },
                 RoleMetadata = new IM.RoleMetadata
                 {
                     SupportsCreate = result.RoleMetadata.SupportsCreate,
                     SupportsDelete = result.RoleMetadata.SupportsDelete,
                     RoleClaimType = result.RoleMetadata.RoleClaimType,
-                    CreateProperties = result.RoleMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.Type), Type = p.Type, Name = p.Name, Required = p.Required }),
-                    UpdateProperties = result.RoleMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.Type), Type = p.Type, Name = p.Name, Required = p.Required })
+                    CreateProperties = result.RoleMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
+                    UpdateProperties = result.RoleMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
                 }
             };
         }

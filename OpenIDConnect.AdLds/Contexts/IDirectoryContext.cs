@@ -1,6 +1,8 @@
 ﻿using OpenIDConnect.AdLds.Models;
-using System.DirectoryServices;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Security.Claims;
+using OpenIDConnect.Core.Models.UserManagement;
 
 namespace OpenIDConnect.AdLds.Contexts
 {
@@ -9,5 +11,11 @@ namespace OpenIDConnect.AdLds.Contexts
         Task<AdLdsUser> ValidateCredentialsAsync(string username, string password);
 
         Task<AdLdsUser> FindUserByNameAsync(string username);
+
+        Task<string> CreateUserAsync(string username, string password, IEnumerable<Claim> claims);
+
+        Task<QueryResult<AdLdsUser>> QueryUsersAsync(int start, int count);
+
+        Task<QueryResult<AdLdsRole>> QueryRolesAsync(int start, int count);
     }
 }

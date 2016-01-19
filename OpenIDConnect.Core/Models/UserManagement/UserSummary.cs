@@ -11,16 +11,6 @@ namespace OpenIDConnect.Core.Models.UserManagement
                 throw new ArgumentNullException(nameof(subject));
             }
 
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                throw new ArgumentNullException(nameof(username));
-            }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             this.Subject = subject;
             this.Username = username;
             this.Name = name;

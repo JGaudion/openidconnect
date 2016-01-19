@@ -33,7 +33,7 @@ namespace OpenIDConnect.AdLds.Services
                 var user = await ValidateLocalCredentials(username, password);
                 if (user != null)
                 {
-                    return new AuthenticationResult(user.Id, user.Name, Enumerable.Empty<Claim>());
+                    return new AuthenticationResult(user.Id, user.UserName, Enumerable.Empty<Claim>());
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace OpenIDConnect.AdLds.Services
         private IEnumerable<Claim> GetClaimsForResult(AdLdsUser user)
         {
             yield return new Claim(ClaimTypes.Subject, user.Id);
-            yield return new Claim(ClaimTypes.PreferredUserName, user.Name);
+            yield return new Claim(ClaimTypes.PreferredUserName, user.DisplayName);
 
             if (!string.IsNullOrWhiteSpace(user.Email))
             {

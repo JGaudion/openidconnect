@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenIDConnect.Core.Models.UserManagement
 {
@@ -12,11 +13,19 @@ namespace OpenIDConnect.Core.Models.UserManagement
         {
             this.SupportsCreate = supportsCreate;
             this.SupportsDelete = supportsDelete;
+            if (updateProperties != null)
+            {
+                this.UpdateProperties = updateProperties;
+            }
+            if (createProperties != null)
+            {
+                this.CreateProperties = createProperties;
+            }
         }
 
         public bool SupportsCreate { get; }
         public bool SupportsDelete { get; }
-        public IEnumerable<PropertyMetadata> UpdateProperties { get; }
-        public IEnumerable<PropertyMetadata> CreateProperties { get; }
+        public IEnumerable<PropertyMetadata> UpdateProperties { get; } = Enumerable.Empty<PropertyMetadata>();
+        public IEnumerable<PropertyMetadata> CreateProperties { get; } = Enumerable.Empty<PropertyMetadata>();
     }
 }

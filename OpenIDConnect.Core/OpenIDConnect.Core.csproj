@@ -50,6 +50,7 @@
     <Compile Include="Constants\AuthenticationMethods.cs" />
     <Compile Include="Constants\AuthenticationTypes.cs" />
     <Compile Include="Constants\IdentityProviders.cs" />
+    <Compile Include="Constants\PropertyTypes.cs" />
     <Compile Include="IConfigurationService.cs" />
     <Compile Include="IOwinBootstrapper.cs" />
     <Compile Include="Models\AccessTokenType.cs" />

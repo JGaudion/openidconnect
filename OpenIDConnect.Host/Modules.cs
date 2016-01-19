@@ -65,6 +65,7 @@ namespace OpenIDConnect.Host
         private static void RegisterAdLds(ContainerBuilder builder)
         {
             builder.RegisterType<AdLdsUserAuthenticationService>().As<IUserAuthenticationService>();
+            builder.RegisterType<AdLdsUserManagementService>().As<IUserManagementService>();
             builder.RegisterType<AdLdsDirectoryContextFactory>().As<IDirectoryContextFactory>();
             builder.RegisterType<DirectoryConnectionConfig>();
         }
