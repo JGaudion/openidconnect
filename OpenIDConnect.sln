@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Core", "OpenI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer.AspNet", "OpenIDConnect.IdentityServer.AspNet\OpenIDConnect.IdentityServer.AspNet.csproj", "{3A27BE93-4C59-4CDD-B7F0-A465E33A6CD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Host.MembershipReboot", "OpenIDConnect.Host.MembershipReboot\OpenIDConnect.Host.MembershipReboot.csproj", "{A513A7BA-C306-4958-AE58-4D6BB16AAE29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer.MembershipReboot", "OpenIDConnect.IdentityServer.MembershipReboot\OpenIDConnect.IdentityServer.MembershipReboot.csproj", "{A513A7BA-C306-4958-AE58-4D6BB16AAE29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

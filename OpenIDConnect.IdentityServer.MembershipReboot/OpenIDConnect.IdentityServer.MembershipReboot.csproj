@@ -7,8 +7,8 @@
     <ProjectGuid>{A513A7BA-C306-4958-AE58-4D6BB16AAE29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenIDConnect.Host.MembershipReboot</RootNamespace>
-    <AssemblyName>OpenIDConnect.Host.MembershipReboot</AssemblyName>
+    <RootNamespace>OpenIDConnect.IdentityServer.MembershipReboot</RootNamespace>
+    <AssemblyName>OpenIDConnect.IdentityServer.MembershipReboot</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -50,10 +50,6 @@
       <HintPath>..\packages\IdentityManager.1.0.0-beta5-5\lib\net45\IdentityManager.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IdentityManager.MembershipReboot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\IdentityManager.MembershipReboot.1.0.0-beta5-1\lib\net45\IdentityManager.MembershipReboot.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="IdentityModel.Net45, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IdentityModel.1.0.0\lib\net45\IdentityModel.Net45.dll</HintPath>
       <Private>True</Private>
@@ -82,18 +78,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Packages\IdentityServer3.MembershipReboot\IdentityServer3.MembershipReboot.cs" />
+    <Compile Include="MembershipRebootUserService.cs" />
     <Compile Include="WrapperClasses\CustomConfig.cs" />
     <Compile Include="WrapperClasses\CustomDatabase.cs" />
     <Compile Include="WrapperClasses\CustomGroup.cs" />
-    <Compile Include="WrapperClasses\CustomIdentityManagerService.cs" />
     <Compile Include="WrapperClasses\CustomUser.cs" />
-    <Compile Include="MembershipRebootManagerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WrapperClasses\CustomUserAccountService.cs" />
+    <Compile Include="WrapperClasses\CustomUserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
+      <Project>{219E72F8-F1A0-43AE-9037-104C2F00476D}</Project>
+      <Name>OpenIDConnect.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

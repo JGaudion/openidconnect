@@ -1,40 +1,23 @@
-/*
- * Copyright 2014 Dominick Baier, Brock Allen
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-using BrockAllen.MembershipReboot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityModel.Extensions;
+using BrockAllen.MembershipReboot;
+using IdentityModel;
 using IdentityServer3.Core;
 using IdentityServer3.Core.Extensions;
-using IdentityServer3.Core.Models;
-using IdentityServer3.Core.Services;
-using IdentityServer3.Core.Services.Default;
+using OpenIDConnect.Core.Models;
+using OpenIDConnect.Core.Services;
 
-namespace IdentityServer3.MembershipReboot
+namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
-    public class MembershipRebootUserService<TAccount> : UserServiceBase
+    public class MembershipRebootUserService<TAccount> : IUserAuthenticationService
         where TAccount : UserAccount
     {
         public string DisplayNameClaimType { get; set; }
-        
+
         protected readonly UserAccountService<TAccount> userAccountService;
 
         public MembershipRebootUserService(UserAccountService<TAccount> userAccountService)
@@ -44,10 +27,15 @@ namespace IdentityServer3.MembershipReboot
             this.userAccountService = userAccountService;
         }
 
-        public override Task GetProfileDataAsync(ProfileDataRequestContext ctx)
+        public Task SignOutAsync(ClaimsPrincipal subject, string clientId)
         {
-            var subject = ctx.Subject;
-            var requestedClaimTypes = ctx.RequestedClaimTypes;
+            return Task.FromResult(0);
+        }
+
+        public Task<IEnumerable<Claim>> GetProfileDataAsync(ProfileDataRequest request)
+        {
+            var subject = request.Subject;
+            var requestedClaimTypes = request.RequestedClaimTypes;
 
             var acct = userAccountService.GetByID(subject.GetSubjectId().ToGuid());
             if (acct == null)
@@ -61,16 +49,14 @@ namespace IdentityServer3.MembershipReboot
                 claims = claims.Where(x => requestedClaimTypes.Contains(x.Type));
             }
 
-            ctx.IssuedClaims = claims;
-
-            return Task.FromResult(0);
+            return Task.FromResult(claims);
         }
 
-        protected virtual IEnumerable<Claim> GetClaimsFromAccount(TAccount account)
+        protected IEnumerable<Claim> GetClaimsFromAccount(TAccount account)
         {
             var claims = new List<Claim>{
                 new Claim(Constants.ClaimTypes.Subject, GetSubjectForAccount(account)),
-                new Claim(Constants.ClaimTypes.UpdatedAt, IdentityModel.EpochTimeExtensions.ToEpochTime(account.LastUpdated).ToString(), ClaimValueTypes.Integer),
+                new Claim(Constants.ClaimTypes.UpdatedAt, EpochTimeExtensions.ToEpochTime(account.LastUpdated).ToString(), ClaimValueTypes.Integer),
                 new Claim("tenant", account.Tenant),
                 new Claim(Constants.ClaimTypes.PreferredUserName, account.Username),
             };
@@ -93,12 +79,12 @@ namespace IdentityServer3.MembershipReboot
             return claims;
         }
 
-        protected virtual string GetSubjectForAccount(TAccount account)
+        protected string GetSubjectForAccount(TAccount account)
         {
             return account.ID.ToString("D");
         }
 
-        protected virtual string GetDisplayNameForAccount(Guid accountID)
+        protected string GetDisplayNameForAccount(Guid accountID)
         {
             var acct = userAccountService.GetByID(accountID);
             var claims = GetClaimsFromAccount(acct);
@@ -114,32 +100,28 @@ namespace IdentityServer3.MembershipReboot
                 ?? acct.Username;
         }
 
-        protected virtual Task<IEnumerable<Claim>> GetClaimsForAuthenticateResultAsync(TAccount account)
+        protected Task<IEnumerable<Claim>> GetClaimsForAuthenticateResultAsync(TAccount account)
         {
-            return Task.FromResult((IEnumerable<Claim>)null);
+            return Task.FromResult(Enumerable.Empty<Claim>());
         }
-        
-        public override async Task AuthenticateLocalAsync(LocalAuthenticationContext ctx)
-        {
-            var username = ctx.UserName;
-            var password = ctx.Password;
-            var message = ctx.SignInMessage;
 
-            AuthenticateResult result = null;
+        public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)
+        {
+            AuthenticationResult result = null;
 
             try
             {
                 TAccount account;
-                if (ValidateLocalCredentials(username, password, message, out account))
+                if (ValidateLocalCredentials(username, password, signInData, out account))
                 {
-                    result = await PostAuthenticateLocalAsync(account, message);
+                    result = await PostAuthenticateLocalAsync(account, signInData);
                     if (result == null)
                     {
                         var subject = GetSubjectForAccount(account);
                         var name = GetDisplayNameForAccount(account.ID);
 
                         var claims = await GetClaimsForAuthenticateResultAsync(account);
-                        result = new AuthenticateResult(subject, name, claims);
+                        result = new AuthenticationResult(subject, name, claims);
                     }
                 }
                 else
@@ -148,64 +130,71 @@ namespace IdentityServer3.MembershipReboot
                     {
                         if (!account.IsLoginAllowed)
                         {
-                            result = new AuthenticateResult("Account is not allowed to login");
+                            result = new AuthenticationResult("Account is not allowed to login");
                         }
                         else if (account.IsAccountClosed)
                         {
-                            result = new AuthenticateResult("Account is closed");
+                            result = new AuthenticationResult("Account is closed");
                         }
                     }
                 }
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
-                result = new AuthenticateResult(ex.Message);
+                result = new AuthenticationResult(ex.Message);
             }
 
-            ctx.AuthenticateResult = result;
+            return result;
         }
 
-        protected virtual Task<AuthenticateResult> PostAuthenticateLocalAsync(TAccount account, SignInMessage message)
+        public Task<AuthenticationResult> PostAuthenticateAsync(SignInData signInData, AuthenticationResult authenticationResult)
         {
-            return Task.FromResult<AuthenticateResult>(null);
+            return Task.FromResult(authenticationResult);
         }
 
-        protected virtual bool ValidateLocalCredentials(string username, string password, SignInMessage message, out TAccount account)
+        public Task<AuthenticationResult> PreAuthenticateAsync(SignInData signInData)
+        {
+            return Task.FromResult<AuthenticationResult>(null);
+        }
+
+        protected Task<AuthenticationResult> PostAuthenticateLocalAsync(TAccount account, SignInData message)
+        {
+            return Task.FromResult<AuthenticationResult>(null);
+        }
+
+        protected bool ValidateLocalCredentials(string username, string password, SignInData message, out TAccount account)
         {
             var tenant = String.IsNullOrWhiteSpace(message.Tenant) ? userAccountService.Configuration.DefaultTenant : message.Tenant;
             return userAccountService.Authenticate(tenant, username, password, out account);
         }
 
-        public override async Task AuthenticateExternalAsync(ExternalAuthenticationContext ctx)
+        public async Task<AuthenticationResult> AuthenticateExternalAsync(ExternalIdentity identity, SignInData signInData)
         {
-            var externalUser = ctx.ExternalIdentity;
-            var message = ctx.SignInMessage;
-
-            if (externalUser == null)
+            if (identity == null)
             {
                 throw new ArgumentNullException("externalUser");
             }
 
             try
             {
-                var tenant = String.IsNullOrWhiteSpace(message.Tenant) ? userAccountService.Configuration.DefaultTenant : message.Tenant;
-                var acct = this.userAccountService.GetByLinkedAccount(tenant, externalUser.Provider, externalUser.ProviderId);
+                var tenant = String.IsNullOrWhiteSpace(signInData.Tenant) ? userAccountService.Configuration.DefaultTenant : signInData.Tenant;
+                var acct = this.userAccountService.GetByLinkedAccount(tenant, identity.Provider, identity.ProviderId);
                 if (acct == null)
                 {
-                    ctx.AuthenticateResult = await ProcessNewExternalAccountAsync(tenant, externalUser.Provider, externalUser.ProviderId, externalUser.Claims);
+                    return await ProcessNewExternalAccountAsync(tenant, identity.Provider, identity.ProviderId, identity.Claims);
                 }
                 else
                 {
-                    ctx.AuthenticateResult = await ProcessExistingExternalAccountAsync(acct.ID, externalUser.Provider, externalUser.ProviderId, externalUser.Claims);
+                    return await ProcessExistingExternalAccountAsync(acct.ID, identity.Provider, identity.ProviderId, identity.Claims);
                 }
             }
             catch (ValidationException ex)
             {
-                ctx.AuthenticateResult = new AuthenticateResult(ex.Message);
+                return await Task.FromResult(new AuthenticationResult(ex.Message));
             }
         }
 
-        protected virtual async Task<AuthenticateResult> ProcessNewExternalAccountAsync(string tenant, string provider, string providerId, IEnumerable<Claim> claims)
+        protected async Task<AuthenticationResult> ProcessNewExternalAccountAsync(string tenant, string provider, string providerId, IEnumerable<Claim> claims)
         {
             var user = await TryGetExistingUserFromExternalProviderClaimsAsync(provider, claims);
             if (user == null)
@@ -225,23 +214,26 @@ namespace IdentityServer3.MembershipReboot
             userAccountService.AddOrUpdateLinkedAccount(user, provider, providerId);
 
             var result = await AccountCreatedFromExternalProviderAsync(user.ID, provider, providerId, claims);
-            if (result != null) return result;
+            if (result != null)
+            {
+                return result;
+            }
 
             return await SignInFromExternalProviderAsync(user.ID, provider);
         }
 
-        protected virtual Task<TAccount> TryGetExistingUserFromExternalProviderClaimsAsync(string provider, IEnumerable<Claim> claims)
+        protected Task<TAccount> TryGetExistingUserFromExternalProviderClaimsAsync(string provider, IEnumerable<Claim> claims)
         {
             return Task.FromResult<TAccount>(null);
         }
 
-        protected virtual Task<TAccount> InstantiateNewAccountFromExternalProviderAsync(string provider, string providerId, IEnumerable<Claim> claims)
+        protected Task<TAccount> InstantiateNewAccountFromExternalProviderAsync(string provider, string providerId, IEnumerable<Claim> claims)
         {
             // we'll let the default creation happen, but can override to initialize properties if needed
             return Task.FromResult<TAccount>(null);
         }
 
-        protected virtual async Task<AuthenticateResult> AccountCreatedFromExternalProviderAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected async Task<AuthenticationResult> AccountCreatedFromExternalProviderAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
         {
             SetAccountEmail(accountID, ref claims);
             SetAccountPhone(accountID, ref claims);
@@ -249,31 +241,31 @@ namespace IdentityServer3.MembershipReboot
             return await UpdateAccountFromExternalClaimsAsync(accountID, provider, providerId, claims);
         }
 
-        protected virtual async Task<AuthenticateResult> SignInFromExternalProviderAsync(Guid accountID, string provider)
+        protected async Task<AuthenticationResult> SignInFromExternalProviderAsync(Guid accountID, string provider)
         {
             var account = userAccountService.GetByID(accountID);
             var claims = await GetClaimsForAuthenticateResultAsync(account);
-            
-            return new AuthenticateResult(
+
+            return new AuthenticationResult(
                 subject: accountID.ToString("D"),
                 name: GetDisplayNameForAccount(accountID),
-                claims:claims,
+                claims: claims,
                 identityProvider: provider,
                 authenticationMethod: Constants.AuthenticationMethods.External);
         }
 
-        protected virtual Task<AuthenticateResult> UpdateAccountFromExternalClaimsAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected Task<AuthenticationResult> UpdateAccountFromExternalClaimsAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
         {
             userAccountService.AddClaims(accountID, new UserClaimCollection(claims));
-            return Task.FromResult<AuthenticateResult>(null);
+            return Task.FromResult<AuthenticationResult>(null);
         }
 
-        protected virtual async Task<AuthenticateResult> ProcessExistingExternalAccountAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected async Task<AuthenticationResult> ProcessExistingExternalAccountAsync(Guid accountID, string provider, string providerId, IEnumerable<Claim> claims)
         {
             return await SignInFromExternalProviderAsync(accountID, provider);
         }
 
-        protected virtual void SetAccountEmail(Guid accountID, ref IEnumerable<Claim> claims)
+        protected void SetAccountEmail(Guid accountID, ref IEnumerable<Claim> claims)
         {
             var email = claims.GetValue(Constants.ClaimTypes.Email);
             if (email != null)
@@ -305,7 +297,7 @@ namespace IdentityServer3.MembershipReboot
             }
         }
 
-        protected virtual void SetAccountPhone(Guid accountID, ref IEnumerable<Claim> claims)
+        protected void SetAccountPhone(Guid accountID, ref IEnumerable<Claim> claims)
         {
             var phone = claims.GetValue(Constants.ClaimTypes.PhoneNumber);
             if (phone != null)
@@ -337,19 +329,17 @@ namespace IdentityServer3.MembershipReboot
             }
         }
 
-        public override Task IsActiveAsync(IsActiveContext ctx)
+        public Task<bool> IsActiveAsync(ClaimsPrincipal subject, Client client)
         {
-            var subject = ctx.Subject;
-
             var acct = userAccountService.GetByID(subject.GetSubjectId().ToGuid());
-            
-            ctx.IsActive = acct != null && !acct.IsAccountClosed && acct.IsLoginAllowed;
 
-            return Task.FromResult(0);
+            var isActive = acct != null && !acct.IsAccountClosed && acct.IsLoginAllowed;
+
+            return Task.FromResult(isActive);
         }
     }
-    
-    static class Extensions
+
+    internal static class Extensions
     {
         public static Guid ToGuid(this string s)
         {
