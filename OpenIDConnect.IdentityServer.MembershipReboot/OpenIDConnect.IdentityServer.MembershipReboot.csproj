@@ -84,6 +84,8 @@
     <Compile Include="WrapperClasses\CustomGroup.cs" />
     <Compile Include="WrapperClasses\CustomUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WrapperClasses\CustomUserAccountService.cs" />
+    <Compile Include="WrapperClasses\CustomUserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
