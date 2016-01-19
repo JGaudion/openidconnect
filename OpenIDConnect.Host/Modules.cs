@@ -11,6 +11,9 @@ using OpenIDConnect.IdentityServer.AspNet.Model;
 using OpenIDConnect.IdentityServer.AspNet.Services;
 using OpenIDConnect.IdentityServer.Factories;
 using System;
+using BrockAllen.MembershipReboot;
+using OpenIDConnect.IdentityServer.MembershipReboot;
+using OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses;
 
 namespace OpenIDConnect.Host
 {
@@ -87,7 +90,12 @@ namespace OpenIDConnect.Host
 
         private static void RegisterMembershipReboot(ContainerBuilder builder)
         {
-            throw new NotImplementedException();
+            builder.RegisterType<MembershipRebootUserService<CustomUser>>().As<IUserAuthenticationService>().ExternallyOwned();
+            builder.RegisterType<CustomUserAccountService>().As<UserAccountService<CustomUser>>().ExternallyOwned();
+            builder.RegisterType<CustomUserRepository>().ExternallyOwned();
+
+            builder.Register(resolver => new CustomDatabase("MembershipReboot")).ExternallyOwned();
+            builder.Register(c => CustomConfig.Config).ExternallyOwned();
         }
     }
 }

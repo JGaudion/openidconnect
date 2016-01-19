@@ -102,7 +102,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
 
         protected Task<IEnumerable<Claim>> GetClaimsForAuthenticateResultAsync(TAccount account)
         {
-            return Task.FromResult((IEnumerable<Claim>)null);
+            return Task.FromResult(Enumerable.Empty<Claim>());
         }
 
         public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)
