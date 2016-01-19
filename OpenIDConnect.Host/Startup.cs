@@ -31,7 +31,11 @@ namespace OpenIDConnect.Host
             });
 
             app.Map("/admin", adminApp => {
-                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri).Run(adminApp);
+                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri, apiOnly: false).Run(adminApp);
+            });
+
+            app.Map("/admin-api", adminApiApp => {
+                new IdentityAdminBootstrapper(identityServerUri, identityAdminUri, apiOnly: true).Run(adminApiApp);
             });
 
             app.Map("/manage", manageApp =>

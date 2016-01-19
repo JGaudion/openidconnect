@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettingsConfigurationService.cs" />
+    <Compile Include="Cert.cs" />
     <Compile Include="Constants\AuthenticationMethods.cs" />
     <Compile Include="Constants\AuthenticationTypes.cs" />
     <Compile Include="Constants\IdentityProviders.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Services\IUserAuthenticationService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Cert\idsrv3test.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -7,6 +7,7 @@ using System;
 using System.Security.Claims;
 using OpenIDConnect.IdentityServer.Services;
 using IdentityServer3.Core.Services;
+using OpenIDConnect.Core;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -58,8 +59,7 @@ namespace OpenIDConnect.IdentityServer
                         
             factory.ClientStore = new Registration<IClientStore>(
                 new CompositeClientStore(new IClientStore[] {
-                    new KnownClientStore(identityManagerUri, identityAdminUri),
-                    new IdentityAdminClientStore(this.identityAdminUri)                    
+                    new KnownClientStore(identityManagerUri, identityAdminUri)
                 }));
 
             factory.ScopeStore = new Registration<IScopeStore>(new KnownScopeStore());
@@ -68,7 +68,7 @@ namespace OpenIDConnect.IdentityServer
             return new IdentityServerOptions
             {
                 SiteName = "IdentityServer v3",
-                SigningCertificate = Cert.Load(),
+                SigningCertificate = Cert.Load(typeof(IOwinBootstrapper).Assembly, "Cert", "idsrv3test.pfx", "idsrv3test"),
                 Endpoints = new EndpointOptions
                 {
                     EnableCspReportEndpoint = true

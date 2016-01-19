@@ -1,14 +1,20 @@
-﻿using IdentityAdmin.Configuration;
+﻿using System;
+using IdentityAdmin.Configuration;
 using IdentityAdmin.Core;
 using IdentityServer3.Admin.EntityFramework;
 using IdentityServer3.Admin.EntityFramework.Entities;
+using OpenIDConnect.Core;
+using System.Linq;
 
 namespace OpenIDConnect.IdentityAdmin
 {
     internal class EntityFrameworkAdminOptionsService
     {
-        public EntityFrameworkAdminOptionsService()
+        private readonly bool apiOnly;
+
+        public EntityFrameworkAdminOptionsService(bool apiOnly)
         {
+            this.apiOnly = apiOnly;
         }
 
         public IdentityAdminOptions GetAdminOptions()
@@ -18,13 +24,41 @@ namespace OpenIDConnect.IdentityAdmin
             return new IdentityAdminOptions
             {
                 Factory = factory,
-                AdminSecurityConfiguration = new AdminHostSecurityConfiguration()
+                AdminSecurityConfiguration = GetSecurityConfiguration(this.apiOnly),
+                DisableUserInterface = this.apiOnly
+                //AdminSecurityConfiguration = new MySecurityConfiguration()
+                //{
+                //    HostAuthenticationType = "Cookies",
+                //    NameClaimType = "name",
+                //    RoleClaimType = "role",
+                //    AdminRoleName = "IdentityAdminManager",
+                //    SigningCert = Cert.Load(typeof(IOwinBootstrapper).Assembly, "Cert", "idsrv3test.pfx", "idsrv3test")
+                //}
+            };
+        }
+
+        private AdminSecurityConfiguration GetSecurityConfiguration(bool useExternalAccessToken)
+        {
+            if (useExternalAccessToken)
+            {
+                return new ExternalBearerTokenConfiguration()
                 {
-                    HostAuthenticationType = "Cookies",
+                    Audience = "https://localhost:44302/admin",     // TODO: get from config
+                    Issuer = "idServer",
                     NameClaimType = "name",
                     RoleClaimType = "role",
-                    AdminRoleName = "IdentityAdminManager"
-                }
+                    AdminRoleName = "IdentityAdminManager",
+                    SigningCert = Cert.Load(typeof(IOwinBootstrapper).Assembly, "Cert", "idsrv3test.pfx", "idsrv3test"),
+                    Scope = "idadmin-api"
+                };
+            }
+
+            return new AdminHostSecurityConfiguration
+            {
+                HostAuthenticationType = "Cookies",
+                NameClaimType = "name",
+                RoleClaimType = "role",
+                AdminRoleName = "IdentityAdminManager"
             };
         }
     }

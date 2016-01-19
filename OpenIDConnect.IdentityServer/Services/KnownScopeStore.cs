@@ -48,7 +48,8 @@ namespace OpenIDConnect.IdentityServer.Services
                 Claims = new List<ScopeClaim>
                 {
                     new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Name),
-                    new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Role)
+                    new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Role),
+                    new ScopeClaim("idadmin-api")
                 }                
             };
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IdentityModel.Extensions;
 using Thinktecture.IdentityModel.Owin;
 using System.IdentityModel.Selectors;
+using Microsoft.Owin.Security;
 
 namespace OpenIDConnect.IdentityAdmin
 {
@@ -16,9 +17,11 @@ namespace OpenIDConnect.IdentityAdmin
     {
         private readonly string identityServerUri;
 
-        private readonly string identityAdminUri;        
+        private readonly string identityAdminUri;
 
-        public IdentityAdminBootstrapper(string identityServerUri, string identityAdminUri)
+        private readonly bool apiOnly;
+
+        public IdentityAdminBootstrapper(string identityServerUri, string identityAdminUri, bool apiOnly)
         {
             if (string.IsNullOrWhiteSpace(identityServerUri))
             {
@@ -32,22 +35,37 @@ namespace OpenIDConnect.IdentityAdmin
 
             this.identityServerUri = identityServerUri;
             this.identityAdminUri = identityAdminUri;
+            this.apiOnly = apiOnly;
         }
 
         public void Run(IAppBuilder app)
         {    
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
-            
-            // If the request has a cookie, then the user is already authenticated, so build the ClaimsIdentity
+
+            //app.UseCompositeAuthentication(new CompositionAuthenticationOptions
+            //{
+            //    AuthenticationType = "Composite",
+            //    CompositeAuthenticationTypes = new string[]
+            //    {
+            //        "Certificate",
+            //        "Cookies"
+            //    }
+            //});
+
+            //app.UseClientCertificateAuthentication(new ClientCertificateAuthenticationOptions
+            //{
+            //    AuthenticationType = "Certificate",
+            //    AuthenticationMode = AuthenticationMode.Passive,
+            //    Validator = new TestCertificateValidator("issuer")
+            //});
+
             app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
-            {
-                AuthenticationType = "Cookies"                      
+            {                
+                AuthenticationType = "Cookies"
             });
 
-            // This middleware checks the SignInAsAuthenticationType to build the ClaimsIdentity
-            // and if not authenticated
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
-            {
+            {                
                 AuthenticationType = "oidc",
                 Authority = this.identityServerUri,
                 ClientId = "idadmin_client",
@@ -82,8 +100,18 @@ namespace OpenIDConnect.IdentityAdmin
                 }
             });
 
-            var options = new EntityFrameworkAdminOptionsService().GetAdminOptions();
+            var options = new EntityFrameworkAdminOptionsService(
+                this.apiOnly).GetAdminOptions();
+
             app.UseIdentityAdmin(options);
+        }
+    }
+
+    internal static class CompositeAuthenticationExtensions
+    {
+        public static IAppBuilder UseCompositeAuthentication(this IAppBuilder app, CompositionAuthenticationOptions options)
+        {
+            return app.Use(typeof(CompositeAuthenticationMiddleware), app, options);
         }
     }
 }
