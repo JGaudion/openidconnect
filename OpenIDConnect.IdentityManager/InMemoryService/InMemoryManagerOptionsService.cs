@@ -2,16 +2,25 @@
 using IdentityManager.Configuration;
 using System.Collections.Generic;
 using IdentityManager;
+using OpenIDConnect.Core.Services;
+using OpenIDConnect.IdentityManager.Services;
 
 namespace OpenIDConnect.IdentityManager
 {
     internal class InMemoryManagerOptionsService
     {
+        private readonly IUserManagementService userManagementService;
+
+        public InMemoryManagerOptionsService(IUserManagementService userManagementService)
+        {
+            this.userManagementService = userManagementService;
+        }
+
         public IdentityManagerOptions GetManagerOptions()
         {
             var factory = new IdentityManagerServiceFactory
             {
-                IdentityManagerService = new Registration<IIdentityManagerService, InMemoryIdentityManagerService>()
+                IdentityManagerService = new Registration<IIdentityManagerService>(ctx => new DomainIdentityManagerService(this.userManagementService))
             };
 
             var rand = new Random();

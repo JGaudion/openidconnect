@@ -1,5 +1,6 @@
 ﻿using IdentityManager.Extensions;
 using OpenIDConnect.Core;
+using OpenIDConnect.Core.Services;
 using Owin;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,18 @@ using System.Threading.Tasks;
 namespace OpenIDConnect.IdentityManager
 {
     public class IdentityManagerBootstrapper : IOwinBootstrapper
-    {     
+    {
         private readonly string identityServerUri;
-
         private readonly string identityManagerUri;
+        private readonly IUserManagementService userManagementService;
 
-        public IdentityManagerBootstrapper(string identityServerUri, string identityManagerUri)
+        public IdentityManagerBootstrapper(IUserManagementService userManagementService, string identityServerUri, string identityManagerUri)
         {
+            if (userManagementService == null)
+            {
+                throw new ArgumentNullException(nameof(userManagementService));
+            }
+
             if (string.IsNullOrWhiteSpace(identityServerUri))
             {
                 throw new ArgumentNullException("No identity server uri specified");
@@ -27,6 +33,7 @@ namespace OpenIDConnect.IdentityManager
                 throw new ArgumentNullException("No identity manager uri specified");
             }
 
+            this.userManagementService = userManagementService;
             this.identityServerUri = identityServerUri;
             this.identityManagerUri = identityManagerUri;
         }
@@ -75,7 +82,7 @@ namespace OpenIDConnect.IdentityManager
                 }
             });
 
-            var options = new InMemoryManagerOptionsService().GetManagerOptions();
+            var options = new InMemoryManagerOptionsService(this.userManagementService).GetManagerOptions();
             app.UseIdentityManager(options);
         }
     }

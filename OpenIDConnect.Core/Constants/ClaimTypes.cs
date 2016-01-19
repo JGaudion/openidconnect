@@ -2,6 +2,7 @@
 {
     public static class ClaimTypes
     {
+        //IdentityServer
         public const string AccessTokenHash = "at_hash";
         public const string Address = "address";
         public const string Audience = "aud";
@@ -48,6 +49,12 @@
         public const string UpdatedAt = "updated_at";
         public const string WebSite = "website";
         public const string ZoneInfo = "zoneinfo";
+
+        //IdentityManager
+        public const string BootstrapToken = "bootstrap-token";
+        public const string Password = "password";
+        public const string Phone = "phone";
+        public const string Username = "username";
 
         public static readonly string[] OidcProtocolClaimTypes = new string[]
         {

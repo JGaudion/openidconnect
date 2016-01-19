@@ -1,17 +1,15 @@
-﻿namespace OpenIDConnect.AdLds.Models
+﻿using OpenIDConnect.Core;
+
+namespace OpenIDConnect.AdLds.Models
 {
     public class DirectoryConnectionConfig
     {
-        public DirectoryConnectionConfig(
-            string serverName,
-            string port,
-            string prefix,
-            string container)
+        public DirectoryConnectionConfig(IConfigurationService configService)
         {
-            this.ServerName = serverName;
-            this.Port = port;
-            this.Prefix = prefix;
-            this.Container = container;
+            this.ServerName = configService.GetSetting<string>("adLds:serverName", string.Empty);
+            this.Port = configService.GetSetting<string>("adLds:port", string.Empty);
+            this.Prefix = configService.GetSetting<string>("adLds:prefix", string.Empty);
+            this.Container = configService.GetSetting<string>("adLds:container", string.Empty);
         }
 
         public string ServerName { get; }
