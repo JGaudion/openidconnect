@@ -21,7 +21,7 @@ namespace OpenIDConnect.IdentityAdmin
 
         private readonly bool apiOnly;
 
-        public IdentityAdminBootstrapper(string identityServerUri, string identityAdminUri, bool apiOnly)
+        public IdentityAdminBootstrapper(string identityServerUri, string identityAdminUri)
         {
             if (string.IsNullOrWhiteSpace(identityServerUri))
             {
@@ -35,7 +35,7 @@ namespace OpenIDConnect.IdentityAdmin
 
             this.identityServerUri = identityServerUri;
             this.identityAdminUri = identityAdminUri;
-            this.apiOnly = apiOnly;
+            this.apiOnly = false;
         }
 
         public void Run(IAppBuilder app)

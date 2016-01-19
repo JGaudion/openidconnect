@@ -173,10 +173,15 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OpenIDConnect.AdLds\OpenIDConnect.AdLds.csproj">
+      <Project>{085d5ecd-afe8-4377-9c4a-20e29a1dc5ac}</Project>
+      <Name>OpenIDConnect.AdLds</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
       <Project>{219e72f8-f1a0-43ae-9037-104c2f00476d}</Project>
       <Name>OpenIDConnect.Core</Name>
@@ -188,6 +193,10 @@
     <ProjectReference Include="..\OpenIDConnect.IdentityManager\OpenIDConnect.IdentityManager.csproj">
       <Project>{7a98f4f1-2aa0-4256-8e72-f5e315d3a59e}</Project>
       <Name>OpenIDConnect.IdentityManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OpenIDConnect.IdentityServer.AspNet\OpenIDConnect.IdentityServer.AspNet.csproj">
+      <Project>{3a27be93-4c59-4cdd-b7f0-a465e33a6cd3}</Project>
+      <Name>OpenIDConnect.IdentityServer.AspNet</Name>
     </ProjectReference>
     <ProjectReference Include="..\OpenIDConnect.IdentityServer\OpenIDConnect.IdentityServer.csproj">
       <Project>{9ccb9a14-0569-4f04-98ee-feb5d0b30ff2}</Project>

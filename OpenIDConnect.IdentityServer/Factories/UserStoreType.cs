@@ -8,6 +8,6 @@
 
         MembershipReboot,
 
-        Adlds
+        AdLds
     }
 }
