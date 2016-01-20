@@ -6,6 +6,7 @@ using OpenIDConnect.IdentityServer.Services;
 using IdentityServer3.Core.Services;
 using OpenIDConnect.Core;
 using OpenIDConnect.Core.Services;
+using IdentityServer3.EntityFramework;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -65,16 +66,25 @@ namespace OpenIDConnect.IdentityServer
             var factory = new IdentityServerServiceFactory();
 
             factory.ClientStore = new Registration<IClientStore>(
-                new CompositeClientStore(new IClientStore[] {
-                    new KnownClientStore(identityManagerUri, identityAdminUri)
+                new CompositeClientStore(new IClientStore[] 
+                {
+                    new KnownClientStore(identityManagerUri, identityAdminUri),
+                    new ClientStore(new ClientConfigurationDbContext("ClientsScopes"))      // TODO: get connection string name from config
                 }));
 
-            factory.ScopeStore = new Registration<IScopeStore>(new KnownScopeStore());
+            factory.ScopeStore = new Registration<IScopeStore>(
+                new CompositeScopeStore(new IScopeStore[]
+                {
+                    new KnownScopeStore(),
+                    new ScopeStore(new ScopeConfigurationDbContext("ClientsScopes"))        // TODO: get connection string name from config
+                }));
 
-            factory.UserService = new Registration<IUserService>(new CompositeUserService(new IUserService[] {
-                new KnownUserService(this.adminUsername, this.adminPassword),
-                new DomainUserService(userAuthenticationService)
-            }));
+            factory.UserService = new Registration<IUserService>(
+                new CompositeUserService(new IUserService[] 
+                {
+                    new KnownUserService(this.adminUsername, this.adminPassword),
+                    new DomainUserService(userAuthenticationService)
+                }));
 
             return new IdentityServerOptions
             {

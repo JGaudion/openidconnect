@@ -14,16 +14,12 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
         // If you wish to target a different database and/or database provider, modify the 'AspNetUserStore' 
         // connection string in the application configuration file.
         public AspNetUserStore()
-            : base("name=AspNetUserStore")
+            : base("UsersAspNetIdentity")
         {
         }
         public AspNetUserStore(string ConnectionString) :base (ConnectionString)
         {
 
-        }
-
-        
-    }
-
-   
+        }        
+    }   
 }

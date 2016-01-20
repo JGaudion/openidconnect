@@ -73,7 +73,7 @@ namespace OpenIDConnect.IdentityAdmin
 
     internal class IdentityAdminManagerService : IdentityAdminCoreManager<IdentityClient, int, IdentityScope, int>
     {
-        public IdentityAdminManagerService() : base("IdentityAdmin")
+        public IdentityAdminManagerService() : base("ClientsScopes")
         {
         }
     }
