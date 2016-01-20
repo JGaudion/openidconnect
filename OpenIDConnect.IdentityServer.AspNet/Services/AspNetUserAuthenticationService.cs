@@ -1,5 +1,6 @@
 ﻿using OpenIDConnect.Core.Models;
 using OpenIDConnect.Core.Services;
+using OpenIDConnect.IdentityServer.AspNet.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,80 +9,27 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.IdentityServer.AspNet.Services
 {
-    public class AspNetUserService<TUser,TKey> : IUserAuthenticationService
-        where TUser : class, Microsoft.AspNet.Identity.IUser<TKey>, new()
-        where TKey : IEquatable<TKey>
+    public class AspNetUserAuthenticationService : IUserAuthenticationService      
     {
         
         public string DisplayNameClaimType { get; set; }
         public bool EnableSecurityStamp { get; set; }
 
-        protected readonly Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager;
-        protected readonly Func<string, TKey> ConvertSubjectToKey;
+        protected readonly UserManager manager;
 
         /// <summary>
         /// This constructor will conjure up a UserManager as the Autofac will inject the dependencies
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="parseSubject"></param>
-        public AspNetUserService(Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager, Func<string, TKey> parseSubject = null)
+        public AspNetUserAuthenticationService(UserManager manager)
         {
             if (manager == null) throw new ArgumentNullException(nameof(manager));
 
             this.manager = manager;
-
-            if (parseSubject != null)
-            {
-                ConvertSubjectToKey = parseSubject;
-            }
-            else
-            {
-                //Set the function to translate the key
-                var keyType = typeof(TKey);
-                if (keyType == typeof(string)) ConvertSubjectToKey = subject => (TKey)ParseString(subject);
-                else if (keyType == typeof(int)) ConvertSubjectToKey = subject => (TKey)ParseInt(subject);
-                else if (keyType == typeof(uint)) ConvertSubjectToKey = subject => (TKey)ParseUInt32(subject);
-                else if (keyType == typeof(long)) ConvertSubjectToKey = subject => (TKey)ParseLong(subject);
-                else if (keyType == typeof(Guid)) ConvertSubjectToKey = subject => (TKey)ParseGuid(subject);
-                else
-                {
-                    throw new InvalidOperationException("Key type not supported");
-                }
-            }
-
+                        
             EnableSecurityStamp = true;
         }
-
-        #region KeyTransformation
-        object ParseString(string sub)
-        {
-            return sub;
-        }
-        object ParseInt(string sub)
-        {
-            int key;
-            if (!Int32.TryParse(sub, out key)) return 0;
-            return key;
-        }
-        object ParseUInt32(string sub)
-        {
-            uint key;
-            if (!UInt32.TryParse(sub, out key)) return 0;
-            return key;
-        }
-        object ParseLong(string sub)
-        {
-            long key;
-            if (!Int64.TryParse(sub, out key)) return 0;
-            return key;
-        }
-        object ParseGuid(string sub)
-        {
-            Guid key;
-            if (!Guid.TryParse(sub, out key)) return Guid.Empty;
-            return key;
-        }
-        #endregion
 
         /// <summary>
         /// External: The user has logged in on some other site
@@ -166,7 +114,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <param name="user"></param>
         /// <param name="signInData"></param>
         /// <returns></returns>
-        protected virtual Task<AuthenticationResult> PostAuthenticateLocalAsync(TUser user, SignInData signInData)
+        protected virtual Task<AuthenticationResult> PostAuthenticateLocalAsync(User user, SignInData signInData)
         {
             return Task.FromResult<AuthenticationResult>(null);
         }
@@ -183,8 +131,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
             if (subject == null) throw new ArgumentNullException("subject");
 
-            TKey key = ConvertSubjectToKey(subject.FindFirst(Core.Constants.ClaimTypes.Subject).Value);//Not sure about this
-            var acct = await manager.FindByIdAsync(key);
+            var acct = await manager.FindByIdAsync(subject.FindFirst(Core.Constants.ClaimTypes.Subject).Value);
             if (acct == null)
             {
                 throw new ArgumentException("Invalid subject identifier");
@@ -268,7 +215,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         }
 
         #region SupportingMethods
-        protected virtual async Task<IEnumerable<Claim>> GetClaimsForAuthenticateResult(TUser user)
+        protected virtual async Task<IEnumerable<Claim>> GetClaimsForAuthenticateResult(User user)
         {
             List<Claim> claims = new List<Claim>();
             if (EnableSecurityStamp && manager.SupportsUserSecurityStamp)
@@ -282,7 +229,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return claims;
         }
 
-        protected virtual async Task<string> GetDisplayNameForAccountAsync(TKey userID)
+        protected virtual async Task<string> GetDisplayNameForAccountAsync(string userID)
         {
             var user = await manager.FindByIdAsync(userID);
             var claims = await GetClaimsFromAccount(user);
@@ -292,18 +239,18 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             {
                 nameClaim = claims.FirstOrDefault(x => x.Type == DisplayNameClaimType);
             }
-            if (nameClaim == null) nameClaim = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.Name);
-            if (nameClaim == null) nameClaim = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.Name);
+            if (nameClaim == null) nameClaim = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.Name);
+            if (nameClaim == null) nameClaim = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.Name);
             if (nameClaim != null) return nameClaim.Value;
 
             return user.UserName;
         }
 
-        protected virtual async Task<IEnumerable<Claim>> GetClaimsFromAccount(TUser user)
+        protected virtual async Task<IEnumerable<Claim>> GetClaimsFromAccount(User user)
         {
             var claims = new List<Claim>{
-                new Claim(Claims.ClaimTypes.Subject, user.Id.ToString()),
-                new Claim(Claims.ClaimTypes.PreferredUserName, user.UserName),
+                new Claim(OpenIDConnect.Core.Constants.ClaimTypes.Subject, user.Id.ToString()),
+                new Claim(OpenIDConnect.Core.Constants.ClaimTypes.PreferredUserName, user.UserName),
             };
 
             if (manager.SupportsUserEmail)
@@ -311,9 +258,9 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 var email = await manager.GetEmailAsync(user.Id);
                 if (!String.IsNullOrWhiteSpace(email))
                 {
-                    claims.Add(new Claim(Claims.ClaimTypes.Email, email));
+                    claims.Add(new Claim(OpenIDConnect.Core.Constants.ClaimTypes.Email, email));
                     var verified = await manager.IsEmailConfirmedAsync(user.Id);
-                    claims.Add(new Claim(Claims.ClaimTypes.EmailVerified, verified ? "true" : "false"));
+                    claims.Add(new Claim(OpenIDConnect.Core.Constants.ClaimTypes.EmailVerified, verified ? "true" : "false"));
                 }
             }
 
@@ -322,9 +269,9 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 var phone = await manager.GetPhoneNumberAsync(user.Id);
                 if (!String.IsNullOrWhiteSpace(phone))
                 {
-                    claims.Add(new Claim(Claims.ClaimTypes.PhoneNumber, phone));
+                    claims.Add(new Claim(OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumber, phone));
                     var verified = await manager.IsPhoneNumberConfirmedAsync(user.Id);
-                    claims.Add(new Claim(Claims.ClaimTypes.PhoneNumberVerified, verified ? "true" : "false"));
+                    claims.Add(new Claim(OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumberVerified, verified ? "true" : "false"));
                 }
             }
 
@@ -337,7 +284,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             {
                 var roleClaims =
                     from role in await manager.GetRolesAsync(user.Id)
-                    select new Claim(Claims.ClaimTypes.Role, role);
+                    select new Claim(OpenIDConnect.Core.Constants.ClaimTypes.Role, role);
                 claims.AddRange(roleClaims);
             }
 
@@ -374,26 +321,26 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return await SignInFromExternalProviderAsync(user.Id, provider);
         }
 
-        protected virtual Task<TUser> InstantiateNewUserFromExternalProviderAsync(string provider, string providerId, IEnumerable<Claim> claims)
+        protected virtual Task<User> InstantiateNewUserFromExternalProviderAsync(string provider, string providerId, IEnumerable<Claim> claims)
         {
-            var user = new TUser() { UserName = Guid.NewGuid().ToString("N") };
+            var user = new User() { UserName = Guid.NewGuid().ToString("N") };
             return Task.FromResult(user);
         }
 
-        protected virtual Task<TUser> TryGetExistingUserFromExternalProviderClaimsAsync(string provider, IEnumerable<Claim> claims)
+        protected virtual Task<User> TryGetExistingUserFromExternalProviderClaimsAsync(string provider, IEnumerable<Claim> claims)
         {
-            return Task.FromResult<TUser>(null);
+            return Task.FromResult<User>(null);
         }
 
-        protected virtual async Task<AuthenticationResult> AccountCreatedFromExternalProviderAsync(TKey userID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected virtual async Task<AuthenticationResult> AccountCreatedFromExternalProviderAsync(string userID, string provider, string providerId, IEnumerable<Claim> claims)
         {
-            claims = await SetAccountEmailAsync(userID, claims);
-            claims = await SetAccountPhoneAsync(userID, claims);
+            claims = await manager.SetAccountEmailAsync(userID, claims);
+            claims = await manager.SetAccountPhoneAsync(userID, claims);
 
             return await UpdateAccountFromExternalClaimsAsync(userID, provider, providerId, claims);
         }
 
-        protected virtual async Task<AuthenticationResult> SignInFromExternalProviderAsync(TKey userID, string provider)
+        protected virtual async Task<AuthenticationResult> SignInFromExternalProviderAsync(string userID, string provider)
         {
             var user = await manager.FindByIdAsync(userID);
             var claims = await GetClaimsForAuthenticateResult(user);
@@ -407,7 +354,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         }
 
-        protected virtual async Task<AuthenticationResult> UpdateAccountFromExternalClaimsAsync(TKey userID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected virtual async Task<AuthenticationResult> UpdateAccountFromExternalClaimsAsync(string userID, string provider, string providerId, IEnumerable<Claim> claims)
         {
             var existingClaims = await manager.GetClaimsAsync(userID);
             var intersection = existingClaims.Intersect(claims);
@@ -425,68 +372,12 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             return null;
         }
 
-        protected virtual async Task<AuthenticationResult> ProcessExistingExternalAccountAsync(TKey userID, string provider, string providerId, IEnumerable<Claim> claims)
+        protected virtual async Task<AuthenticationResult> ProcessExistingExternalAccountAsync(string userID, string provider, string providerId, IEnumerable<Claim> claims)
         {
             return await SignInFromExternalProviderAsync(userID, provider);
         }
-
-        protected virtual async Task<IEnumerable<Claim>> SetAccountEmailAsync(TKey userID, IEnumerable<Claim> claims)
-        {
-            var email = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.Email);
-            if (email != null)
-            {
-                var userEmail = await manager.GetEmailAsync(userID);
-                if (userEmail == null)
-                {
-                    // if this fails, then presumably the email is already associated with another account
-                    // so ignore the error and let the claim pass thru
-                    var result = await manager.SetEmailAsync(userID, email.Value);
-                    if (result.Succeeded)
-                    {
-                        var email_verified = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.EmailVerified);
-                        if (email_verified != null && email_verified.Value == "true")
-                        {
-                            var token = await manager.GenerateEmailConfirmationTokenAsync(userID);
-                            await manager.ConfirmEmailAsync(userID, token);
-                        }
-
-                        var emailClaims = new string[] { Claims.ClaimTypes.Email, Claims.ClaimTypes.EmailVerified };
-                        return claims.Where(x => !emailClaims.Contains(x.Type));
-                    }
-                }
-            }
-
-            return claims;
-        }
-
-        protected virtual async Task<IEnumerable<Claim>> SetAccountPhoneAsync(TKey userID, IEnumerable<Claim> claims)
-        {
-            var phone = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.PhoneNumber);
-            if (phone != null)
-            {
-                var userPhone = await manager.GetPhoneNumberAsync(userID);
-                if (userPhone == null)
-                {
-                    // if this fails, then presumably the phone is already associated with another account
-                    // so ignore the error and let the claim pass thru
-                    var result = await manager.SetPhoneNumberAsync(userID, phone.Value);
-                    if (result.Succeeded)
-                    {
-                        var phone_verified = claims.FirstOrDefault(x => x.Type == Claims.ClaimTypes.PhoneNumberVerified);
-                        if (phone_verified != null && phone_verified.Value == "true")
-                        {
-                            var token = await manager.GenerateChangePhoneNumberTokenAsync(userID, phone.Value);
-                            await manager.ChangePhoneNumberAsync(userID, phone.Value, token);
-                        }
-
-                        var phoneClaims = new string[] { Claims.ClaimTypes.PhoneNumber, Claims.ClaimTypes.PhoneNumberVerified };
-                        return claims.Where(x => !phoneClaims.Contains(x.Type));
-                    }
-                }
-            }
-
-            return claims;
-        }
+               
+             
 
         #endregion
     }
