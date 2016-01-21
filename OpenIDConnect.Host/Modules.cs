@@ -39,7 +39,7 @@ namespace OpenIDConnect.Host
 
             builder.RegisterType<IdentityManagerBootstrapper>()
                 .WithParameter("identityServerUri", identityServerUri)
-                .WithParameter("identityManagerUri", identityManagerUri);
+                .WithParameter("identityManagerUri", identityManagerUri);            
         }
 
         private static void RegisterUserStore(IConfigurationService configService, ContainerBuilder builder)
