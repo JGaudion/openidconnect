@@ -9,4 +9,22 @@
   <parameter name="IdentityAdminUri" defaultValue="https://localhost:44302/admin">
     <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IdentityAdminUri']/@value" />
   </parameter>
+  <parameter name="Google.ClientId" defaultValue="767400843187-8boio83mb57ruogr9af9ut09fkg56b27.apps.googleusercontent.com">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:google:clientId']/@value" />
+  </parameter>
+  <parameter name="Google.ClientSecret" defaultValue="5fWcBT0udKY7_b6E3gEiJlze">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:google:clientSecret']/@value" />
+  </parameter>
+  <parameter name="Facebook.ClientId" defaultValue="676607329068058">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:facebook:clientId']/@value" />
+  </parameter>
+  <parameter name="Facebook.ClientSecret" defaultValue="9d6ab75f921942e61fb43a9b1fc25c63">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:facebook:clientSecret']/@value" />
+  </parameter>
+  <parameter name="Twitter.ClientId" defaultValue="N8r8w7PIepwtZZwtH066kMlmq">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:twitter:clientId']/@value" />
+  </parameter>
+  <parameter name="Twitter.ClientSecret" defaultValue="df15L2x6kNI50E4PYcHS0ImBQlcGIt6huET8gQN41VFpUCwNjM">
+    <parameterEntry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='externalProviders:twitter:clientSecret']/@value" />
+  </parameter>
 </parameters>
