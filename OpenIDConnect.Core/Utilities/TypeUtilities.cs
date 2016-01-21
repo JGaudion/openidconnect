@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using OpenIDConnect.Core.Constants;
 using OpenIDConnect.Core.Models.UserManagement;
 
@@ -16,7 +12,7 @@ namespace OpenIDConnect.Core.Utilities
             try
             {
                 Type type = instance.GetType();
-                PropertyInfo prop = type.GetProperty(propertyName, BindingFlags.Public);
+                PropertyInfo prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
 
                 Type conversionType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 
