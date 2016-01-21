@@ -11,14 +11,21 @@ namespace OpenIDConnect.IdentityServer
     public class IdentityServerBootstrapper : IOwinBootstrapper
     {
         private readonly IConfigurationService configService;
+        private readonly ExternalIdentityProviderService externalIdentityProviderService;
         private readonly IUserAuthenticationService userAuthenticationService;
 
         public IdentityServerBootstrapper(IUserAuthenticationService userAuthenticationService,
+            ExternalIdentityProviderService externalIdentityProviderService,
             IConfigurationService configService)
         {
             if (userAuthenticationService == null)
             {
                 throw new ArgumentNullException(nameof(userAuthenticationService));
+            }
+
+            if (externalIdentityProviderService == null)
+            {
+                throw new ArgumentNullException(nameof(externalIdentityProviderService));
             }
 
             if (configService == null)
@@ -27,6 +34,7 @@ namespace OpenIDConnect.IdentityServer
             }
 
             this.userAuthenticationService = userAuthenticationService;
+            this.externalIdentityProviderService = externalIdentityProviderService;
             this.configService = configService;
         }
 
@@ -47,7 +55,8 @@ namespace OpenIDConnect.IdentityServer
                     adminPassword, 
                     identityManagerUri, 
                     identityAdminUri,
-                    userAuthenticationService).GetServerOptions();
+                    userAuthenticationService,
+                    externalIdentityProviderService).GetServerOptions();
 
             app.UseIdentityServer(options);
         }
