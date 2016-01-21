@@ -8,6 +8,7 @@ using OpenIDConnect.Core.Models.UserManagement;
 using System.Security.Claims;
 using OpenIDConnect.IdentityServer.AspNet.Model;
 using OpenIDConnect.Core.Constants;
+using OpenIDConnect.Core.Utilities;
 
 namespace OpenIDConnect.IdentityServer.AspNet.Services
 {
@@ -54,17 +55,31 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         {
             try
             {
+               
                 var name = !string.IsNullOrEmpty(roleName) ? roleName : Guid.NewGuid().ToString();
+                //I think the role name should be unique...so check the rolename first
+
+                if(roleManager.CheckRoleNameInUse(name))
+                {
+                    throw new Exception("Role name is already in use. Please choose a new role name");
+                }
+
                 var role = new Role()
                 {
                     Name = name
                 };
+
+                //These seems to have to be done before the create, otherwise doesn't save (and I don't have access to context save?)
+                //Ensure that we don't accidentally pick up the password claim!
+                var SafeClaims = claims.Where(c => c.Type != Core.Constants.ClaimTypes.Password && c.Type != Core.Constants.ClaimTypes.Name);
+                foreach (var claim in SafeClaims)
+                {
+                    TypeUtilities.SetProperty(role, claim.Type, claim.Value);
+                }
+
                 //Create a role 
                 var result = await roleManager.CreateAsync(role);
-
-                //Deal with the claims
-               // claims = await roleManager.SetClaims(name, claims);
-
+                
                 return new UserManagementResult<string>(name);
             }
             catch (Exception e)
@@ -77,32 +92,43 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         {
             try
             {
+                //Check the email address is unique
+                if(manager.CheckEmailAlreadyInUse(claims))
+                {
+                    throw new Exception("This email is already in use by an existing user");//This will be turned into the UserManagementResult with the errors array
+                }
+
                 var name = !string.IsNullOrEmpty(username) ? username : Guid.NewGuid().ToString("N");
                 var user = new User() {
-                    UserName = name
+                    UserName = name,
+                    DisplayName = name,
                 };
                 //Create a user with the supplied password
                 var result = await manager.CreateAsync(user, password);
+                if(result.Errors.Any())
+                {
+                    return new UserManagementResult<string>(result.Errors);
+                }
 
                 //Deal with the claims
                 if(manager.SupportsUserEmail)
                 {
-                    claims = await manager.SetAccountEmailAsync(name, claims);
+                    claims = await manager.SetAccountEmailAsync(user.Id, claims);
                 }
 
                 if(manager.SupportsUserPhoneNumber)
                 {
-                    claims = await manager.SetAccountPhoneAsync(name, claims);
+                    claims = await manager.SetAccountPhoneAsync(user.Id, claims);
                 }
 
                 if (manager.SupportsUserClaim)
                 {
-                    claims = await manager.SetOtherClaims(name, claims);
+                    claims = await manager.SetOtherClaims(user.Id, claims);
                 }
 
                 if (manager.SupportsUserRole)
                 {
-                    claims = await manager.SetRolesForUser(name, claims);
+                    claims = await manager.SetRolesForUser(user.Id, claims);
                 }
 
                 return new UserManagementResult<string>(name);
@@ -150,15 +176,33 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         public Task<UserManagementMetadata> GetMetadataAsync()
         {
            
-                var createProperties = new List<PropertyMetadata>
+                var createUserProperties = new List<PropertyMetadata>
             {
                 new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
                 new PropertyMetadata(PropertyTypes.Password, Core.Constants.ClaimTypes.Password, "Password", true),
-                new PropertyMetadata(PropertyTypes.Email, Core.Constants.ClaimTypes.Email, "Email", false)
+                new PropertyMetadata(PropertyTypes.Email, Core.Constants.ClaimTypes.Email, "Email", true),
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Role, "Role", false)
             };
 
-                var userMetadata = new UserMetadata(true, false, false, Enumerable.Empty<PropertyMetadata>(), createProperties);
-                var roleMetadata = new RoleMetadata(false, false, Core.Constants.ClaimTypes.Role, Enumerable.Empty<PropertyMetadata>(), Enumerable.Empty<PropertyMetadata>());
+            var updateUserProperties = new List<PropertyMetadata>
+            {
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Role, "Role", false)
+            };
+
+            var createRoleProperties = new List<PropertyMetadata>
+            {
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", false)
+            };
+
+            var updateRoleProperties = new List<PropertyMetadata>
+            {
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", false)
+            };
+
+                var userMetadata = new UserMetadata(true, true, true, updateUserProperties, createUserProperties);
+                var roleMetadata = new RoleMetadata(true, true, Core.Constants.ClaimTypes.Role, updateRoleProperties, createRoleProperties);
 
                 return Task.FromResult(new UserManagementMetadata(userMetadata, roleMetadata));  
         }
@@ -196,11 +240,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         public async Task<UserManagementResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                throw new NotImplementedException("Not implemented user query with filter");
-            }
-
+           
             try
             {
                 var result = await roleManager.QueryRolesAsync(start, count, filter);
@@ -215,11 +255,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         public async Task<UserManagementResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                throw new NotImplementedException("Not implemented user query with filter");
-            }
-
+            
             try
             {
                 var result = await manager.QueryUsersAsync(start, count, filter);
@@ -259,47 +295,70 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 }
                 else
                 {
-                    throw new Exception("User not found");
+                    return new UserManagementResult<string>(new[] { "User not found" });
                 }
                 
             }
             catch (Exception e)
             {
-                return new UserManagementResult<UserDetail>(new[] { e.Message });
+                return new UserManagementResult<string>(new[] { e.Message });
             }
         }
 
         /// <summary>
         /// Assuming we are looking for a specific role and then changing the value of the property 
+        /// by looking for the property with matching type
         /// </summary>
         /// <param name="subject"></param>
         /// <param name="type"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Task<UserManagementResult> SetRolePropertyAsync(string subject, string type, string value)
+        public async Task<UserManagementResult> SetRolePropertyAsync(string subject, string type, string value)
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    //awaiting code
-            //}
-            //catch (Exception e)
-            //{
-            //  //  return new UserManagementResult<UserDetail>(new[] { e.Message });
-            //}
+            try
+            {
+                var role = await roleManager.FindByIdAsync(subject);
+                if (role == null)
+                {
+                    return new UserManagementResult<string>(new[] { "Role not found" });
+                }
+
+                TypeUtilities.SetProperty(role, type, value);
+                var test = role.Description;
+
+                return UserManagementResult.Success;
+            }
+            catch (Exception e)
+            {
+                  return new UserManagementResult<UserDetail>(new[] { e.Message });
+            }
         }
 
-        public Task<UserManagementResult> SetUserPropertyAsync(string subject, string type, string value)
+        /// <summary>
+        /// Set the metadata on the property for the user, by looking for the property with matching type
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="type"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public async Task<UserManagementResult> SetUserPropertyAsync(string subject, string type, string value)
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    //awaiting code
-            //}
-            //catch (Exception e)
-            //{
-            // //   return new UserManagementResult<UserDetail>(new[] { e.Message });
-            //}
+            try
+            {
+                var user = await manager.FindByIdAsync(subject);
+                if(user == null)
+                {
+                    return new UserManagementResult<string>(new[] { "User not found" });
+                }
+
+                TypeUtilities.SetProperty(user, type, value);
+
+                return UserManagementResult.Success;
+            }
+            catch (Exception e)
+            {
+                   return new UserManagementResult<string>(new[] { e.Message });
+            }
         }
     }
 }

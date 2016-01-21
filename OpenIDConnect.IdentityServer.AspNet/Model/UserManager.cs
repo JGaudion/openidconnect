@@ -26,34 +26,48 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
         {
             var email = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.Email);
             if (email != null)
-            {
-                var userEmail = await this.GetEmailAsync(userID);
-                if (userEmail == null)
+            {                                
+                // if this fails, then presumably the email is already associated with another account
+                // so ignore the error and let the claim pass thru
+                var result = await this.SetEmailAsync(userID, email.Value);
+                if (result.Succeeded)
                 {
-                    // if this fails, then presumably the email is already associated with another account
-                    // so ignore the error and let the claim pass thru
-                    var result = await this.SetEmailAsync(userID, email.Value);
-                    if (result.Succeeded)
+                    var email_verified = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.EmailVerified);
+                    if (email_verified != null && email_verified.Value == "true")
                     {
-                        var email_verified = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.EmailVerified);
-                        if (email_verified != null && email_verified.Value == "true")
-                        {
-                            var token = await this.GenerateEmailConfirmationTokenAsync(userID);
-                            await this.ConfirmEmailAsync(userID, token);
-                        }
-
-                        var emailClaims = new string[] { OpenIDConnect.Core.Constants.ClaimTypes.Email, OpenIDConnect.Core.Constants.ClaimTypes.EmailVerified };
-                        return claims.Where(x => !emailClaims.Contains(x.Type));
+                        var token = await this.GenerateEmailConfirmationTokenAsync(userID);
+                        await this.ConfirmEmailAsync(userID, token);
                     }
+
+                    var emailClaims = new string[] { OpenIDConnect.Core.Constants.ClaimTypes.Email, OpenIDConnect.Core.Constants.ClaimTypes.EmailVerified };
+                    return claims.Where(x => !emailClaims.Contains(x.Type));
                 }
+                
             }
 
             return claims;
         }
 
         /// <summary>
-        /// Checks to see if this phone has already been assigned to a user. If it has - ignore this claim. 
-        /// Otherwise add the phone to the user
+        /// Checks the claims for the email address and ensures that it is unique
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
+        internal bool CheckEmailAlreadyInUse(IEnumerable<Claim> claims)
+        {
+            var email = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.Email);
+            if (email == null)
+            {
+                throw new Exception("No email address found in supplied claims");
+            }
+            //If there is an existing user with this email then return false
+            var existingUser = this.FindByEmail(email.Value);
+            return existingUser != null;
+
+        }
+
+        /// <summary>
+        /// Add the phone to the user
         /// </summary>
         /// <param name="userID"></param>
         /// <param name="claims"></param>
@@ -63,11 +77,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
             var phone = claims.FirstOrDefault(x => x.Type == OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumber);
             if (phone != null)
             {
-                var userPhone = await this.GetPhoneNumberAsync(userID);
-                if (userPhone == null)
-                {
-                    // if this fails, then presumably the phone is already associated with another account
-                    // so ignore the error and let the claim pass thru
+                     
                     var result = await this.SetPhoneNumberAsync(userID, phone.Value);
                     if (result.Succeeded)
                     {
@@ -81,7 +91,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
                         var phoneClaims = new string[] { OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumber, OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumberVerified };
                         return claims.Where(x => !phoneClaims.Contains(x.Type));
                     }
-                }
+                
             }
 
             return claims;
@@ -116,12 +126,14 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
         /// <returns></returns>
         internal virtual async Task<IEnumerable<Claim>> SetOtherClaims (string userID, IEnumerable<Claim> claims)
         {
-            var MiscClaims = claims.Where(c => c.Type != OpenIDConnect.Core.Constants.ClaimTypes.Role && c.Type != OpenIDConnect.Core.Constants.ClaimTypes.Email && c.Type != OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumber);
+            //Ensure that we don't accidentally pick up the password claim!
+            var SafeClaims = claims.Where(c => c.Type != Core.Constants.ClaimTypes.Password && c.Type != Core.Constants.ClaimTypes.Name);
+            var MiscClaims = SafeClaims.Where(c => c.Type != OpenIDConnect.Core.Constants.ClaimTypes.Role && c.Type != OpenIDConnect.Core.Constants.ClaimTypes.Email && c.Type != OpenIDConnect.Core.Constants.ClaimTypes.PhoneNumber);
 
-            if(MiscClaims != null)
+            if(MiscClaims != null && MiscClaims.Any())
             {
                 var existingClaims = await this.GetClaimsAsync(userID);
-                var newClaims = claims.Where(c => !existingClaims.Any(x=> x.Value == c.Value));
+                var newClaims = MiscClaims.Where(c => !existingClaims.Any(x=> x.Value == c.Value));
                 foreach(var claim in newClaims)
                 {
                     this.AddClaim(userID, claim);
@@ -132,18 +144,17 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
 
         private QueryResult<User> QueryUsers(int start, int count, string filter)
         {
-            var results = this.Users.ToList();
-            List<User> selectedUsers = new List<User>();
+            var results = this.Users.ToList();            
             if (!string.IsNullOrEmpty(filter))
             {
                 //Could use dynamic linq?
-                selectedUsers = selectedUsers.Where(u => u.UserName.Contains(filter)).ToList();
+                results = results.Where(u => u.UserName.Contains(filter)).ToList();
             }
 
             int total = results.Count();
-            selectedUsers = results.Skip(start).Take(count).ToList();
+            results = results.Skip(start).Take(count).ToList();
            
-            return new QueryResult<User>(start, count, total, null, selectedUsers);
+            return new QueryResult<User>(start, count, total, null, results);
         }
 
         public Task<QueryResult<User>> QueryUsersAsync(int start, int count, string filter)

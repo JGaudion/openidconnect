@@ -39,7 +39,7 @@ namespace OpenIDConnect.Host
 
             builder.RegisterType<IdentityManagerBootstrapper>()
                 .WithParameter("identityServerUri", identityServerUri)
-                .WithParameter("identityManagerUri", identityManagerUri);            
+                .WithParameter("identityManagerUri", identityManagerUri);
         }
 
         private static void RegisterUserStore(IConfigurationService configService, ContainerBuilder builder)
@@ -81,7 +81,8 @@ namespace OpenIDConnect.Host
         /// <param name="builder"></param>
         private static void RegisterAspNetIdentity(ContainerBuilder builder)
         {
-            builder.RegisterType<ConcreteAspNetUserService>().As<IUserAuthenticationService>().ExternallyOwned();
+            builder.RegisterType<AspNetUserAuthenticationService>().As<IUserAuthenticationService>().ExternallyOwned();
+            builder.RegisterType<AspNetUserManagementService>().As<IUserManagementService>().ExternallyOwned();
             builder.RegisterType<UserManager>().ExternallyOwned();
             builder.RegisterType<RoleManager>().ExternallyOwned();
             builder.RegisterType<UserStore>().ExternallyOwned();

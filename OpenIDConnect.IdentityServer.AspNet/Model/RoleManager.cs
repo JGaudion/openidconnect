@@ -16,18 +16,18 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
 
         }
 
-        private QueryResult<Role> QueryRoles(int start, int count,string filter)
+        private QueryResult<Role> QueryRoles(int start, int count, string filter)
         {
             var results = this.Roles.ToList();
-            List<Role> selectedRoles = new List<Role>();
+            
             if (!string.IsNullOrEmpty(filter))
             {
                 //We could use dynamic linq here for more filtering options
-                selectedRoles = selectedRoles.Where(u => u.Name.Contains(filter)).ToList();
+                results = results.Where(u => u.Name.Contains(filter)).ToList();
             }
             int total = results.Count();
-            selectedRoles = results.Skip(start).Take(count).ToList();
-            return new QueryResult<Role>(start, count, total, null, selectedRoles);
+            results = results.Skip(start).Take(count).ToList();
+            return new QueryResult<Role>(start, count, total, null, results);
         }
 
         public Task<QueryResult<Role>> QueryRolesAsync(int start, int count, string filter)
@@ -39,5 +39,19 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
         {
             return new QueryResult<TOut>(result.Start, result.Count, result.Total, result.Filter, result.Items.Select(resultConverter));
         }
+
+        /// <summary>
+        /// Checks the role name is unique
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <returns></returns>
+        internal bool CheckRoleNameInUse(string roleName)
+        {            
+            //If there is an existing role with this name then return false
+            var existingRole = this.FindByName(roleName);
+            return existingRole != null;
+
+        }
+
     }
 }
