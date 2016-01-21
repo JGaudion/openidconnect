@@ -62,7 +62,9 @@ namespace OpenIDConnect.IdentityManager.Services
         {
             var result = await this.userManagementService.GetMetadataAsync();
 
-            return ToIdentityManagerMetadata(result);
+            var meta = ToIdentityManagerMetadata(result);
+
+            return meta;
         }
 
         public async Task<IM.IdentityManagerResult<IM.RoleDetail>> GetRoleAsync(string subject)

@@ -24,6 +24,7 @@ namespace OpenIDConnect.Core.Models.UserManagement
             {
                 throw new ArgumentNullException(nameof(errors));
             }
+            this.Errors = errors; 
         }
 
         public IEnumerable<string> Errors { get; } = Enumerable.Empty<string>();

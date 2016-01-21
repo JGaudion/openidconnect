@@ -9,5 +9,6 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
 {
     public class User : IdentityUser
     {
+        public string DisplayName { get; set; }
     }
 }

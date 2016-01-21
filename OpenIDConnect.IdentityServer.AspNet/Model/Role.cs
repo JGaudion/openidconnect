@@ -9,5 +9,6 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
 {
     public class Role : IdentityRole
     {
+        public string Description { get; set; }
     }
 }

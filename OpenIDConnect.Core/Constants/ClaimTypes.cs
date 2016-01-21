@@ -14,6 +14,7 @@
         public const string AuthorizedParty = "azp";
         public const string BirthDate = "birthdate";
         public const string ClientId = "client_id";
+        public const string Description = "Description";
         public const string Email = "email";
         public const string EmailVerified = "email_verified";
         public const string Expiration = "exp";
