@@ -7,12 +7,18 @@ namespace OpenIDConnect.Core.Utilities
 {
     public static class TypeUtilities
     {
-        public static UserManagementResult SetProperty(object instance, string propertyName, string value)
+        public static UserManagementResult SetProperty(object instance, string propertyName, string value, bool ignorePropertiesWhichDoNotExist = false)
         {
             try
             {
                 Type type = instance.GetType();
-                PropertyInfo prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+                //Option to let us completely ignore properties which don't exist, rather than raising an error
+                if(ignorePropertiesWhichDoNotExist && prop == null)
+                {
+                    return UserManagementResult.Success;
+                }
 
                 Type conversionType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 
@@ -43,7 +49,7 @@ namespace OpenIDConnect.Core.Utilities
             }
         }
 
-        public static string GetProperty(object instance, PropertyMetadata propertyMetadata)
+        public static string GetProperty(object instance, PropertyMetadata propertyMetadata, bool ignorePropertiesWhichDoNotExist = false)
         {
             if (instance == null)
             {
@@ -61,7 +67,14 @@ namespace OpenIDConnect.Core.Utilities
             }
 
             Type type = instance.GetType();
-            PropertyInfo prop = type.GetProperty(propertyMetadata.ClaimType, BindingFlags.Public);
+            PropertyInfo prop = type.GetProperty(propertyMetadata.ClaimType, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            //Option to let us completely ignore properties which don't exist, rather than raising an error
+            if (ignorePropertiesWhichDoNotExist && prop == null)
+            {
+                return string.Empty;
+            }
+
             var value = prop.GetValue(instance);
 
             return value?.ToString();

@@ -74,13 +74,13 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 var SafeClaims = claims.Where(c => c.Type != Core.Constants.ClaimTypes.Password && c.Type != Core.Constants.ClaimTypes.Name);
                 foreach (var claim in SafeClaims)
                 {
-                    TypeUtilities.SetProperty(role, claim.Type, claim.Value);
+                    TypeUtilities.SetProperty(role, claim.Type, claim.Value, true);
                 }
 
                 //Create a role 
                 var result = await roleManager.CreateAsync(role);
                 
-                return new UserManagementResult<string>(name);
+                return new UserManagementResult<string>(role.Id);
             }
             catch (Exception e)
             {
@@ -103,6 +103,16 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                     UserName = name,
                     DisplayName = name,
                 };
+
+                //These seems to have to be done before the create, otherwise doesn't save (and I don't have access to context save?)
+                //Ensure that we don't accidentally pick up the password claim!
+                var SafeClaims = claims.Where(c => c.Type != Core.Constants.ClaimTypes.Password && c.Type != Core.Constants.ClaimTypes.Name);
+                var RemainingClaims = SafeClaims.Where(c => c.Type != Core.Constants.ClaimTypes.Email && c.Type != Core.Constants.ClaimTypes.Phone);
+                foreach (var claim in RemainingClaims)
+                {
+                    TypeUtilities.SetProperty(user, claim.Type, claim.Value, true);
+                }
+
                 //Create a user with the supplied password
                 var result = await manager.CreateAsync(user, password);
                 if(result.Errors.Any())
@@ -131,7 +141,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                     claims = await manager.SetRolesForUser(user.Id, claims);
                 }
 
-                return new UserManagementResult<string>(name);
+                return new UserManagementResult<string>(user.Id);
             }
             catch (Exception e)
             {
@@ -189,6 +199,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                 new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
                 new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Role, "Role", false)
             };
+            
 
             var createRoleProperties = new List<PropertyMetadata>
             {
@@ -212,7 +223,15 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             try
             {
                 var role = await roleManager.FindByIdAsync(subject);
-                return new UserManagementResult<RoleDetail>(new RoleDetail(subject, role.Name, role.Description, Enumerable.Empty<Claim>()));
+                var claims = new List<Claim>();
+                var allMetadata = await GetMetadataAsync();
+                
+                foreach(var prop in allMetadata.RoleMetadata.UpdateProperties)
+                {
+                    var property = TypeUtilities.GetProperty(role, prop, true);
+                    claims.Add(new Claim(prop.ClaimType, property));
+                }
+                return new UserManagementResult<RoleDetail>(new RoleDetail(subject, role.Name, role.Description, claims));
             }
             catch (Exception e)
             {
@@ -229,8 +248,24 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         {
             try
             {
-                var user = await manager.FindByIdAsync(subject);                
-                return new UserManagementResult<UserDetail>(new UserDetail(subject, user.UserName, user.DisplayName, Enumerable.Empty<Claim>(), Enumerable.Empty<Claim>()));
+                var user = await manager.FindByIdAsync(subject);
+                List<Claim> claims = new List<Claim>();
+                List<Claim> properties = new List<Claim>();
+                var allMetadata = await GetMetadataAsync();
+
+                //I'm doing this as they need to be converted from a collection of IdentityUserClaims. There is probably a neater way.
+                foreach (var claim in user.Claims)
+                {
+                    claims.Add(new Claim(claim.ClaimType, claim.ClaimValue));
+                }  
+                
+                foreach(var prop in allMetadata.UserMetadata.UpdateProperties)
+                {
+                    var property = TypeUtilities.GetProperty(user, prop, true);
+                    properties.Add(new Claim(prop.ClaimType, property));
+                }  
+                           
+                return new UserManagementResult<UserDetail>(new UserDetail(subject, user.UserName, user.DisplayName, claims, properties));
             }
             catch (Exception e)
             {
@@ -323,9 +358,8 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                     return new UserManagementResult<string>(new[] { "Role not found" });
                 }
 
-                TypeUtilities.SetProperty(role, type, value);
-                var test = role.Description;
-
+                TypeUtilities.SetProperty(role, type, value, true);
+                
                 return UserManagementResult.Success;
             }
             catch (Exception e)
@@ -351,7 +385,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                     return new UserManagementResult<string>(new[] { "User not found" });
                 }
 
-                TypeUtilities.SetProperty(user, type, value);
+                TypeUtilities.SetProperty(user, type, value, true);
 
                 return UserManagementResult.Success;
             }
