@@ -96,6 +96,10 @@ namespace OpenIDConnect.IdentityServer
                     new ClaimsUserService(new NullClaimsService(), new DomainUserService(userAuthenticationService))
                 }));
 
+            factory.CorsPolicyService = new Registration<ICorsPolicyService>(
+                    new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes"))
+                );
+
             return new IdentityServerOptions
             {
                 SiteName = "IdentityServer v3",
