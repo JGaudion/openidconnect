@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServer.MembershipReboot", "OpenIDConnect.IdentityServer.MembershipReboot\OpenIDConnect.IdentityServer.MembershipReboot.csproj", "{A513A7BA-C306-4958-AE58-4D6BB16AAE29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Clients.Angular14", "OpenIDConnect.Clients.Angular14\OpenIDConnect.Clients.Angular14.csproj", "{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{A513A7BA-C306-4958-AE58-4D6BB16AAE29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A513A7BA-C306-4958-AE58-4D6BB16AAE29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A513A7BA-C306-4958-AE58-4D6BB16AAE29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
