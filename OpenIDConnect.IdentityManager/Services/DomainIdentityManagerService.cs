@@ -197,16 +197,16 @@ namespace OpenIDConnect.IdentityManager.Services
                     SupportsCreate = result.UserMetadata.SupportsCreate,
                     SupportsDelete = result.UserMetadata.SupportsDelete,
                     SupportsClaims = result.UserMetadata.SupportsClaims,
-                    CreateProperties = result.UserMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
-                    UpdateProperties = result.UserMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
+                    CreateProperties = result.UserMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.DisplayFieldType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
+                    UpdateProperties = result.UserMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.DisplayFieldType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
                 },
                 RoleMetadata = new IM.RoleMetadata
                 {
                     SupportsCreate = result.RoleMetadata.SupportsCreate,
                     SupportsDelete = result.RoleMetadata.SupportsDelete,
                     RoleClaimType = result.RoleMetadata.RoleClaimType,
-                    CreateProperties = result.RoleMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
-                    UpdateProperties = result.RoleMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.PropertyType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
+                    CreateProperties = result.RoleMetadata.CreateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.DisplayFieldType), Type = p.ClaimType, Name = p.Name, Required = p.Required }),
+                    UpdateProperties = result.RoleMetadata.UpdateProperties.Select(p => new IM.PropertyMetadata { DataType = ToDataType(p.DisplayFieldType), Type = p.ClaimType, Name = p.Name, Required = p.Required })
                 }
             };
         }

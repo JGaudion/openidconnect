@@ -105,6 +105,7 @@
     <Compile Include="Services\ExternalIdentityProviderService.cs" />
     <Compile Include="Services\IUserAuthenticationService.cs" />
     <Compile Include="Services\IUserManagementService.cs" />
+    <Compile Include="Utilities\TypeUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Cert\idsrv3test.pfx" />

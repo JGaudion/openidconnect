@@ -5,14 +5,14 @@ namespace OpenIDConnect.Core.Models.UserManagement
     public class PropertyMetadata
     {
         public PropertyMetadata(
-            string propertyType,
+            string displayFieldType,
             string claimType,
             string name,
             bool required)
         {
-            if (string.IsNullOrWhiteSpace(propertyType))
+            if (string.IsNullOrWhiteSpace(displayFieldType))
             {
-                throw new ArgumentNullException(nameof(propertyType));
+                throw new ArgumentNullException(nameof(displayFieldType));
             }
 
             if (string.IsNullOrEmpty(claimType))
@@ -25,13 +25,13 @@ namespace OpenIDConnect.Core.Models.UserManagement
                 throw new ArgumentNullException(nameof(name));
             }
 
-            this.PropertyType = propertyType;
+            this.DisplayFieldType = displayFieldType;
             this.ClaimType = claimType;
             this.Name = name;
             this.Required = required;
         }
 
-        public string PropertyType { get; }
+        public string DisplayFieldType { get; }
         public string ClaimType { get; }
         public string Name { get; }
         public bool Required { get; }

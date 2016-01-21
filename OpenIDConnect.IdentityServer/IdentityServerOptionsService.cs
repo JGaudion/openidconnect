@@ -93,7 +93,7 @@ namespace OpenIDConnect.IdentityServer
                 new CompositeUserService(new IUserService[] 
                 {
                     new KnownUserService(this.adminUsername, this.adminPassword),
-                    new DomainUserService(userAuthenticationService)
+                    new ClaimsUserService(new NullClaimsService(), new DomainUserService(userAuthenticationService))
                 }));
 
             return new IdentityServerOptions

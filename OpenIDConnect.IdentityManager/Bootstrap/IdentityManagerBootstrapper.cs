@@ -59,7 +59,7 @@ namespace OpenIDConnect.IdentityManager
                 Notifications = new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationNotifications
                 {
                     SecurityTokenValidated = n =>
-                    {
+                    {                        
                         n.AuthenticationTicket.Identity.AddClaim(new Claim("id_token", n.ProtocolMessage.IdToken));
                         return Task.FromResult(0);
                     },

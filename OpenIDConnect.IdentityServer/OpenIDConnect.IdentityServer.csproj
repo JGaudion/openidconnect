@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\ClaimsUserService.cs" />
     <Compile Include="Services\CompositeClientStore.cs" />
     <Compile Include="Services\CompositeScopeStore.cs" />
     <Compile Include="Services\CompositeUserService.cs" />

@@ -110,9 +110,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bootstrap\CompositeAuthenticationHandler.cs" />
-    <Compile Include="Bootstrap\CompositeAuthenticationMiddleware.cs" />
-    <Compile Include="Bootstrap\CompositionAuthenticationOptions.cs" />
+    <Compile Include="Middleware\CompositeAuthenticationHandler.cs" />
+    <Compile Include="Middleware\CompositeAuthenticationMiddleware.cs" />
+    <Compile Include="Middleware\CompositionAuthenticationOptions.cs" />
     <Compile Include="Bootstrap\TestCertificateValidator.cs" />
     <Compile Include="Services\EntityFrameworkAdminOptionsService.cs" />
     <Compile Include="Bootstrap\IdentityAdminBootstrapper.cs" />
@@ -137,9 +137,7 @@
       <Name>OpenIDConnect.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Middleware\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
