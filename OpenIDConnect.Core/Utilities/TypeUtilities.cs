@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using OpenIDConnect.Core.Constants;
 using OpenIDConnect.Core.Models.UserManagement;
 
 namespace OpenIDConnect.Core.Utilities
@@ -16,7 +17,7 @@ namespace OpenIDConnect.Core.Utilities
             {
                 Type type = instance.GetType();
                 PropertyInfo prop = type.GetProperty(propertyName, BindingFlags.Public);
-                
+
                 Type conversionType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 
                 object obj;
@@ -46,5 +47,28 @@ namespace OpenIDConnect.Core.Utilities
             }
         }
 
+        public static string GetProperty(object instance, PropertyMetadata propertyMetadata)
+        {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            if (propertyMetadata == null)
+            {
+                throw new ArgumentNullException(nameof(propertyMetadata));
+            }
+
+            if (propertyMetadata.DisplayFieldType == PropertyTypes.Password)
+            {
+                return null;
+            }
+
+            Type type = instance.GetType();
+            PropertyInfo prop = type.GetProperty(propertyMetadata.ClaimType, BindingFlags.Public);
+            var value = prop.GetValue(instance);
+
+            return value?.ToString();
+        }
     }
 }
