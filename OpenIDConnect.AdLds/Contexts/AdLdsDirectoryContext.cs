@@ -6,6 +6,7 @@ using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ClaimTypes = OpenIDConnect.Core.Constants.ClaimTypes;
 
 namespace OpenIDConnect.AdLds.Contexts
 {
@@ -28,9 +29,19 @@ namespace OpenIDConnect.AdLds.Contexts
             return Task.Run(() => FindUserByName(username));
         }
 
+        public Task<AdLdsUser> FindUserByLinkedAccountAsync(string provider, string providerId)
+        {
+            return Task.Run(() => FindUserByLinkedAccount(provider, providerId));
+        }
+
         public Task<string> CreateUserAsync(string username, string password, IEnumerable<Claim> claims)
         {
             return Task.Run(() => CreateUser(username, password, claims));
+        }
+
+        public Task<AdLdsUser> CreateLinkedUserAsync(string provider, string providerId, IEnumerable<Claim> claims)
+        {
+            return Task.Run(() => CreateLinkedUser(provider, providerId, claims));
         }
 
         public Task<QueryResult<AdLdsUser>> QueryUsersAsync(int start, int count)
@@ -196,5 +207,55 @@ namespace OpenIDConnect.AdLds.Contexts
             return new PrincipalContext(ContextType.ApplicationDirectory, $"{this.config.ServerName}:{this.config.Port}", this.config.Container);
         }
 
+        private AdLdsUser FindUserByLinkedAccount(string provider, string providerId)
+        {
+            try
+            {
+                using (var principalContext = CreatePrincipalContext())
+                {
+                    var principal = UserPrincipal.FindByIdentity(principalContext, $"cn={providerId},{this.config.Container}");
+
+                    if (principal != null)
+                    {
+                        return new AdLdsUser(principal.Name, principal.DisplayName, principal.UserPrincipalName) { Email = principal.EmailAddress };
+                    }
+
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: exception while searching for linked account {providerId}: {e}");
+                throw;
+            }
+        }
+
+        private AdLdsUser CreateLinkedUser(string provider, string providerId, IEnumerable<Claim> claims)
+        {
+            try
+            {
+                var givenName = claims.First(c => c.Type == ClaimTypes.GivenName).Value;
+                var email = claims.First(c => c.Type == ClaimTypes.Email).Value;
+
+                using (var context = CreatePrincipalContext())
+                using (var user = new UserPrincipal(context))
+                {
+                    user.Name = providerId;
+                    user.UserPrincipalName = email;
+                    user.DisplayName = givenName;
+
+                    user.EmailAddress = email;
+
+                    user.Save();
+                }
+
+                return new AdLdsUser(providerId, givenName, email);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error while creating user {providerId}, exception: {e}");
+                throw;
+            }
+        }
     }
 }
