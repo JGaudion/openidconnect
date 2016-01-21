@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer3.Core.Models;
+using System.Linq;
 
 namespace OpenIDConnect.IdentityServer.Services
 {
@@ -25,7 +26,7 @@ namespace OpenIDConnect.IdentityServer.Services
             foreach (var scopeStore in this.scopeStores)
             {
                 var scopes = await scopeStore.FindScopesAsync(scopeNames);
-                if (scopes != null)
+                if (scopes != null && scopes.Any())
                 {
                     return scopes;
                 }
@@ -34,18 +35,19 @@ namespace OpenIDConnect.IdentityServer.Services
             return null;
         }
 
-        public async Task<IEnumerable<Scope>> GetScopesAsync(bool publicOnly = true)
+        public Task<IEnumerable<Scope>> GetScopesAsync(bool publicOnly = true)
         {
-            foreach (var scopeStore in this.scopeStores)
+            return Task.Run(() =>
             {
-                var scopes = await scopeStore.GetScopesAsync(publicOnly);
-                if (scopes != null)
-                {
-                    return scopes;
-                }
-            }
+                IEnumerable<Scope> scopes = Enumerable.Empty<Scope>();
 
-            return null;
+                foreach (var scopeStore in this.scopeStores)
+                {
+                    scopes = scopes.Union(scopeStore.GetScopesAsync(publicOnly).Result);
+                }
+
+                return scopes;
+            });
         }
     }
 }

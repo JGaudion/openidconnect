@@ -7,6 +7,7 @@ namespace OpenIDConnect.Clients.Angular14.Modules
         public HomeModule()
         {
             this.Get["/"] = _ => this.View["index.html"];
+            this.Get["/{uri*}"] = _ => this.View["index.html"];
         }
     }
 }
