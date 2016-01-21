@@ -21,9 +21,25 @@ namespace OpenIDConnect.AdLds.Services
             this.directoryContext = contextFactory.CreateDirectoryContext(connectionConfig);
         }
 
-        public Task<AuthenticationResult> AuthenticateExternalAsync(ExternalIdentity identity, SignInData signInData)
+        public async Task<AuthenticationResult> AuthenticateExternalAsync(ExternalIdentity identity, SignInData signInData)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await this.directoryContext.FindUserByLinkedAccountAsync(identity.Provider, identity.ProviderId);
+
+                if (user == null)
+                {
+                    user = await this.directoryContext.CreateLinkedUserAsync(identity.Provider, identity.ProviderId, identity.Claims);
+                }
+
+                return new AuthenticationResult(user.Id, user.UserName, identity.Claims);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception occurred authenticating external identity {identity.ProviderId} from external provider {identity.Provider}.\r\nException: {e}");
+
+                throw;
+            }
         }
 
         public async Task<AuthenticationResult> AuthenticateLocalAsync(string username, string password, SignInData signInData)

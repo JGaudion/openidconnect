@@ -12,10 +12,15 @@ namespace OpenIDConnect.AdLds.Contexts
 
         Task<AdLdsUser> FindUserByNameAsync(string username);
 
+        Task<AdLdsUser> FindUserByLinkedAccountAsync(string provider, string providerId);
+
         Task<string> CreateUserAsync(string username, string password, IEnumerable<Claim> claims);
+
+        Task<AdLdsUser> CreateLinkedUserAsync(string provider, string providerId, IEnumerable<Claim> claims);
 
         Task<QueryResult<AdLdsUser>> QueryUsersAsync(int start, int count);
 
         Task<QueryResult<AdLdsRole>> QueryRolesAsync(int start, int count);
+
     }
 }
