@@ -29,6 +29,7 @@
             authority: 'https://localhost:44333/core',
             client_id: 'angular14',
             redirect_uri: 'https://localhost:44303/callback',
+            post_logout_redirect_uri: 'https://localhost:44303',
             response_type: 'id_token token',
             scope: 'openid api'
         };
