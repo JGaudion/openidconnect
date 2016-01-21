@@ -21,18 +21,19 @@ namespace OpenIDConnect.IdentityServer.Services
             this.scopeStores = scopeStores;
         }
 
-        public async Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
+        public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
         {
-            foreach (var scopeStore in this.scopeStores)
+            return Task.Run(() =>
             {
-                var scopes = await scopeStore.FindScopesAsync(scopeNames);
-                if (scopes != null && scopes.Any())
-                {
-                    return scopes;
-                }
-            }
+                IEnumerable<Scope> scopes = Enumerable.Empty<Scope>();
 
-            return null;
+                foreach (var scopeStore in this.scopeStores)
+                {
+                    scopes = scopes.Union(scopeStore.FindScopesAsync(scopeNames).Result);
+                }
+
+                return scopes;
+            });
         }
 
         public Task<IEnumerable<Scope>> GetScopesAsync(bool publicOnly = true)
