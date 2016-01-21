@@ -185,7 +185,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         {
             try
             {
-                var user = await manager.FindByIdAsync(subject);
+                var user = await manager.FindByIdAsync(subject);                
                 return new UserManagementResult<UserDetail>(new UserDetail(subject, user.UserName, user.DisplayName, Enumerable.Empty<Claim>(), Enumerable.Empty<Claim>()));
             }
             catch (Exception e)
