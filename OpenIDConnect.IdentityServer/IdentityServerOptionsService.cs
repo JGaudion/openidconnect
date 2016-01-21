@@ -7,6 +7,7 @@ using IdentityServer3.Core.Services;
 using OpenIDConnect.Core;
 using OpenIDConnect.Core.Services;
 using IdentityServer3.EntityFramework;
+using Owin;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -22,12 +23,15 @@ namespace OpenIDConnect.IdentityServer
 
         private readonly IUserAuthenticationService userAuthenticationService;
 
+        private readonly ExternalIdentityProviderService externalIdentityProviderService;
+
         public IdentityServerOptionsService(
             string adminUsername,
             string adminPassword,
             string identityManagerUri,
             string identityAdminUri,
-            IUserAuthenticationService userAuthenticationService)
+            IUserAuthenticationService userAuthenticationService,
+            ExternalIdentityProviderService externalIdentityProviderService)
         {
             if (string.IsNullOrWhiteSpace(adminUsername))
             {
@@ -54,11 +58,17 @@ namespace OpenIDConnect.IdentityServer
                 throw new ArgumentNullException(nameof(userAuthenticationService));
             }
 
+            if (externalIdentityProviderService == null)
+            {
+                throw new ArgumentNullException(nameof(externalIdentityProviderService));
+            }
+
             this.adminUsername = adminUsername;
             this.adminPassword = adminPassword;
             this.identityManagerUri = identityManagerUri;
             this.identityAdminUri = identityAdminUri;
             this.userAuthenticationService = userAuthenticationService;
+            this.externalIdentityProviderService = externalIdentityProviderService;
         }
 
         public IdentityServerOptions GetServerOptions()
@@ -94,7 +104,11 @@ namespace OpenIDConnect.IdentityServer
                 {
                     EnableCspReportEndpoint = true
                 },
-                Factory = factory                
+                AuthenticationOptions = new AuthenticationOptions
+                {
+                    IdentityProviders = externalIdentityProviderService.UseExternalIdentityProviders
+                },
+                Factory = factory
             };
         }
 

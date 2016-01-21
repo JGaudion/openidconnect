@@ -25,6 +25,7 @@ namespace OpenIDConnect.Host
             builder.Register(ctx => configService).As<IConfigurationService>();
 
             RegisterUserStore(configService, builder);
+            RegisterExternalIdentityProviders(configService, builder);
 
             var identityServerUri = configService.GetSetting<string>("IdentityServerUri", null);
             var identityManagerUri = configService.GetSetting<string>("IdentityManagerUri", null);
@@ -96,6 +97,16 @@ namespace OpenIDConnect.Host
 
             builder.Register(resolver => new CustomDatabase("MembershipReboot")).ExternallyOwned();
             builder.Register(c => CustomConfig.Config).ExternallyOwned();
+        }
+
+        private static void RegisterExternalIdentityProviders(IConfigurationService configService, ContainerBuilder builder)
+        {
+            var externalIdentityProviderService = new ExternalIdentityProviderService()
+                .WithGoogleAuthentication(configService.GetSetting("externalProviders:google:clientId", string.Empty), configService.GetSetting("externalProviders:google:clientSecret", string.Empty))
+                .WithFacebookAuthentication(configService.GetSetting("externalProviders:facebook:clientId", string.Empty), configService.GetSetting("externalProviders:facebook:clientSecret", string.Empty))
+                .WithTwitterAuthentication(configService.GetSetting("externalProviders:twitter:clientId", string.Empty), configService.GetSetting("externalProviders:twitter:clientSecret", string.Empty));
+
+            builder.Register(ctx => externalIdentityProviderService);
         }
     }
 }
