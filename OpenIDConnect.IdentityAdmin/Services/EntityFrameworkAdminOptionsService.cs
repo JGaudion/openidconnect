@@ -43,7 +43,7 @@ namespace OpenIDConnect.IdentityAdmin
             {
                 return new ExternalBearerTokenConfiguration()
                 {
-                    Audience = "https://localhost:44302/admin",     // TODO: get from config
+                    Audience = "https://localhost:44333/admin",     // TODO: get from config
                     Issuer = "idServer",
                     NameClaimType = "name",
                     RoleClaimType = "role",
