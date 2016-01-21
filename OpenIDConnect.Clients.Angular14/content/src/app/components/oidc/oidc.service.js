@@ -28,7 +28,7 @@
 
     function createTokenManager() {
         var settings = {
-            authority: 'https://localhost:44302/core',
+            authority: 'https://localhost:44333/core',
             client_id: 'angular14',
             redirect_uri: 'https://localhost:44303/callback',
             response_type: 'id_token token',
