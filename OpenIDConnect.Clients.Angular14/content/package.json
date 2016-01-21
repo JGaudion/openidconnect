@@ -1,7 +1,9 @@
 {
   "name": "src",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "oidc-token-manager": "^1.0.1"
+  },
   "scripts": {
     "test": "gulp test"
   },
