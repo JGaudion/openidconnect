@@ -11,6 +11,7 @@ namespace OpenIDConnect.IdentityServer
     public class IdentityServerBootstrapper : IOwinBootstrapper
     {
         private readonly IConfigurationService configService;
+
         private readonly IUserAuthenticationService userAuthenticationService;
 
         public IdentityServerBootstrapper(IUserAuthenticationService userAuthenticationService,

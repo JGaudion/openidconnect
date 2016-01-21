@@ -77,12 +77,17 @@ namespace OpenIDConnect.IdentityAdmin
                 Notifications = new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationNotifications
                 {
                     SecurityTokenValidated = n =>
-                    {
+                    {                        
+                        // Add the returned id token from the IdP to the returned ticket so that 
+                        // it can be retrieved later when we logout (see below)
                         n.AuthenticationTicket.Identity.AddClaim(new Claim("id_token", n.ProtocolMessage.IdToken));
                         return Task.FromResult(0);
                     },
                     RedirectToIdentityProvider = async n =>
                     {
+                        // If we redirect to the IdP to perform a logout, then 
+                        // before the redirect clear the associated cookie, and send the id_token as a hint
+                        // so that the user name can be displayed by the IdP
                         if (n.ProtocolMessage.RequestType == Microsoft.IdentityModel.Protocols.OpenIdConnectRequestType.LogoutRequest)
                         {
                             var result = await n.OwinContext.Authentication.AuthenticateAsync("Cookies");
