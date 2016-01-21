@@ -1,31 +1,24 @@
-﻿using System;
-using Nancy;
+﻿using Nancy;
 using Nancy.Conventions;
-using System.IO;
+using Nancy.TinyIoc;
 
 namespace OpenIDConnect.Clients.Angular14.Bootstrap
 {
     public class CustomNancyBootstrapper : DefaultNancyBootstrapper
     {
-        protected override IRootPathProvider RootPathProvider
+        protected override void ApplicationStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
         {
-            get { return new CustomRootPathProvider(new DefaultRootPathProvider()); }
-        }
-    }
-
-    internal class CustomRootPathProvider : IRootPathProvider
-    {
-        private readonly IRootPathProvider provider;
-
-        public CustomRootPathProvider(IRootPathProvider provider)
-        {
-            this.provider = provider;
+            this.Conventions.ViewLocationConventions.Add((viewName, model, context) =>
+            {
+                return string.Concat("content/dist/", viewName);
+            });
         }
 
-        public string GetRootPath()
+        protected override void ConfigureConventions(NancyConventions conventions)
         {
-            var path = Path.Combine(this.provider.GetRootPath(), "content/dist/");
-            return path;
+            base.ConfigureConventions(conventions);
+
+            conventions.StaticContentsConventions.AddDirectory("", "content/dist");
         }
-    }   
+    }    
 }
