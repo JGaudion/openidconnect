@@ -77,6 +77,22 @@ namespace OpenIDConnect.IdentityServer.Services
                         "idadmin"
                     }
             };
+
+            yield return new Client
+            {
+                Enabled = true,
+                ClientName = "angular14",
+                ClientId = "angular14",
+                Flow = Flows.Implicit,
+                EnableLocalLogin = true,
+                AllowedScopes = new List<string> {
+                    IdentityServer3.Core.Constants.StandardScopes.OpenId,
+                    "api"
+                },
+                AccessTokenLifetime = 1200,
+                IdentityTokenLifetime = 300,
+                RedirectUris = new List<string> { "https://localhost:44303/callback" }
+            };
         }
     }
 }

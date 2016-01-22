@@ -52,6 +52,16 @@ namespace OpenIDConnect.IdentityServer.Services
                     new ScopeClaim("idadmin-api")
                 }                
             };
+
+            yield return new Scope
+            {
+                Name = "api",
+                DisplayName = "API",
+                Description = "Authorization for the API",
+                Type = ScopeType.Identity,
+                ShowInDiscoveryDocument = true,
+                Enabled = true
+            };
         }
     }
 }
