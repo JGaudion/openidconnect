@@ -10,6 +10,7 @@ using OpenIDConnect.Core.Constants;
 using OpenIDConnect.Core.Models.UserManagement;
 using OpenIDConnect.Core.Services;
 using OpenIDConnect.IdentityServer.MembershipReboot.Extensions;
+using OpenIDConnect.IdentityServer.MembershipReboot.Models;
 using ClaimTypes = OpenIDConnect.Core.Constants.ClaimTypes;
 using PropertyMetadata = OpenIDConnect.Core.Models.UserManagement.PropertyMetadata;
 using RoleDetail = OpenIDConnect.Core.Models.UserManagement.RoleDetail;
@@ -163,11 +164,6 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             }
 
             return new UserManagementMetadata(userMetadata, null);
-        }
-
-        public PropertyMetadata GetMetadataForClaim(string type, string name = null, PropertyDataType dataType = PropertyDataType.String, bool required = false)
-        {
-            return PropertyMetadata.FromFunctions<TAccount, string>(type, GetForClaim(type), SetForClaim(type), name, dataType, required);
         }
 
         public Func<TAccount, string> GetForClaim(string type)
