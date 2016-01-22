@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenIDConnect.Core.Models.UserManagement;
+using OpenIDConnect.IdentityServer.MembershipReboot.Models;
 
 namespace OpenIDConnect.IdentityServer.MembershipReboot.Extensions
 {
