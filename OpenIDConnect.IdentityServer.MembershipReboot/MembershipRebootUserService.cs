@@ -339,7 +339,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
         }
     }
 
-    internal static class Extensions
+    internal static class GuidExtensions
     {
         public static Guid ToGuid(this string s)
         {

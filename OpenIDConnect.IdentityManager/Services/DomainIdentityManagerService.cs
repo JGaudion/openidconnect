@@ -35,7 +35,7 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IM.IdentityManagerResult<IM.CreateResult>> CreateUserAsync(IEnumerable<IM.PropertyValue> properties)
         {
-            var userName = properties.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value ?? string.Empty;
+            var userName = properties.FirstOrDefault(x => (x.Type == ClaimTypes.Name || x.Type == ClaimTypes.Username))?.Value ?? string.Empty;
             var password = properties.FirstOrDefault(x => x.Type == ClaimTypes.Password)?.Value ?? string.Empty;
             var result = await this.userManagementService.CreateUserAsync(userName, password, 
                 properties.Where(p => p.Value != null && p.Type != ClaimTypes.Password).Select(p => new Claim(p.Type, p.Value ?? string.Empty)));

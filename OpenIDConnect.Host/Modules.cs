@@ -97,10 +97,14 @@ namespace OpenIDConnect.Host
         private static void RegisterMembershipReboot(ContainerBuilder builder)
         {
             builder.RegisterType<MembershipRebootUserService<CustomUser>>().As<IUserAuthenticationService>().ExternallyOwned();
+            builder.RegisterType<MembershipRebootIdentityManagerService<CustomUser, CustomGroup>>().As<IUserManagementService>().ExternallyOwned();
             builder.RegisterType<CustomUserAccountService>().As<UserAccountService<CustomUser>>().ExternallyOwned();
             builder.RegisterType<CustomUserRepository>().ExternallyOwned();
 
-            builder.Register(resolver => new CustomDatabase("MembershipReboot")).ExternallyOwned();
+            builder.RegisterType<CustomGroupService>().As<GroupService<CustomGroup>>().ExternallyOwned();
+            builder.RegisterType<CustomGroupRepository>().ExternallyOwned();
+
+            builder.Register(resolver => new CustomDatabase("UserMembershipReboot")).ExternallyOwned();
             builder.Register(c => CustomConfig.Config).ExternallyOwned();
         }
 
