@@ -6,10 +6,19 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Relational;
+using IdentityManager;
 using OpenIDConnect.Core.Constants;
 using OpenIDConnect.Core.Models.UserManagement;
 using OpenIDConnect.Core.Services;
+using OpenIDConnect.IdentityServer.MembershipReboot.Extensions;
 using ClaimTypes = OpenIDConnect.Core.Constants.ClaimTypes;
+using PropertyMetadata = OpenIDConnect.Core.Models.UserManagement.PropertyMetadata;
+using RoleDetail = OpenIDConnect.Core.Models.UserManagement.RoleDetail;
+using RoleMetadata = OpenIDConnect.Core.Models.UserManagement.RoleMetadata;
+using RoleSummary = OpenIDConnect.Core.Models.UserManagement.RoleSummary;
+using UserDetail = OpenIDConnect.Core.Models.UserManagement.UserDetail;
+using UserMetadata = OpenIDConnect.Core.Models.UserManagement.UserMetadata;
+using UserSummary = OpenIDConnect.Core.Models.UserManagement.UserSummary;
 
 namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
@@ -146,7 +155,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     new PropertyMetadata(
                         "Name",
                         ClaimTypes.Name,
-                        PropertyDataType.String,
+                        PropertyTypes.String,
                         true)
                     },
                 updateProperties: Enumerable.Empty<PropertyMetadata>());
@@ -313,7 +322,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             return result;
         }
 
-        public Task<UserManagementResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
+        public Task<UserManagementResult<Core.Models.UserManagement.QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
             if (start < 0)
             {
@@ -334,7 +343,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             int total;
             var users = _userQuery.Query(query => filterFunc(query, filter), Sort, start, count, out total).ToArray();
 
-            var result = new QueryResult<UserSummary>(
+            var result = new Core.Models.UserManagement.QueryResult<UserSummary>(
             start,
             count,
             total,
@@ -346,7 +355,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     DisplayNameFromUserId(x.ID)))
                 .ToArray());
 
-            return Task.FromResult(new UserManagementResult<QueryResult<UserSummary>>(result));
+            return Task.FromResult(new UserManagementResult<Core.Models.UserManagement.QueryResult<UserSummary>>(result));
         }
 
         private string DisplayNameFromUserId(Guid id)
@@ -369,7 +378,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 foreach (var prop in otherProperties)
                 {
                     var result = SetUserProperty(createProps, account, prop.Type, prop.Value);
-                    if (!result.IsSuccess)
+                    if (result.Errors.Any())
                     {
                         return new UserManagementResult<string>(result.Errors.ToArray());
                     }
@@ -477,7 +486,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
 
                 var metadata = await GetMetadataAsync();
                 var result = SetUserProperty(metadata.UserMetadata.UpdateProperties, acct, type, value);
-                if (!result.IsSuccess)
+                if (result.Errors.Any())
                 {
                     return result;
                 }
@@ -589,7 +598,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 foreach (var prop in otherProperties)
                 {
                     var result = SetGroupProperty(createProps, group, prop.Type, prop.Value);
-                    if (!result.IsSuccess)
+                    if (result.Errors.Any())
                     {
                         return new UserManagementResult<string>(result.Errors.ToArray());
                     }
@@ -674,7 +683,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             }
         }
 
-        public Task<UserManagementResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
+        public Task<UserManagementResult<Core.Models.UserManagement.QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
             ValidateSupportsGroups();
 
@@ -684,7 +693,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             int total;
             var groups = _groupQuery.Query(filter, start, count, out total).ToArray();
 
-            var result = new QueryResult<RoleSummary>(
+            var result = new Core.Models.UserManagement.QueryResult<RoleSummary>(
             start,
             count,
             total,
@@ -696,7 +705,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     String.Empty)
                 ).ToArray());
 
-            return Task.FromResult(new UserManagementResult<QueryResult<RoleSummary>>(result));
+            return Task.FromResult(new UserManagementResult<Core.Models.UserManagement.QueryResult<RoleSummary>>(result));
         }
 
         public async Task<UserManagementResult> SetRolePropertyAsync(string subject, string type, string value)
@@ -717,7 +726,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
 
             var metadata = await GetMetadataAsync();
             var result = SetGroupProperty(metadata.RoleMetadata.UpdateProperties, group, type, value);
-            if (!result.IsSuccess)
+            if (result.Errors.Any())
             {
                 return result;
             }
