@@ -87,6 +87,7 @@ namespace OpenIDConnect.IdentityServer.Services
                 EnableLocalLogin = true,
                 AllowedScopes = new List<string> {
                     IdentityServer3.Core.Constants.StandardScopes.OpenId,
+                    IdentityServer3.Core.Constants.StandardScopes.Profile,
                     "api"
                 },
                 AccessTokenLifetime = 1200,
@@ -99,7 +100,8 @@ namespace OpenIDConnect.IdentityServer.Services
                 PostLogoutRedirectUris = new List<string>
                 {
                     "https://localhost:44303"
-                }
+                },
+                RequireConsent = false
             };
         }
     }

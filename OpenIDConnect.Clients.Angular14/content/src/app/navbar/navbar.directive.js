@@ -30,7 +30,7 @@
                 }
             };
 
-            vm.signOut = function () {
+            vm.signOut = function () {                
                 vm.mgr.redirectForLogout();
             };
         }

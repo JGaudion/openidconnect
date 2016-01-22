@@ -31,7 +31,7 @@
             redirect_uri: 'https://localhost:44303/callback',
             post_logout_redirect_uri: 'https://localhost:44303',
             response_type: 'id_token token',
-            scope: 'openid api'
+            scope: 'openid profile api'
         };
 
         return new OidcTokenManager(settings);
