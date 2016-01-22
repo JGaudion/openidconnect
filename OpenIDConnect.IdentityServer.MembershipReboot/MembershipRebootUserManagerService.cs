@@ -105,16 +105,16 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             if (_userAccountService.Configuration.EmailIsUsername)
             {
                 update.AddRange(new[]{
-                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Username, PropertyTypes.Email, "Email", true, GetUsername, SetUsername),
-                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Password, PropertyTypes.Password, "Password", true, x => null, SetPassword)
+                    new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.Email, ClaimTypes.Username, "Email", true, GetUsername, SetUsername),
+                    new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.Password, ClaimTypes.Password, "Password", true, x => null, SetPassword)
                 });
             }
             else
             {
                 update.AddRange(new[]{
-                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Username, PropertyTypes.String, "Username", true, GetUsername, SetUsername),
-                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Password, PropertyTypes.Password, "Password", true, x => null, SetPassword),
-                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Email, PropertyTypes.Email, "Email", _userAccountService.Configuration.RequireAccountVerification, GetEmail, SetConfirmedEmail)
+                   new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.String, ClaimTypes.Username, "Username", true, GetUsername, SetUsername),
+                   new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.Password, ClaimTypes.Password, "Password", true, x => null, SetPassword),
+                   new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.Email, ClaimTypes.Email, "Email", _userAccountService.Configuration.RequireAccountVerification, GetEmail, SetConfirmedEmail)
                 });
             }
 
@@ -123,13 +123,13 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             {
                 create.AddRange(update.Where(x => x.Required).ToArray());
                 create.AddRange(new[]{
-                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Email, PropertyTypes.Email, "Email", false, GetEmail, SetConfirmedEmail)
+                    new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.Email, ClaimTypes.Email, "Email", false, GetEmail, SetConfirmedEmail)
                 });
             }
 
             update.AddRange(new PropertyMetadata[] {
-                new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Phone, PropertyTypes.String, "Phone", false, GetPhone, SetConfirmedPhone),
-                new ExpressionPropertyMetadata<TAccount, bool>("IsLoginAllowed", PropertyTypes.Boolean, "Is Login Allowed", false, GetIsLoginAllowed, SetIsLoginAllowed)
+                new ExpressionPropertyMetadata<TAccount, string>(PropertyTypes.String, ClaimTypes.Phone, "Phone", false, GetPhone, SetConfirmedPhone),
+                new ExpressionPropertyMetadata<TAccount, bool>(PropertyTypes.Boolean, "IsLoginAllowed", "Is Login Allowed", false, GetIsLoginAllowed, SetIsLoginAllowed)
             });
 
             if (includeAccountProperties)
@@ -146,9 +146,9 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 var roleMetadata = new RoleMetadata(true, true, ClaimTypes.Role,
                 createProperties: new[]{
                     new PropertyMetadata(
-                        "Name",
-                        ClaimTypes.Name,
                         PropertyTypes.String,
+                        ClaimTypes.Name,
+                        "Name",
                         true)
                     },
                 updateProperties: Enumerable.Empty<PropertyMetadata>());
@@ -388,7 +388,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             }
             catch (ValidationException ex)
             {
-                return new UserManagementResult<string>(ex.Message);
+                return new UserManagementResult<string>(new string[] { ex.Message });
             }
         }
 
@@ -660,7 +660,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 var role = new RoleDetail(
                     subject,
                     group.Name,
-                    String.Empty,
+                    "A role",
                     properties);
 
                 return new UserManagementResult<RoleDetail>(role);
@@ -690,7 +690,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 new RoleSummary(
                     x.ID.ToString("D"),
                     x.Name,
-                    String.Empty)
+                    "A role")
                 ).ToArray());
 
             return Task.FromResult(new UserManagementResult<QueryResult<RoleSummary>>(result));

@@ -10,13 +10,13 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot.Models
         private readonly Func<TContainer, TProperty, UserManagementResult> _set;
 
         public ExpressionPropertyMetadata(
-            string claimType,
             string dataType,
+            string claimType,
             string name,
             bool required,
             Func<TContainer, TProperty> get,
             Func<TContainer, TProperty, UserManagementResult> set)
-            : base(claimType, dataType, name, required)
+            : base(dataType, claimType, name, required)
         {
             if (String.IsNullOrWhiteSpace(claimType))
             {
@@ -37,7 +37,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot.Models
             {
                 throw new ArgumentNullException(nameof(set));
             }
-            
+
             _get = get;
             _set = set;
         }

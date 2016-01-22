@@ -32,9 +32,9 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     if (property.IsValidAsPropertyMetadata())
                     {
                         var propMeta = FromPropertyInfo(
+                            property.GetPropertyDataType(),
                             property.Name,
                             property.GetName(),
-                            property.GetPropertyDataType(),
                             property.IsRequired(),
                             property);
                         props.Add(propMeta);
