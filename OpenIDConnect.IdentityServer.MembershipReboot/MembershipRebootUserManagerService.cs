@@ -112,16 +112,16 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             if (_userAccountService.Configuration.EmailIsUsername)
             {
                 update.AddRange(new PropertyMetadata[]{
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Email", dataType: PropertyTypes.Email, required: true),
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true)
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Email", dataType: PropertyTypes.Email, required: true),
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true)
                 });
             }
             else
             {
                 update.AddRange(new PropertyMetadata[]{
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Username", dataType: PropertyTypes.String, required: true),
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true),
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: _userAccountService.Configuration.RequireAccountVerification)
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Username", dataType: PropertyTypes.String, required: true),
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true),
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: _userAccountService.Configuration.RequireAccountVerification)
                 });
             }
 
@@ -130,18 +130,18 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             {
                 create.AddRange(update.Where(x => x.Required).ToArray());
                 create.AddRange(new PropertyMetadata[]{
-                    PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: false)
+                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: false)
                 });
             }
 
             update.AddRange(new PropertyMetadata[] {
-                PropertyMetadata.FromFunctions<TAccount, string>(ClaimTypes.Phone, GetPhone, SetConfirmedPhone, name: "Phone", dataType: PropertyTypes.String, required: false),
-                PropertyMetadata.FromFunctions<TAccount, bool>("IsLoginAllowed", GetIsLoginAllowed, SetIsLoginAllowed, name: "Is Login Allowed", dataType: PropertyTypes.Boolean, required: false)
+                PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Phone, GetPhone, SetConfirmedPhone, name: "Phone", dataType: PropertyTypes.String, required: false),
+                PropertyMetaDataCreation.FromFunctions<TAccount, bool>("IsLoginAllowed", GetIsLoginAllowed, SetIsLoginAllowed, name: "Is Login Allowed", dataType: PropertyTypes.Boolean, required: false)
             });
 
             if (includeAccountProperties)
             {
-                update.AddRange(PropertyMetadata.FromType<TAccount>());
+                update.AddRange(PropertyMetaDataCreation.FromType<TAccount>());
             }
 
             var userMetadata = new UserMetadata(true, true, true,
