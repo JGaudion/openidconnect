@@ -84,6 +84,7 @@
     <Compile Include="MembershipRebootUserManagerService.cs" />
     <Compile Include="MembershipRebootUserService.cs" />
     <Compile Include="Models\ExecutablePropertyMetadata.cs" />
+    <Compile Include="Models\ExpressionPropertyMetadata.cs" />
     <Compile Include="Models\RelationalUserAccountQuery.cs" />
     <Compile Include="PropertyMetaDataCreation.cs" />
     <Compile Include="WrapperClasses\CustomConfig.cs" />

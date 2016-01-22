@@ -12,13 +12,6 @@ using OpenIDConnect.Core.Services;
 using OpenIDConnect.IdentityServer.MembershipReboot.Extensions;
 using OpenIDConnect.IdentityServer.MembershipReboot.Models;
 using ClaimTypes = OpenIDConnect.Core.Constants.ClaimTypes;
-using PropertyMetadata = OpenIDConnect.Core.Models.UserManagement.PropertyMetadata;
-using RoleDetail = OpenIDConnect.Core.Models.UserManagement.RoleDetail;
-using RoleMetadata = OpenIDConnect.Core.Models.UserManagement.RoleMetadata;
-using RoleSummary = OpenIDConnect.Core.Models.UserManagement.RoleSummary;
-using UserDetail = OpenIDConnect.Core.Models.UserManagement.UserDetail;
-using UserMetadata = OpenIDConnect.Core.Models.UserManagement.UserMetadata;
-using UserSummary = OpenIDConnect.Core.Models.UserManagement.UserSummary;
 
 namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
@@ -111,17 +104,17 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             var update = new List<PropertyMetadata>();
             if (_userAccountService.Configuration.EmailIsUsername)
             {
-                update.AddRange(new PropertyMetadata[]{
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Email", dataType: PropertyTypes.Email, required: true),
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true)
+                update.AddRange(new[]{
+                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Username, PropertyTypes.Email, "Email", true, GetUsername, SetUsername),
+                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Password, PropertyTypes.Password, "Password", true, x => null, SetPassword)
                 });
             }
             else
             {
-                update.AddRange(new PropertyMetadata[]{
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Username, GetUsername, SetUsername, name: "Username", dataType: PropertyTypes.String, required: true),
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Password, x => null, SetPassword, name: "Password", dataType: PropertyTypes.Password, required: true),
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: _userAccountService.Configuration.RequireAccountVerification)
+                update.AddRange(new[]{
+                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Username, PropertyTypes.String, "Username", true, GetUsername, SetUsername),
+                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Password, PropertyTypes.Password, "Password", true, x => null, SetPassword),
+                   new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Email, PropertyTypes.Email, "Email", _userAccountService.Configuration.RequireAccountVerification, GetEmail, SetConfirmedEmail)
                 });
             }
 
@@ -129,14 +122,14 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             if (!_userAccountService.Configuration.EmailIsUsername && !_userAccountService.Configuration.RequireAccountVerification)
             {
                 create.AddRange(update.Where(x => x.Required).ToArray());
-                create.AddRange(new PropertyMetadata[]{
-                    PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Email, GetEmail, SetConfirmedEmail, name: "Email", dataType: PropertyTypes.Email, required: false)
+                create.AddRange(new[]{
+                    new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Email, PropertyTypes.Email, "Email", false, GetEmail, SetConfirmedEmail)
                 });
             }
 
             update.AddRange(new PropertyMetadata[] {
-                PropertyMetaDataCreation.FromFunctions<TAccount, string>(ClaimTypes.Phone, GetPhone, SetConfirmedPhone, name: "Phone", dataType: PropertyTypes.String, required: false),
-                PropertyMetaDataCreation.FromFunctions<TAccount, bool>("IsLoginAllowed", GetIsLoginAllowed, SetIsLoginAllowed, name: "Is Login Allowed", dataType: PropertyTypes.Boolean, required: false)
+                new ExpressionPropertyMetadata<TAccount, string>(ClaimTypes.Phone, PropertyTypes.String, "Phone", false, GetPhone, SetConfirmedPhone),
+                new ExpressionPropertyMetadata<TAccount, bool>("IsLoginAllowed", PropertyTypes.Boolean, "Is Login Allowed", false, GetIsLoginAllowed, SetIsLoginAllowed)
             });
 
             if (includeAccountProperties)
@@ -317,7 +310,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             return result;
         }
 
-        public Task<UserManagementResult<Core.Models.UserManagement.QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
+        public Task<UserManagementResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
             if (start < 0)
             {
@@ -338,7 +331,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             int total;
             var users = _userQuery.Query(query => filterFunc(query, filter), Sort, start, count, out total).ToArray();
 
-            var result = new Core.Models.UserManagement.QueryResult<UserSummary>(
+            var result = new QueryResult<UserSummary>(
             start,
             count,
             total,
@@ -350,7 +343,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     DisplayNameFromUserId(x.ID)))
                 .ToArray());
 
-            return Task.FromResult(new UserManagementResult<Core.Models.UserManagement.QueryResult<UserSummary>>(result));
+            return Task.FromResult(new UserManagementResult<QueryResult<UserSummary>>(result));
         }
 
         private string DisplayNameFromUserId(Guid id)
@@ -678,7 +671,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             }
         }
 
-        public Task<UserManagementResult<Core.Models.UserManagement.QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
+        public Task<UserManagementResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
             ValidateSupportsGroups();
 
@@ -688,7 +681,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             int total;
             var groups = _groupQuery.Query(filter, start, count, out total).ToArray();
 
-            var result = new Core.Models.UserManagement.QueryResult<RoleSummary>(
+            var result = new QueryResult<RoleSummary>(
             start,
             count,
             total,
@@ -700,7 +693,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                     String.Empty)
                 ).ToArray());
 
-            return Task.FromResult(new UserManagementResult<Core.Models.UserManagement.QueryResult<RoleSummary>>(result));
+            return Task.FromResult(new UserManagementResult<QueryResult<RoleSummary>>(result));
         }
 
         public async Task<UserManagementResult> SetRolePropertyAsync(string subject, string type, string value)

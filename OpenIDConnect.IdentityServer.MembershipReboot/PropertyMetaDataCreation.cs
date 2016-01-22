@@ -8,37 +8,6 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
     public static class PropertyMetaDataCreation
     {
-        public static PropertyMetadata FromFunctions<TContainer, TProperty>(
-            string type,
-            Func<TContainer, TProperty> get,
-            Func<TContainer, TProperty, UserManagementResult> set,
-            string name = null,
-            string dataType = null,
-            bool? required = null)
-        {
-            if (String.IsNullOrWhiteSpace(type))
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (get == null)
-            {
-                throw new ArgumentNullException(nameof(get));
-            }
-
-            if (set == null)
-            {
-                throw new ArgumentNullException(nameof(set));
-            }
-
-            var meta = new ExpressionPropertyMetadata<TContainer, TProperty>(type, get, set);
-            if (name != null) meta.Name = name;
-            if (dataType != null) meta.DataType = dataType.Value;
-            if (required != null) meta.Required = required.Value;
-
-            return meta;
-        }
-
         public static IEnumerable<PropertyMetadata> FromType<T>()
         {
             return FromType(typeof(T), new string[0]);
@@ -67,6 +36,32 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             }
 
             return props;
+        }
+
+        public static PropertyMetadata FromPropertyInfo(
+            PropertyInfo property,
+            string type = null,
+            string name = null,
+            string dataType = null,
+            bool? required = null)
+        {
+            if (property == null)
+            {
+                throw new ArgumentNullException(nameof(property));
+            }
+
+            if (!property.IsValidAsPropertyMetadata())
+            {
+                throw new InvalidOperationException(property.Name + " is an invalid property for use as PropertyMetadata");
+            }
+
+            return new ReflectedPropertyMetadata(property)
+            {
+                Type = type ?? property.Name,
+                Name = name ?? property.GetName(),
+                DataType = dataType ?? property.GetPropertyDataType(),
+                Required = required ?? property.IsRequired(),
+            };
         }
     }
 }
