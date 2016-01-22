@@ -7,6 +7,7 @@ using OpenIDConnect.IdentityManager;
 using OpenIDConnect.IdentityAdmin;
 using OpenIDConnect.IdentityServer;
 
+
 [assembly: OwinStartup(typeof(OpenIDConnect.Host.Startup))]
 
 namespace OpenIDConnect.Host
@@ -42,6 +43,30 @@ namespace OpenIDConnect.Host
                 {
                     scope.Resolve<IdentityManagerBootstrapper>().Run(manageApp);
                 });
+                //app.Map("/memory", memoryApp =>
+                //{
+               // using IdentityManager;
+               // using IdentityManager.Configuration;
+               // using System.Collections.Generic;
+
+                //    var factory = new IdentityManagerServiceFactory
+                //    {
+
+                //    };
+
+                //    var rand = new System.Random();
+                //    var users = new List<InMemoryUser>();
+                //    var roles = new List<InMemoryRole>();
+
+                //    factory.Register(new Registration<ICollection<InMemoryUser>>(users));
+                //    factory.Register(new Registration<ICollection<InMemoryRole>>(roles));
+                //    factory.IdentityManagerService = new Registration<IIdentityManagerService, InMemoryIdentityManagerService>();
+
+                //    memoryApp.UseIdentityManager(new IdentityManagerOptions
+                //    {
+                //        Factory = factory,
+                //    });
+                //});
             }
         }
     }
