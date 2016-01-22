@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MembershipRebootUserManagerService.cs" />
     <Compile Include="MembershipRebootUserService.cs" />
     <Compile Include="WrapperClasses\CustomConfig.cs" />
     <Compile Include="WrapperClasses\CustomDatabase.cs" />
