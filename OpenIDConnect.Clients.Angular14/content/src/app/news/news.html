@@ -1,0 +1,15 @@
+<div id="news-container">
+  <div id="news-main">
+    <h2>News Headlines</h2>
+    <div ng-repeat="article in vm.newsArticles" class="article">
+      <h4>{{article.title}}</h4>
+      <p>{{article.body}}</p>
+    </div>
+  </div>
+  <div id="news-archive">
+    <h4>Archive</h4>
+    <div ng-repeat="article in vm.newsArticles" class="article-link">
+      <a href="#">{{article.title}}</a>
+    </div>
+  </div>
+</div>

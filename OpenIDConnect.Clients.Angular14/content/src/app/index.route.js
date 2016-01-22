@@ -8,11 +8,20 @@
   /** @ngInject */
   function routerConfig($stateProvider, $urlRouterProvider) {
       $stateProvider
-        .state('home', {
+        .state('main', {
+          templateUrl: 'app/main/main.html',
+        })
+        .state('main.home', {
             url: '/',
-            templateUrl: 'app/main/main.html',
-            controller: 'MainController',
+            templateUrl: 'app/home/home.html',
+            controller: 'HomeController',
             controllerAs: 'vm'
+        })
+        .state('main.news', {
+          url: '/news',
+          templateUrl: 'app/news/news.html',
+          controller: 'NewsController',
+          controllerAs: 'vm'
         })
         .state('callback', {
             url: '/callback',
