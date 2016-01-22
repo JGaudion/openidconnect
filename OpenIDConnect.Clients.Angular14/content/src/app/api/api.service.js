@@ -4,7 +4,7 @@
   angular.module('src')
     .factory('api', api);
 
-  function api($http) {
+  function api($http, oidc) {
     var service = {
       get: get
     };
@@ -12,9 +12,13 @@
     return service;
 
     function get(route) {
+      console.log(oidc.get().access_token);
       return $http( {
         method: 'GET',
-        url: 'https://localhost:44303/api/' + route
+        url: 'api/' + route,
+        headers: {
+          "Authorization": "Bearer " + oidc.get().access_token
+        }
       });
     }
 
