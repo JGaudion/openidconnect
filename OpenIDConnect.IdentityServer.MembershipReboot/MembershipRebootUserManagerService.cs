@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Relational;
-using IdentityManager;
 using OpenIDConnect.Core.Constants;
 using OpenIDConnect.Core.Models.UserManagement;
 using OpenIDConnect.Core.Services;
