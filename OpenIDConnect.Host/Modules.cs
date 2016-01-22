@@ -100,7 +100,7 @@ namespace OpenIDConnect.Host
             builder.RegisterType<CustomGroupService>().As<GroupService<CustomGroup>>().ExternallyOwned();
             builder.RegisterType<CustomGroupRepository>().ExternallyOwned();
 
-            builder.Register(resolver => new CustomDatabase("MembershipReboot")).ExternallyOwned();
+            builder.Register(resolver => new CustomDatabase("UserMembershipReboot")).ExternallyOwned();
             builder.Register(c => CustomConfig.Config).ExternallyOwned();
         }
 

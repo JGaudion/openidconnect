@@ -541,7 +541,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             string val;
             if (propMetadata.TryGet(user, out val))
             {
-                return val;
+                return val ?? String.Empty;
             }
 
             throw new Exception("Invalid property type " + propMetadata.ClaimType);
