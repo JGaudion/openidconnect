@@ -8,6 +8,8 @@ using OpenIDConnect.Core;
 using OpenIDConnect.Core.Services;
 using IdentityServer3.EntityFramework;
 using Owin;
+using IdentityServer3.Core.Services.Default;
+using IdentityServer3.Core.Services.InMemory;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -75,10 +77,12 @@ namespace OpenIDConnect.IdentityServer
         {
             var factory = new IdentityServerServiceFactory();
 
+            var knownClientStore = new KnownClientStore(identityManagerUri, identityAdminUri);
+
             factory.ClientStore = new Registration<IClientStore>(
                 new CompositeClientStore(new IClientStore[] 
                 {
-                    new KnownClientStore(identityManagerUri, identityAdminUri),
+                    knownClientStore,
                     new ClientStore(new ClientConfigurationDbContext("ClientsScopes"))      // TODO: get connection string name from config
                 }));
 
@@ -97,8 +101,11 @@ namespace OpenIDConnect.IdentityServer
                 }));
 
             factory.CorsPolicyService = new Registration<ICorsPolicyService>(
-                    new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes"))
-                );
+                new CompositeCorsPolicyService(new ICorsPolicyService[]
+                {
+                    new InMemoryCorsPolicyService(knownClientStore.GetClients()),
+                    new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes"))     // TODO: get connection string name from config
+                }));                                    
 
             return new IdentityServerOptions
             {

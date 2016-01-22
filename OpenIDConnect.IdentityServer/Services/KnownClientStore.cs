@@ -38,7 +38,7 @@ namespace OpenIDConnect.IdentityServer.Services
             return Task.FromResult(clients.SingleOrDefault(c => c.ClientId == clientId));
         }
 
-        private IEnumerable<Client> GetClients()
+        public IEnumerable<Client> GetClients()
         {
             yield return new Client
             {
@@ -91,7 +91,15 @@ namespace OpenIDConnect.IdentityServer.Services
                 },
                 AccessTokenLifetime = 1200,
                 IdentityTokenLifetime = 300,
-                RedirectUris = new List<string> { "https://localhost:44303/callback" }
+                RedirectUris = new List<string> { "https://localhost:44303/callback" },
+                AllowedCorsOrigins = new List<string>
+                {
+                    "https://localhost:44303"
+                },
+                PostLogoutRedirectUris = new List<string>
+                {
+                    "https://localhost:44303"
+                }
             };
         }
     }
