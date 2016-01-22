@@ -60,7 +60,11 @@ namespace OpenIDConnect.IdentityServer.Services
                 Description = "Authorization for the API",
                 Type = ScopeType.Identity,
                 ShowInDiscoveryDocument = true,
-                Enabled = true
+                Enabled = true,
+                Claims = new List<ScopeClaim>
+                {
+                    new ScopeClaim("role", alwaysInclude: true)
+                }
             };
         }
     }
