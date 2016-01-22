@@ -14,6 +14,8 @@ using System;
 using BrockAllen.MembershipReboot;
 using OpenIDConnect.IdentityServer.MembershipReboot;
 using OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses;
+using System.Data.Entity;
+using OpenIDConnect.IdentityServer.AspNet.Migrations;
 
 namespace OpenIDConnect.Host
 {
@@ -81,6 +83,8 @@ namespace OpenIDConnect.Host
         /// <param name="builder"></param>
         private static void RegisterAspNetIdentity(ContainerBuilder builder)
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<AspNetUserStore, Configuration>());
+
             builder.RegisterType<AspNetUserAuthenticationService>().As<IUserAuthenticationService>().ExternallyOwned();
             builder.RegisterType<AspNetUserManagementService>().As<IUserManagementService>().ExternallyOwned();
             builder.RegisterType<UserManager>().ExternallyOwned();

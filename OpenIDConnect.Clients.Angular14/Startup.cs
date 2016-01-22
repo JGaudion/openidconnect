@@ -9,6 +9,7 @@ using Microsoft.Owin.Security.Jwt;
 using System.Collections.Generic;
 using IdentityServer3.AccessTokenValidation;
 using System;
+using System.IdentityModel.Tokens;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Clients.Angular14.Startup))]
 
@@ -19,6 +20,8 @@ namespace OpenIDConnect.Clients.Angular14
         public void Configuration(IAppBuilder app)
         {
             var configuration = new HttpConfiguration();
+
+            JwtSecurityTokenHandler.InboundClaimTypeMap.Clear();
 
             // Setup camelCase JSON serialization
             var jsonFormatter =

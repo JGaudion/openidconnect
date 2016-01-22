@@ -81,30 +81,30 @@ namespace OpenIDConnect.IdentityServer
 
             factory.ClientStore = new Registration<IClientStore>(
                 new CompositeClientStore(new IClientStore[] 
-                {
-                    knownClientStore,
-                    new ClientStore(new ClientConfigurationDbContext("ClientsScopes"))      // TODO: get connection string name from config
+                {                    
+                    new ClientStore(new ClientConfigurationDbContext("ClientsScopes")),      // TODO: get connection string name from config
+                    knownClientStore
                 }));
 
             factory.ScopeStore = new Registration<IScopeStore>(
                 new CompositeScopeStore(new IScopeStore[]
-                {
-                    new KnownScopeStore(),
-                    new ScopeStore(new ScopeConfigurationDbContext("ClientsScopes"))        // TODO: get connection string name from config
+                {                    
+                    new ScopeStore(new ScopeConfigurationDbContext("ClientsScopes")),        // TODO: get connection string name from config
+                    new KnownScopeStore()
                 }));
 
             factory.UserService = new Registration<IUserService>(
                 new CompositeUserService(new IUserService[] 
-                {
-                    new KnownUserService(this.adminUsername, this.adminPassword),
-                    new ClaimsUserService(new NullClaimsService(), new DomainUserService(userAuthenticationService))
+                {                    
+                    new ClaimsUserService(new NullClaimsService(), new DomainUserService(userAuthenticationService)),
+                    new KnownUserService(this.adminUsername, this.adminPassword)
                 }));
 
             factory.CorsPolicyService = new Registration<ICorsPolicyService>(
                 new CompositeCorsPolicyService(new ICorsPolicyService[]
-                {
-                    new InMemoryCorsPolicyService(knownClientStore.GetClients()),
-                    new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes"))     // TODO: get connection string name from config
+                {                    
+                    new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes")),     // TODO: get connection string name from config
+                    new InMemoryCorsPolicyService(knownClientStore.GetClients())
                 }));                                    
 
             return new IdentityServerOptions

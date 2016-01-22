@@ -1,6 +1,9 @@
 ﻿using OpenIDConnect.Clients.Angular14.Models;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Web.Http;
+using System;
 
 namespace OpenIDConnect.Clients.Angular14.Controllers
 {
@@ -10,13 +13,18 @@ namespace OpenIDConnect.Clients.Angular14.Controllers
         [Route("api/news")]
         public IHttpActionResult GetNews()
         {
-            var newsArticles = new List<NewsArticleApiModel>()
-            {
-                new NewsArticleApiModel { Id = 1, Title = "News article 1", Body = "This is some sample news" },
-                new NewsArticleApiModel { Id = 2, Title = "News article 2", Body = "This is some more sample news" }
-            };
-            
+            var newsArticles = GetArticles(this.User.IsInRole("Premium"));
             return this.Ok(newsArticles);
+        }
+
+        private IEnumerable<NewsArticleApiModel> GetArticles(bool includePremium)
+        {
+            yield return new NewsArticleApiModel { Id = 1, Type = NewsArticleType.Free, Title = "Free news", Body = "This is some sample news" };
+
+            if (includePremium)
+            {
+                yield return new NewsArticleApiModel { Id = 2, Type = NewsArticleType.Premium, Title = "Premium news!", Body = "This is some more sample news" };
+            }
         }
     }
 }

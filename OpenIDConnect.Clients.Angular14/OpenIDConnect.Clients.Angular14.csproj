@@ -192,6 +192,7 @@
     <Compile Include="Bootstrap\CustomNancyBootstrapper.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Models\NewsArticleApiModel.cs" />
+    <Compile Include="Models\NewsArticleType.cs" />
     <Compile Include="Modules\HomeModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

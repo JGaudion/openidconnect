@@ -18,8 +18,7 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
         {
         }
         public AspNetUserStore(string ConnectionString) :base (ConnectionString)
-        {
-
+        {            
         }        
     }   
 }

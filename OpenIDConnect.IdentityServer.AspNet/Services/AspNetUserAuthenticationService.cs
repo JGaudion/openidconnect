@@ -116,7 +116,15 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         protected virtual Task<AuthenticationResult> PostAuthenticateLocalAsync(User user, SignInData signInData)
         {
-            return Task.FromResult<AuthenticationResult>(null);
+            if (user == null)
+            {
+                return Task.FromResult<AuthenticationResult>(null);
+            }
+
+            return Task.FromResult(new AuthenticationResult(
+                user.Id, 
+                user.UserName, 
+                user.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue))));
         }
 
         /// <summary>
@@ -154,11 +162,14 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
         /// <returns></returns>
         public async Task<bool> IsActiveAsync(ClaimsPrincipal subject, Client client)
         {
-           
-            if (subject == null) throw new ArgumentNullException("subject");
+            if (subject == null)
+            {
+                throw new ArgumentNullException("subject");
+            }
 
             //Not sure about this
-            var activeUser = await manager.FindByNameAsync(subject.Identity.Name);
+            var subjectId = subject.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+            var activeUser = await manager.FindByIdAsync(subjectId);
 
             bool IsActive = false;
 
@@ -248,9 +259,11 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
         protected virtual async Task<IEnumerable<Claim>> GetClaimsFromAccount(User user)
         {
-            var claims = new List<Claim>{
-                new Claim(OpenIDConnect.Core.Constants.ClaimTypes.Subject, user.Id.ToString()),
-                new Claim(OpenIDConnect.Core.Constants.ClaimTypes.PreferredUserName, user.UserName),
+            var claims = new List<Claim>
+            {
+                new Claim(Core.Constants.ClaimTypes.Subject, user.Id.ToString()),
+                new Claim(Core.Constants.ClaimTypes.Name, user.UserName),
+                new Claim(Core.Constants.ClaimTypes.PreferredUserName, user.UserName),
             };
 
             if (manager.SupportsUserEmail)

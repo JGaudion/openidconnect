@@ -45,10 +45,17 @@ namespace OpenIDConnect.IdentityServer.Services
         {
             foreach (var service in this.services)
             {
-                await service.GetProfileDataAsync(context);
-                if (context.IssuedClaims.Any())
+                try
                 {
-                    return;
+                    await service.GetProfileDataAsync(context);
+                    if (context.IssuedClaims.Any())
+                    {
+                        return;
+                    }
+                }
+                catch
+                {
+                    // TODO: log
                 }
             }
         }
