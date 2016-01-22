@@ -104,11 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="content\src\app\callback\callback.controller.js" />
-    <Content Include="content\src\app\components\oidc\oidc.service.js" />
+    <Content Include="content\src\app\oidc\oidc.service.js" />
     <Content Include="packages.config" />
     <Content Include="content\e2e\.eslintrc" />
-    <Content Include="content\src\app\components\malarkey\malarkey.scss" />
-    <Content Include="content\src\app\components\navbar\navbar.scss" />
+    <Content Include="content\src\app\navbar\navbar.scss" />
     <Content Include="content\src\app\index.scss" />
     <Content Include="content\gulp\.eslintrc" />
     <None Include="Web.Debug.config">
@@ -131,15 +130,9 @@
     <Content Include="content\gulp\styles.js" />
     <Content Include="content\gulp\unit-tests.js" />
     <Content Include="content\gulp\watch.js" />
-    <Content Include="content\src\app\components\githubContributor\githubContributor.service.js" />
-    <Content Include="content\src\app\components\githubContributor\githubContributor.service.spec.js" />
-    <Content Include="content\src\app\components\malarkey\malarkey.directive.js" />
-    <Content Include="content\src\app\components\malarkey\malarkey.directive.spec.js" />
-    <Content Include="content\src\app\components\navbar\navbar.directive.js" />
-    <Content Include="content\src\app\components\navbar\navbar.directive.spec.js" />
-    <Content Include="content\src\app\components\navbar\navbar.html" />
-    <Content Include="content\src\app\components\webDevTec\webDevTec.service.js" />
-    <Content Include="content\src\app\components\webDevTec\webDevTec.service.spec.js" />
+    <Content Include="content\src\app\navbar\navbar.directive.js" />
+    <Content Include="content\src\app\navbar\navbar.directive.spec.js" />
+    <Content Include="content\src\app\navbar\navbar.html" />
     <Content Include="content\src\app\index.config.js" />
     <Content Include="content\src\app\index.constants.js" />
     <Content Include="content\src\app\index.module.js" />
