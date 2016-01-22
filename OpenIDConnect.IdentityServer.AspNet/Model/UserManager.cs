@@ -112,7 +112,8 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
                 var newRoles = roles.Where(r => !existingRoles.Contains(r.Value));
                 foreach (var role in newRoles)
                 {
-                    this.AddToRole(userID, role.Value);
+                    this.AddToRole(userID, role.Value); //This one adds an entry to the userroles table
+                    this.AddClaim(userID, role); //This one adds a claim, which seems to be the one actually used
                 }
             }
             return claims;
@@ -152,7 +153,10 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
             }
 
             int total = results.Count();
-            results = results.Skip(start).Take(count).ToList();
+            if (count >= 0 && start >= 0)
+            {
+                results = results.Skip(start).Take(count).ToList();
+            }
            
             return new QueryResult<User>(start, count, total, null, results);
         }

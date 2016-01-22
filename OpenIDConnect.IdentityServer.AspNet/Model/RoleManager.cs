@@ -26,7 +26,10 @@ namespace OpenIDConnect.IdentityServer.AspNet.Model
                 results = results.Where(u => u.Name.Contains(filter)).ToList();
             }
             int total = results.Count();
-            results = results.Skip(start).Take(count).ToList();
+            if (start >= 0 && count >= 0)
+            {
+                results = results.Skip(start).Take(count).ToList();
+            }
             return new QueryResult<Role>(start, count, total, null, results);
         }
 
