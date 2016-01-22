@@ -6,7 +6,7 @@
     .controller('HomeController', HomeController);
 
   /** @ngInject */
-  function HomeController($timeout, webDevTec, toastr) {
+  function HomeController($timeout, toastr) {
     var vm = this;
   }
 })();
