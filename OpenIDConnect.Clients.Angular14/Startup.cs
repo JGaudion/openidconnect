@@ -5,6 +5,10 @@ using System.Web.Http;
 using System.Net.Http.Formatting;
 using System.Linq;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Owin.Security.Jwt;
+using System.Collections.Generic;
+using IdentityServer3.AccessTokenValidation;
+using System;
 
 [assembly: OwinStartup(typeof(OpenIDConnect.Clients.Angular14.Startup))]
 
@@ -28,6 +32,18 @@ namespace OpenIDConnect.Clients.Angular14
 
             // Set up attribute based routing
             configuration.MapHttpAttributeRoutes();
+
+            app.UseIdentityServerBearerTokenAuthentication(new IdentityServerBearerTokenAuthenticationOptions
+            {
+                Authority = "https://localhost:44333/core",
+                RequiredScopes = new[] { "api" },
+                NameClaimType = "name",
+                RoleClaimType = "role",
+
+                // client credentials for the introspection endpoint
+                ClientId = "angualar14",
+                ClientSecret = Guid.NewGuid().ToString()
+            });
 
             app.UseWebApi(configuration);
 

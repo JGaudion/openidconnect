@@ -41,7 +41,16 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
             try {
 
                 var newClaim = new Claim(type, value);
+                //If it is a role claim then add it to the UserRoles table (even though it is not really used!)
+                //Claims seem to be used for roles, rather than the UserRoles table, even though it appeared with the 
+                //default IdentityUser and IdentityRole
+                if(newClaim.Type == Core.Constants.ClaimTypes.Role)
+                {
+                    await manager.AddToRoleAsync(subject, newClaim.Value);
+                }
+
                 await manager.AddClaimAsync(subject, newClaim);
+                
 
                 return UserManagementResult.Success;
             }
@@ -196,20 +205,20 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
 
             var updateUserProperties = new List<PropertyMetadata>
             {
-                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
-                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Role, "Role", false)
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true)
+              
             };
             
 
             var createRoleProperties = new List<PropertyMetadata>
             {
                 new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Name, "Name", true),
-                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", false)
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", true)
             };
 
             var updateRoleProperties = new List<PropertyMetadata>
             {
-                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", false)
+                new PropertyMetadata(PropertyTypes.String, Core.Constants.ClaimTypes.Description, "Description", true)
             };
 
                 var userMetadata = new UserMetadata(true, true, true, updateUserProperties, createUserProperties);
@@ -323,6 +332,11 @@ namespace OpenIDConnect.IdentityServer.AspNet.Services
                         var claim = userClaims.Where(c => c.Type == type && c.Value == value).FirstOrDefault();
                         if (claim != null)
                         {
+                            //If it is a role then also remove it from the UserRoles table
+                            if(claim.Type == Core.Constants.ClaimTypes.Role)
+                            {
+                                await manager.RemoveFromRoleAsync(subject, value);
+                            }
                             await manager.RemoveClaimAsync(subject, claim);
                         }
                     }

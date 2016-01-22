@@ -26,6 +26,8 @@ namespace OpenIDConnect.IdentityServer.Services
         {
             yield return StandardScopes.OpenId;
 
+            yield return StandardScopes.Profile;
+
             yield return new Scope
             {
                 Name = "idmanager",
@@ -50,7 +52,7 @@ namespace OpenIDConnect.IdentityServer.Services
                     new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Name),
                     new ScopeClaim(IdentityServer3.Core.Constants.ClaimTypes.Role),
                     new ScopeClaim("idadmin-api")
-                }                
+                }
             };
 
             yield return new Scope
@@ -60,7 +62,11 @@ namespace OpenIDConnect.IdentityServer.Services
                 Description = "Authorization for the API",
                 Type = ScopeType.Identity,
                 ShowInDiscoveryDocument = true,
-                Enabled = true
+                Enabled = true,
+                Claims = new List<ScopeClaim>
+                {
+                    new ScopeClaim("role", alwaysInclude: true)
+                }
             };
         }
     }
