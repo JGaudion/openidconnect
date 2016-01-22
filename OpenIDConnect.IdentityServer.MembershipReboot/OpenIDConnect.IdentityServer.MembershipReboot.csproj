@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\PropertyInfoExtensions.cs" />
     <Compile Include="Extensions\PropertyMetadataExtensions.cs" />
     <Compile Include="Extensions\RoleMetadataExtensions.cs" />
     <Compile Include="Extensions\UserMetadataExtensions.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="MembershipRebootUserService.cs" />
     <Compile Include="Models\ExecutablePropertyMetadata.cs" />
     <Compile Include="Models\ExpressionPropertyMetadata.cs" />
+    <Compile Include="Models\ReflectedPropertyMetadata.cs" />
     <Compile Include="Models\RelationalUserAccountQuery.cs" />
     <Compile Include="PropertyMetaDataCreation.cs" />
     <Compile Include="WrapperClasses\CustomConfig.cs" />

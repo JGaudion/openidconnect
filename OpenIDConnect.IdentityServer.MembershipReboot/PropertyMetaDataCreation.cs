@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using OpenIDConnect.Core.Models.UserManagement;
+using OpenIDConnect.IdentityServer.MembershipReboot.Extensions;
+using OpenIDConnect.IdentityServer.MembershipReboot.Models;
 
 namespace OpenIDConnect.IdentityServer.MembershipReboot
 {
@@ -22,14 +24,19 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
 
             List<PropertyMetadata> props = new List<PropertyMetadata>();
 
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly);
-            foreach (var property in properties)
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly);
+            foreach (PropertyInfo property in properties)
             {
                 if (!propertiesToExclude.Contains(property.Name, StringComparer.OrdinalIgnoreCase))
                 {
                     if (property.IsValidAsPropertyMetadata())
                     {
-                        var propMeta = FromPropertyInfo(property);
+                        var propMeta = FromPropertyInfo(
+                            property.Name,
+                            property.GetName(),
+                            property.GetPropertyDataType(),
+                            property.IsRequired(),
+                            property);
                         props.Add(propMeta);
                     }
                 }
@@ -38,12 +45,7 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
             return props;
         }
 
-        public static PropertyMetadata FromPropertyInfo(
-            PropertyInfo property,
-            string type = null,
-            string name = null,
-            string dataType = null,
-            bool? required = null)
+        public static PropertyMetadata FromPropertyInfo(string displayFieldType, string claimType, string name, bool required, PropertyInfo property)
         {
             if (property == null)
             {
@@ -55,13 +57,12 @@ namespace OpenIDConnect.IdentityServer.MembershipReboot
                 throw new InvalidOperationException(property.Name + " is an invalid property for use as PropertyMetadata");
             }
 
-            return new ReflectedPropertyMetadata(property)
-            {
-                Type = type ?? property.Name,
-                Name = name ?? property.GetName(),
-                DataType = dataType ?? property.GetPropertyDataType(),
-                Required = required ?? property.IsRequired(),
-            };
+            return new ReflectedPropertyMetadata(
+                displayFieldType,
+                name,
+                claimType,
+                required,
+                property);
         }
     }
 }
