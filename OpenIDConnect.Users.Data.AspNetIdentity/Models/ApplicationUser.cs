@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNet.Identity.EntityFramework;
 using OpenIDConnect.Users.Domain.Models;
+using System.Linq;
 
 namespace OpenIDConnect.Users.Data.AspNetIdentity.Models
 {
@@ -13,15 +14,28 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Models
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return new ApplicationUser
+            var applicationUser = new ApplicationUser
             {
-                UserName = user.Id
+                UserName = user.Id                
             };
+
+            foreach (var claim in user.Claims)
+            {
+                applicationUser.Claims.Add(new IdentityUserClaim<string>()
+                {
+                    ClaimType = claim.Type,
+                    ClaimValue = claim.Value
+                });
+            }
+
+            return applicationUser;    
         }
 
         internal User ToDomainModel()
         {
-            return new User(this.Id);
+            return new User(
+                this.Id, 
+                this.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)));
         }
     }
 }
