@@ -1,0 +1,62 @@
+#%RAML 0.8
+title: User service - manages users and user claims
+version: 1
+/users:
+  get:
+    description: Retrieves the list of users from the user store
+  post:
+    description: Adds a user to the user store
+    body:
+      application/json:       
+        example: |      
+          {
+            "username": "user",
+            "passwordHash": "...",
+            "email": "user@user.com",
+            "emailConfirmed": true          
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+              {
+                "id": 123
+              }
+/users/{userId}:
+  get:
+    description: Gets the specified user from the user store
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "id": 123,
+                "username": "user"
+              }
+  put:
+    description: Updates the specified user in the user store
+    body:
+      application/json:
+        example: |
+          {
+            "username": "user"
+          }
+    responses: 
+      204:
+  delete:
+    description: Deletes the specified user from the user store
+    responses:
+      204:
+/users/{userId}/claims:
+  get:
+  post:
+    description: Adds a claim to the specified user
+    body:
+    responses:
+      204:
+/users/{userId}/claims/{claimId}:
+  get:
+  put:
+  delete:

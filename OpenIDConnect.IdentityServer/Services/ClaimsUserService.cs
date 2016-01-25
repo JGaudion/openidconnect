@@ -17,7 +17,7 @@ namespace OpenIDConnect.IdentityServer.Services
     {
         public IEnumerable<Claim> GetUserClaimsForClient(string clientId, string userId)
         {
-            return Enumerable.Empty<Claim>();
+            yield return new Claim("test-claim", "this-is-a-test");
         }
     }
 

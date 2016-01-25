@@ -21,6 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.IdentityServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Clients.Angular14", "OpenIDConnect.Clients.Angular14\OpenIDConnect.Clients.Angular14.csproj", "{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{78D0DFCA-4F20-4820-9ECE-BD2A507AA1BD}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\news.api.raml = Documentation\news.api.raml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
