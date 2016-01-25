@@ -18,6 +18,8 @@
     }
   },
   "dependencies": {
+    "Microsoft.AspNet.Identity": "3.0.0-rc1-final",
+    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
     "OpenIDConnect.Users.Domain": "1.0.0-*"
   }
 }

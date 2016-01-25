@@ -1,9 +1,12 @@
 ﻿using OpenIDConnect.Users.Domain.Models;
+using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Domain
 {    
     public interface IUsersRepository
     {
-        User GetUser(string userId);
+        Task<User> GetUser(string userId);
+
+        Task AddUser(User user);
     }
 }

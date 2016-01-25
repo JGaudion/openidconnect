@@ -2,6 +2,7 @@
 using OpenIDConnect.Users.Domain;
 using System;
 using OpenIDConnect.Users.Api.Models;
+using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
@@ -19,11 +20,23 @@ namespace OpenIDConnect.Users.Api.Controllers
 
             this.usersRepository = usersRepository;
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] UserCreateApiModel userApiModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();   // TODO: unprocessible entity response
+            }
+
+            await this.usersRepository.AddUser(userApiModel.ToDomainModel());
+            return this.Ok();       // TODO: return created response
+        }
         
         [HttpGet("{userId}")]
-        public IActionResult Get(string userId)
+        public async Task<IActionResult> Get(string userId)
         {
-            var user = this.usersRepository.GetUser(userId);
+            var user = await this.usersRepository.GetUser(userId);
             if (user == null)
             {
                 return this.HttpNotFound();
