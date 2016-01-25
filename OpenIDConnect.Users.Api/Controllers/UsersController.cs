@@ -45,5 +45,17 @@ namespace OpenIDConnect.Users.Api.Controllers
             var userApiModel = new UserApiModel { Id = user.Id };
             return this.Ok(userApiModel);
         }     
+
+        [HttpPost("{userId}/authenticate")]
+        public async Task<IActionResult> Authenticate(string userId, string password)
+        {
+            var passwordMatches = await this.usersRepository.Authenticate(userId, password);
+            if (passwordMatches)
+            {
+                return this.Ok();
+            }
+
+            return this.HttpBadRequest();
+        }
     }
 }

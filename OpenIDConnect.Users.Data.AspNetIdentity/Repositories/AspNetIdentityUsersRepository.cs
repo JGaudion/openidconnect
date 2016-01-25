@@ -34,5 +34,28 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 throw new Exception("There was an error adding the user");
             }
         }
+
+        public async Task<bool> Authenticate(string userId, string password)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            var user = await this.GetUser(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            return await this.userManager.CheckPasswordAsync(
+                ApplicationUser.FromUser(user), 
+                password);
+        }
     }
 }

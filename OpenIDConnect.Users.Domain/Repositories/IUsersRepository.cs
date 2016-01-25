@@ -8,5 +8,7 @@ namespace OpenIDConnect.Users.Domain
         Task<User> GetUser(string userId);
 
         Task AddUser(User user);
+        
+        Task<bool> Authenticate(string userId, string password);
     }
 }
