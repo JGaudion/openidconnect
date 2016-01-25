@@ -26,6 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\news.api.raml = Documentation\news.api.raml
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Users.Api", "OpenIDConnect.Users.Api\OpenIDConnect.Users.Api.xproj", "{E57986F1-5A2A-4434-9F82-EA42B865E9DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Users", "Users", "{E1E7AA16-202B-44E7-B12E-68BAB058A7E7}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Users.Domain", "OpenIDConnect.Users.Domain\OpenIDConnect.Users.Domain.xproj", "{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Users.Data.AspNetIdentity", "OpenIDConnect.Users.Data.AspNetIdentity\OpenIDConnect.Users.Data.AspNetIdentity.xproj", "{EBC2578A-0790-4ADA-863B-3CC747FE40F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,8 +76,25 @@ Global
 		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C071C9A-C0E3-4D10-BDD4-7FDC07B1AAD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E57986F1-5A2A-4434-9F82-EA42B865E9DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57986F1-5A2A-4434-9F82-EA42B865E9DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57986F1-5A2A-4434-9F82-EA42B865E9DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57986F1-5A2A-4434-9F82-EA42B865E9DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC2578A-0790-4ADA-863B-3CC747FE40F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC2578A-0790-4ADA-863B-3CC747FE40F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC2578A-0790-4ADA-863B-3CC747FE40F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC2578A-0790-4ADA-863B-3CC747FE40F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E57986F1-5A2A-4434-9F82-EA42B865E9DC} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
+		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
+		{EBC2578A-0790-4ADA-863B-3CC747FE40F4} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
 	EndGlobalSection
 EndGlobal

@@ -10,10 +10,8 @@ version: 1
       application/json:       
         example: |      
           {
-            "username": "user",
-            "passwordHash": "...",
-            "email": "user@user.com",
-            "emailConfirmed": true          
+            "id": "user",
+            "password": "..."            
           }
     responses:
       201:
@@ -21,7 +19,7 @@ version: 1
           application/json:
             example: |
               {
-                "id": 123
+                "id": "user"
               }
 /users/{userId}:
   get:
@@ -32,8 +30,7 @@ version: 1
           application/json:
             example: |
               {
-                "id": 123,
-                "username": "user"
+                "id": "user"
               }
   put:
     description: Updates the specified user in the user store
@@ -41,9 +38,9 @@ version: 1
       application/json:
         example: |
           {
-            "username": "user"
+            "password": "..."
           }
-    responses: 
+    responses:
       204:
   delete:
     description: Deletes the specified user from the user store
@@ -60,3 +57,15 @@ version: 1
   get:
   put:
   delete:
+/users/{userId}/authentiate:
+  post:
+    description: Authenticates the user
+	body:
+	  application/json:
+	    example: |
+		  {
+		    "password": "..."
+		  }
+	responses:
+	  200:
+	  400:
