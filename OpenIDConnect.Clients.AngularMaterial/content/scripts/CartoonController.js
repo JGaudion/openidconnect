@@ -1,6 +1,16 @@
 ﻿angular.module('CartoonsApp')
-.controller('CartoonController', function () {
-    this.cartoons = [
+.controller('CartoonController', CartoonController);
+
+CartoonController.$inject = ['$http'];
+function CartoonController($http) {
+    var ctrl = this;
+    $http({ method: 'GET', url: '/content/cartoons' })
+    .success(function(data)
+    {
+        ctrl.cartoons = data;
+        console.log(data);
+    })
+    this.cartoons2 = [
         { Id: 1, Name: "Duck Tales", Species: ["Duck"] },
         { Id: 2, Name: "Thundercats", Species: ["WildCat", "Lion", "Cheetah", "Tiger", "Panther", "Mummy", "Jackal","Toad"] },
         { Id: 3, Name: "Pirates of Dark Water", Species: ["Human", "Monkeybird", "Pirate", "Dragon"] },
@@ -14,4 +24,4 @@
         { Id: 11, Name: "Farthing Wood", Species: ["Fox", "Badger", "Toad", "Weasel","Owl","Newt", "Mole"] },
         { Id: 12, Name: "Dungeons and Dragons", Species: ["Human", "Wizard", "Dragon", "Unicorn"] }
     ];
-});
+}
