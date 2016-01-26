@@ -91,6 +91,7 @@
     <Compile Include="IdentityServerOptionsService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\KnownUserService.cs" />
+    <Compile Include="Services\UsersApiUserService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIDConnect.AdLds\OpenIDConnect.AdLds.csproj">

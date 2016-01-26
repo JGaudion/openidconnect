@@ -9,18 +9,23 @@ namespace OpenIDConnect.IdentityManager
 {
     internal class InMemoryManagerOptionsService
     {
-        private readonly IUserManagementService userManagementService;
+        private readonly IIdentityManagerService identityManagerService;
 
-        public InMemoryManagerOptionsService(IUserManagementService userManagementService)
+        public InMemoryManagerOptionsService(IIdentityManagerService identityManagerService)
         {
-            this.userManagementService = userManagementService;
+            if (identityManagerService == null)
+            {
+                throw new ArgumentNullException(nameof(identityManagerService));
+            }
+
+            this.identityManagerService = identityManagerService;
         }
 
         public IdentityManagerOptions GetManagerOptions()
         {
             var factory = new IdentityManagerServiceFactory
             {
-                IdentityManagerService = new Registration<IIdentityManagerService>(ctx => new DomainIdentityManagerService(this.userManagementService))
+                IdentityManagerService = new Registration<IIdentityManagerService>(ctx => identityManagerService)
             };
 
             var rand = new Random();

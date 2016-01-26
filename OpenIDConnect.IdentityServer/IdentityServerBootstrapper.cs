@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using IdentityServer3.Core.Services;
 using OpenIDConnect.Core;
 using OpenIDConnect.Core.Services;
 using OpenIDConnect.IdentityServer.Configuration;
@@ -14,15 +15,15 @@ namespace OpenIDConnect.IdentityServer
 
         private readonly ExternalIdentityProviderService externalIdentityProviderService;
 
-        private readonly IUserAuthenticationService userAuthenticationService;
+        private readonly IUserService userService;
 
-        public IdentityServerBootstrapper(IUserAuthenticationService userAuthenticationService,
+        public IdentityServerBootstrapper(IUserService userService,
             ExternalIdentityProviderService externalIdentityProviderService,
             IConfigurationService configService)
         {
-            if (userAuthenticationService == null)
+            if (userService == null)
             {
-                throw new ArgumentNullException(nameof(userAuthenticationService));
+                throw new ArgumentNullException(nameof(userService));
             }
 
             if (externalIdentityProviderService == null)
@@ -35,7 +36,7 @@ namespace OpenIDConnect.IdentityServer
                 throw new ArgumentNullException(nameof(configService));
             }
 
-            this.userAuthenticationService = userAuthenticationService;
+            this.userService = userService;
             this.externalIdentityProviderService = externalIdentityProviderService;
             this.configService = configService;
         }
@@ -57,7 +58,7 @@ namespace OpenIDConnect.IdentityServer
                     adminPassword, 
                     identityManagerUri, 
                     identityAdminUri,
-                    userAuthenticationService,
+                    userService,
                     externalIdentityProviderService).GetServerOptions();
 
             app.UseIdentityServer(options);

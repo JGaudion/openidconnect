@@ -86,6 +86,7 @@
     <Compile Include="InMemoryService\RoleSeeder.cs" />
     <Compile Include="InMemoryService\UserSeeder.cs" />
     <Compile Include="Services\DomainIdentityManagerService.cs" />
+    <Compile Include="Services\UsersApiIdentityManagerService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIDConnect.Core\OpenIDConnect.Core.csproj">
