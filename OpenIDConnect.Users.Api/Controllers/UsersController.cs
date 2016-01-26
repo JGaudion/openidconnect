@@ -29,7 +29,9 @@ namespace OpenIDConnect.Users.Api.Controllers
                 return this.HttpBadRequest();   // TODO: unprocessible entity response
             }
 
-            await this.usersRepository.AddUser(userApiModel.ToDomainModel());
+            await this.usersRepository.AddUser(
+                userApiModel.ToDomainModel());
+
             return this.Ok();       // TODO: return created response
         }
         
@@ -44,7 +46,20 @@ namespace OpenIDConnect.Users.Api.Controllers
 
             var userApiModel = new UserApiModel { Id = user.Id };
             return this.Ok(userApiModel);
-        }     
+        }
+        
+        [HttpPut("{username}")]
+        public void Put(string username, [FromBody]UpdateUserApiModel userApiModel)
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpDelete("{username}")]
+        public async Task<IActionResult> Delete(string username)
+        {
+            await this.usersRepository.DeleteUser(username);
+            return this.Ok();
+        }
 
         [HttpPost("{username}/authenticate")]
         public async Task<IActionResult> Authenticate(string username, string password)

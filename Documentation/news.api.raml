@@ -87,7 +87,7 @@ version: 1
           ]
     responses:
       204:
-/users/{username}/claims/{claimType}:
+/users/{username}/claims?type={claimType}:
   get:
     description: Gets all claims of the specified type from the specified user
     responses:

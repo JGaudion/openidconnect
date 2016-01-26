@@ -38,6 +38,37 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             }
         }
 
+        public async Task UpdateUser(User user)
+        {
+            var applicationUser = ApplicationUser.FromUser(user);
+            var result = await this.userManager.UpdateAsync(applicationUser);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("There was an error updating the user");
+            }
+        }
+
+        public async Task DeleteUser(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            var user = await this.userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Invalid username specified");
+            }
+
+            var result = await this.userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("There was an error deleting the user");
+            }
+        }
+
         public async Task<bool> Authenticate(string userId, string password)
         {
             if (string.IsNullOrWhiteSpace(userId))
