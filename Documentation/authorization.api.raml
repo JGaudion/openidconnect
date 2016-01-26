@@ -1,0 +1,58 @@
+#%RAML 0.8
+title: Authorization service - manages groups of client/user specific claims
+version: 1
+/clients:
+  get:
+    description: Retrieves a list of registered clients
+  post:
+    description: Adds a client to the user store
+    body:
+      application/json:       
+        example: |      
+          {
+            "id": "clientid",
+            "name": "clientname",
+            "enabled": true,
+            "claimsUri": "http://<host>/claims"
+          }    
+/clients/{clientId}:
+  get:
+    description: Gets the specified client
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "id": "clientid",
+                "name: "clientname",
+                "enabled": true,
+                "claimsUri": "http://<host>/claims"
+              }
+  put:
+    description: Updates the specified client    
+  delete:
+    description: Deletes the specified client    
+/clients/{clientId}/groups:
+  get:
+    description: Gets the collection of groups
+  post:
+    description: Adds a group to the client
+/clients/{clientId}/groups/{groupId}:
+  get:
+    description: Gets the specified group for the specified client
+  put:
+  delete:
+/clients/{clientId}/groups/{groupId}/claims:
+  get:
+    description: Gets the claims for the specified group
+/clients/{clientId}/users:
+  get:
+  post:
+/clients/{clientId}/users/{userId}:
+  get:
+  put:
+  delete:
+/clients/{clientId}/users/{userId}/claims:
+  get:
+    description: Gets the list of claims for the specified user in the specified client

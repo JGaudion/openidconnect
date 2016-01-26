@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace OpenIDConnect.IdentityServer.Services
 {
-    internal class KnownScopeStore : IScopeStore
+    internal abstract class FixedScopeStore : IScopeStore
     {
         public Task<IEnumerable<Scope>> FindScopesAsync(IEnumerable<string> scopeNames)
         {
@@ -22,7 +22,12 @@ namespace OpenIDConnect.IdentityServer.Services
             return Task.FromResult(scopes);
         }
 
-        private IEnumerable<Scope> GetScopes()
+        protected abstract IEnumerable<Scope> GetScopes();
+    }
+
+    internal class KnownScopeStore : FixedScopeStore
+    {
+        protected override IEnumerable<Scope> GetScopes()
         {
             yield return StandardScopes.OpenId;
 
