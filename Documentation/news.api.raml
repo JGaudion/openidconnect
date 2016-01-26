@@ -14,6 +14,20 @@ version: 1
       count:
         type: integer
         description: The number of users to return
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "start": "0",
+                "count": "10",
+                "total": "150",
+                "filter": "...",
+                "items": [ {
+                  "id": "mtinning"
+                } ]
+              }
   post:
     description: Adds a user to the user store
     body:
