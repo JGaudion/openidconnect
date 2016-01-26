@@ -153,9 +153,9 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
-            var filterParam = !string.IsNullOrEmpty(filter) ? $"filter={filter}" : string.Empty;
-            var startParam = start != 0 ? $"{start}" : string.Empty;
-            var countParam = count > 0 ? $"{count}" : string.Empty;
+            var filterParam = !string.IsNullOrEmpty(filter) ? $"username={filter}" : string.Empty;
+            var startParam = start != 0 ? $"page={count / start}" : string.Empty;
+            var countParam = count > 0 ? $"pageSize={count}" : string.Empty;
 
             var queryString = string.Join("&", new[] { filterParam, startParam, countParam }.Where(p => !string.IsNullOrEmpty(p)));
             queryString = string.IsNullOrEmpty(queryString) ? queryString : $"?{queryString}";
@@ -174,9 +174,9 @@ namespace OpenIDConnect.IdentityManager.Services
                     new QueryResult<UserSummary>
                     {
                         Count = queryResult.Count,
-                        Filter = queryResult.Filter,
-                        Start = queryResult.Start,
-                        Items = queryResult.Users.Select(u => new UserSummary { Name = u.Id, Subject = u.Id, Username = u.Id }),
+                        Filter = filter,
+                        Start = queryResult.Page * queryResult.PageSize,
+                        Items = queryResult.Items.Select(u => new UserSummary { Name = u.Id, Subject = u.Id, Username = u.Id }),
                         Total = queryResult.Total
                     });
             }
@@ -199,7 +199,16 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(
+                new IdentityManagerResult<QueryResult<RoleSummary>>(
+                    new QueryResult<RoleSummary>
+                    {
+                        Count = count,
+                        Filter = filter,
+                        Start = start,
+                        Items = Enumerable.Empty<RoleSummary>(),
+                        Total = 0
+                    }));
         }
 
         public Task<IdentityManagerResult> SetRolePropertyAsync(string subject, string type, string value)

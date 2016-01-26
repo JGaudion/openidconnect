@@ -5,6 +5,7 @@ using OpenIDConnect.Users.Api.Models;
 using System.Threading.Tasks;
 using OpenIDConnect.Core.Api.Models;
 using System.Linq;
+using OpenIDConnect.Core.Domain.Models;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
@@ -31,15 +32,15 @@ namespace OpenIDConnect.Users.Api.Controllers
                 return this.HttpBadRequest();
             }
 
-            var users = (await this.usersRepository.QueryUsers(pagingApiModel.Page, pagingApiModel.PageSize, username)).ToList();
+            var domainResult = (await this.usersRepository.QueryUsers(username, new Paging(pagingApiModel.Page, pagingApiModel.PageSize)));
 
             var result = new PagingResultApiModel<UserApiModel>
             {
-                Page = pagingApiModel.Page,
-                PageSize = pagingApiModel.PageSize,
-                Count = users.Count,
-                Total = 0,
-                Items = users.Select(u => new UserApiModel { Id = u.Id })
+                Page = domainResult.Page,
+                PageSize = domainResult.PageSize,
+                Count = domainResult.Count,
+                Total = domainResult.Total,
+                Items = domainResult.Items.Select(u => new UserApiModel { Id = u.Id })
             };
 
             return this.Ok(result);

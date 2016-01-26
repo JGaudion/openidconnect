@@ -1,5 +1,5 @@
-﻿using OpenIDConnect.Users.Domain.Models;
-using System.Collections.Generic;
+﻿using OpenIDConnect.Core.Domain.Models;
+using OpenIDConnect.Users.Domain.Models;
 using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Domain
@@ -16,6 +16,6 @@ namespace OpenIDConnect.Users.Domain
         
         Task<bool> Authenticate(string username, string password);
 
-        Task<IEnumerable<User>> QueryUsers(int page, int pageSize, string username);
+        Task<PagingResult<User>> QueryUsers(string username, Paging paging);
     }
 }

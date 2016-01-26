@@ -4,6 +4,9 @@ using OpenIDConnect.Users.Domain;
 using OpenIDConnect.Users.Domain.Models;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using OpenIDConnect.Core.Domain.Models;
 
 namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
 {
@@ -90,6 +93,23 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             return await this.userManager.CheckPasswordAsync(
                 ApplicationUser.FromUser(user), 
                 password);
+        }
+
+        public Task<PagingResult<User>> QueryUsers(string username, Paging paging)
+        {
+            return Task.Run(() =>
+                {
+                    var users = this.userManager.Users
+                                    .Where(u => username == null || u.Id.Contains(username))
+                                    .Select(u => new User(u.Id, u.UserName, u.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue))))
+                                    .Skip(paging.Page * paging.PageSize)
+                                    .Take(paging.PageSize)
+                                    .ToList();
+
+                    var total = this.userManager.Users.Count();
+
+                    return new PagingResult<User>(paging.Page, paging.PageSize, users.Count, total, users);
+                });
         }
     }
 }
