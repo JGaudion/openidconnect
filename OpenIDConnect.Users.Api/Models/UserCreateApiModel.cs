@@ -10,7 +10,7 @@ namespace OpenIDConnect.Users.Api.Models
         private List<ClaimApiModel> claims;
 
         [Required]
-        public string Id { get; set; }
+        public string Username { get; set; }
 
         [Required]
         public string Password { get; set; }
@@ -31,7 +31,8 @@ namespace OpenIDConnect.Users.Api.Models
         internal User ToDomainModel()
         {
             return new User(
-                this.Id, 
+                null,
+                this.Username, 
                 this.Claims.Select(c => new Claim(c.Type, c.Value)));
         }
     }

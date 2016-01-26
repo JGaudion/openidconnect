@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController : Controller
     {
         private readonly IUsersRepository usersRepository;
@@ -33,10 +33,10 @@ namespace OpenIDConnect.Users.Api.Controllers
             return this.Ok();       // TODO: return created response
         }
         
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(string userId)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> Get(string username)
         {
-            var user = await this.usersRepository.GetUser(userId);
+            var user = await this.usersRepository.GetUserByName(username);
             if (user == null)
             {
                 return this.HttpNotFound();
@@ -46,11 +46,11 @@ namespace OpenIDConnect.Users.Api.Controllers
             return this.Ok(userApiModel);
         }     
 
-        [HttpPost("{userId}/authenticate")]
-        public async Task<IActionResult> Authenticate(string userId, string password)
+        [HttpPost("{username}/authenticate")]
+        public async Task<IActionResult> Authenticate(string username, string password)
         {
             var passwordMatches = 
-                await this.usersRepository.Authenticate(userId, password);
+                await this.usersRepository.Authenticate(username, password);
 
             if (passwordMatches)
             {

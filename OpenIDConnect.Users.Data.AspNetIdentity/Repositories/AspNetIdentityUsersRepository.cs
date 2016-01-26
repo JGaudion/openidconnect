@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using OpenIDConnect.Users.Data.AspNetIdentity.Models;
 using OpenIDConnect.Users.Domain;
 using OpenIDConnect.Users.Domain.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
@@ -15,12 +13,17 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
 
         public AspNetIdentityUsersRepository(UserManager<ApplicationUser> userManager)
         {
+            if (userManager == null)
+            {
+                throw new ArgumentNullException(nameof(userManager));
+            }
+
             this.userManager = userManager;
         }
 
-        public async Task<User> GetUser(string userId)
+        public async Task<User> GetUserByName(string username)
         {
-            var user = await this.userManager.FindByIdAsync(userId);
+            var user = await this.userManager.FindByNameAsync(username);
             return user?.ToDomainModel();
         }
 
@@ -47,7 +50,7 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var user = await this.GetUser(userId);
+            var user = await this.GetUserByName(userId);
             if (user == null)
             {
                 return false;
