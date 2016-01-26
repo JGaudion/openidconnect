@@ -10,6 +10,7 @@ using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using OpenIDConnect.Users.Data.AspNetIdentity.Models;
 using System;
+using OpenIDConnect.Users.Domain.Repositories;
 
 namespace OpenIDConnect.Users.Api
 {
@@ -46,7 +47,8 @@ namespace OpenIDConnect.Users.Api
                     new CamelCasePropertyNamesContractResolver();
             });
 
-            services.AddSingleton<IUsersRepository, AspNetIdentityUsersRepository>();
+            services.AddScoped<IUsersRepository, AspNetIdentityUsersRepository>();
+            services.AddScoped<IUserClaimsRepository, AspNetIdentityUserClaimsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

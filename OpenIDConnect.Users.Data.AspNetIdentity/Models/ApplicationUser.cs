@@ -16,7 +16,8 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Models
 
             var applicationUser = new ApplicationUser
             {
-                UserName = user.Id                
+                Id = user.Id,
+                UserName = user.Username
             };
 
             foreach (var claim in user.Claims)
@@ -34,7 +35,8 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Models
         internal User ToDomainModel()
         {
             return new User(
-                this.Id, 
+                this.Id,
+                this.UserName,
                 this.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue)));
         }
     }

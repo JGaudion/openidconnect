@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
-    [Route("api/[controller]")]
+    [Route("api/users")]
     public class UsersController : Controller
     {
         private readonly IUsersRepository usersRepository;
@@ -29,14 +29,16 @@ namespace OpenIDConnect.Users.Api.Controllers
                 return this.HttpBadRequest();   // TODO: unprocessible entity response
             }
 
-            await this.usersRepository.AddUser(userApiModel.ToDomainModel());
+            await this.usersRepository.AddUser(
+                userApiModel.ToDomainModel());
+
             return this.Ok();       // TODO: return created response
         }
         
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(string userId)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> Get(string username)
         {
-            var user = await this.usersRepository.GetUser(userId);
+            var user = await this.usersRepository.GetUserByName(username);
             if (user == null)
             {
                 return this.HttpNotFound();
@@ -44,13 +46,26 @@ namespace OpenIDConnect.Users.Api.Controllers
 
             var userApiModel = new UserApiModel { Id = user.Id };
             return this.Ok(userApiModel);
-        }     
+        }
+        
+        [HttpPut("{username}")]
+        public void Put(string username, [FromBody]UpdateUserApiModel userApiModel)
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpDelete("{username}")]
+        public async Task<IActionResult> Delete(string username)
+        {
+            await this.usersRepository.DeleteUser(username);
+            return this.Ok();
+        }
 
-        [HttpPost("{userId}/authenticate")]
-        public async Task<IActionResult> Authenticate(string userId, string password)
+        [HttpPost("{username}/authenticate")]
+        public async Task<IActionResult> Authenticate(string username, string password)
         {
             var passwordMatches = 
-                await this.usersRepository.Authenticate(userId, password);
+                await this.usersRepository.Authenticate(username, password);
 
             if (passwordMatches)
             {

@@ -10,18 +10,18 @@ version: 1
       application/json:       
         example: |      
           {
-            "id": "user",
-            "password": "..."
-			"claims": [
-				{
-					"type": "...",
-					"value": "..."
-				},
-				{
-					"type": "...",
-					"value": "..."
-				}
-			]
+            "username": "user",
+            "password": "...",
+            "claims": [
+              {
+                "type": "...",
+                "value": "..."
+              },
+              {
+                "type": "...",
+                "value": "..."
+              }
+            ]
           }
     responses:
       201:
@@ -29,9 +29,9 @@ version: 1
           application/json:
             example: |
               {
-                "id": "user"
+                "username": "user"
               }
-/users/{userId}:
+/users/{username}:
   get:
     description: Gets the specified user from the user store
     responses:
@@ -40,7 +40,7 @@ version: 1
           application/json:
             example: |
               {
-                "id": "user"
+                "username": "user"
               }
   put:
     description: Updates the specified user in the user store
@@ -56,26 +56,67 @@ version: 1
     description: Deletes the specified user from the user store
     responses:
       204:
-/users/{userId}/claims:
+/users/{username}/claims:
   get:
+    description: Retrieves the specified user's claims
+    responses:
+      200:
+        body:
+          application/json:    
+            example: |
+              [
+                {
+                  "type": "...",
+                  "value": "..."
+                }
+              ]
   post:
-    description: Adds a claim to the specified user
+    description: Adds the claims to the specified user
     body:
+      application/json:
+        example: |
+          [
+            {
+              "type": "...",
+              "value": "..."
+            },
+            {
+              "type": "...",
+              "value": "..."
+            }
+          ]
     responses:
       204:
-/users/{userId}/claims/{claimId}:
+/users/{username}/claims?type={claimType}:
   get:
+    description: Gets all claims of the specified type from the specified user
+    responses:
+      200:
+        body:          
+          application/json:
+            example: |
+              [
+                {
+                  "type": "test",
+                  "value": "..."
+                },
+                {
+                  "type": "test",
+                  "value": "..."                  
+                }
+              ]
   put:
+    description: Updates the claim for the specified user
   delete:
-/users/{userId}/authentiate:
+/users/{username}/authenticate:
   post:
     description: Authenticates the user
-	body:
-	  application/json:
-	    example: |
-		  {
-		    "password": "..."
-		  }
-	responses:
-	  200:
-	  400:
+    body:
+      application/json:
+        example: |
+          {
+            "password": "..."
+          }
+    responses:
+      200:
+      400:

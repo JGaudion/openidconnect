@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using OpenIDConnect.Users.Data.AspNetIdentity.Models;
 using OpenIDConnect.Users.Domain;
 using OpenIDConnect.Users.Domain.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
@@ -15,12 +13,17 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
 
         public AspNetIdentityUsersRepository(UserManager<ApplicationUser> userManager)
         {
+            if (userManager == null)
+            {
+                throw new ArgumentNullException(nameof(userManager));
+            }
+
             this.userManager = userManager;
         }
 
-        public async Task<User> GetUser(string userId)
+        public async Task<User> GetUserByName(string username)
         {
-            var user = await this.userManager.FindByIdAsync(userId);
+            var user = await this.userManager.FindByNameAsync(username);
             return user?.ToDomainModel();
         }
 
@@ -32,6 +35,37 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             {
                 // TODO: change to identity create exception
                 throw new Exception("There was an error adding the user");
+            }
+        }
+
+        public async Task UpdateUser(User user)
+        {
+            var applicationUser = ApplicationUser.FromUser(user);
+            var result = await this.userManager.UpdateAsync(applicationUser);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("There was an error updating the user");
+            }
+        }
+
+        public async Task DeleteUser(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            var user = await this.userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Invalid username specified");
+            }
+
+            var result = await this.userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("There was an error deleting the user");
             }
         }
 
@@ -47,7 +81,7 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var user = await this.GetUser(userId);
+            var user = await this.GetUserByName(userId);
             if (user == null)
             {
                 return false;
