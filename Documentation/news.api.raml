@@ -1,9 +1,19 @@
 #%RAML 0.8
 title: User service - manages users and user claims
 version: 1
-/users:
+/users?filter={filter}&skip={skip}&count={count}:
   get:
     description: Retrieves the list of users from the user store
+    queryParameters:
+      filter:
+        type: string
+        description: Text to filter the user name on
+      skip:
+        type: integer
+        description: The number of users to skip
+      count:
+        type: integer
+        description: The number of users to return
   post:
     description: Adds a user to the user store
     body:
@@ -87,9 +97,13 @@ version: 1
           ]
     responses:
       204:
-/users/{username}/claims?type={claimType}:
+/users/{username}/claims?types={claimTypes}:
   get:
     description: Gets all claims of the specified type from the specified user
+    queryParameters:
+      claimTypes:
+        type:  string
+        description: Comma-separated list of claim types requested
     responses:
       200:
         body:          

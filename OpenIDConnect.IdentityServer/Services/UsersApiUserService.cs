@@ -50,7 +50,7 @@ namespace OpenIDConnect.IdentityServer.Services
 
                 if (postResult.IsSuccessStatusCode)
                 {
-                    var claims = await GetAllClaimsAsync(client, userName);
+                    var claims = await GetClaimsAsync(client, userName, Enumerable.Empty<string>());
                     context.AuthenticateResult = new AuthenticateResult(userName, GetDisplayName(claims) ?? userName, claims);
                 }
                 else
@@ -66,7 +66,7 @@ namespace OpenIDConnect.IdentityServer.Services
 
             using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })
             {
-                context.IssuedClaims = await GetAllClaimsAsync(client, userName);
+                context.IssuedClaims = await GetClaimsAsync(client, userName, context.RequestedClaimTypes ?? Enumerable.Empty<string>());
             }
         }
 
@@ -111,9 +111,16 @@ namespace OpenIDConnect.IdentityServer.Services
             return new AuthenticateResult(identity.ProviderId, GetDisplayName(identity.Claims) ?? identity.ProviderId, identity.Claims);
         }
 
-        private async Task<IEnumerable<Claim>> GetAllClaimsAsync(HttpClient client, string userName)
+        private async Task<IEnumerable<Claim>> GetClaimsAsync(HttpClient client, string userName, IEnumerable<string> claimTypes)
         {
-            using (var getResult = await client.GetAsync($"/api/users/{userName}/claims"))
+            if (claimTypes == null)
+            {
+                throw new ArgumentNullException(nameof(claimTypes));
+            }
+
+            var queryString = claimTypes.Any() ? $"?types={string.Join(",", claimTypes)}" : string.Empty;
+
+            using (var getResult = await client.GetAsync($"/api/users/{userName}/claims{queryString}"))
             {
                 var claimsString = await getResult.Content.ReadAsStringAsync();
                 var claims = JObject.Parse(claimsString).ToObject<Dictionary<string, string>>();
