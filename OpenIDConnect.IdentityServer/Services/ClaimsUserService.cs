@@ -17,7 +17,7 @@ namespace OpenIDConnect.IdentityServer.Services
     {
         public IEnumerable<Claim> GetUserClaimsForClient(string clientId, string userId)
         {
-            yield return new Claim("test-claim", "this-is-a-test");
+            yield return new Claim("Permission", "TestPermission");
         }
     }
 
@@ -56,6 +56,17 @@ namespace OpenIDConnect.IdentityServer.Services
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             await this.innerUserService.GetProfileDataAsync(context);
+            if (context.IssuedClaims == null)
+            {
+                return;
+            }
+
+            var userClientClaims = this.claimsService.GetUserClaimsForClient(
+                context.Client?.ClientId,
+                context.Subject?.Identity?.Name);
+
+            var finalClaims = context.IssuedClaims.Union(userClientClaims);
+            context.IssuedClaims = finalClaims;
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
@@ -66,24 +77,6 @@ namespace OpenIDConnect.IdentityServer.Services
         public async Task PostAuthenticateAsync(PostAuthenticationContext context)
         {
             await this.innerUserService.PostAuthenticateAsync(context);
-            if (context.AuthenticateResult.IsError)
-            {
-                return;
-            }
-
-            var user = context.AuthenticateResult.User;
-
-            var userClientClaims = this.claimsService.GetUserClaimsForClient(
-                context.SignInMessage.ClientId, 
-                user.Identity.Name);
-
-            var finalClaims = user.Claims.Union(userClientClaims);
-
-            var subject = user.Claims.FirstOrDefault(c => c.Type == "sub");
-            context.AuthenticateResult = new AuthenticateResult(
-                subject == null ? null : subject.Value,
-                user.Identity.Name,
-                finalClaims);
         }
 
         public async Task PreAuthenticateAsync(PreAuthenticationContext context)

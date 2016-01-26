@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompositeCorsPolicyService.cs" />
+    <Compile Include="Services\AuthorizationManagerScopeStore.cs" />
     <Compile Include="Services\ClaimsUserService.cs" />
     <Compile Include="Services\CompositeClientStore.cs" />
     <Compile Include="Services\CompositeScopeStore.cs" />
