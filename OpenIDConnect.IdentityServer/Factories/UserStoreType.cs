@@ -8,6 +8,8 @@
 
         MembershipReboot,
 
-        AdLds
+        AdLds,
+
+        UsersApi
     }
 }
