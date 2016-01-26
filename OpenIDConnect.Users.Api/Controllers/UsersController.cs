@@ -3,6 +3,8 @@ using OpenIDConnect.Users.Domain;
 using System;
 using OpenIDConnect.Users.Api.Models;
 using System.Threading.Tasks;
+using OpenIDConnect.Core.Api.Models;
+using System.Linq;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
@@ -19,6 +21,28 @@ namespace OpenIDConnect.Users.Api.Controllers
             }
 
             this.usersRepository = usersRepository;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers(string username, [FromQuery] PagingApiModel pagingApiModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            var users = (await this.usersRepository.QueryUsers(pagingApiModel.Page, pagingApiModel.PageSize, username)).ToList();
+
+            var result = new PagingResultApiModel<UserApiModel>
+            {
+                Page = pagingApiModel.Page,
+                PageSize = pagingApiModel.PageSize,
+                Count = users.Count,
+                Total = 0,
+                Items = users.Select(u => new UserApiModel { Id = u.Id })
+            };
+
+            return this.Ok(result);
         }
 
         [HttpPost]

@@ -1,4 +1,5 @@
 ﻿using OpenIDConnect.Users.Domain.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OpenIDConnect.Users.Domain
@@ -14,5 +15,7 @@ namespace OpenIDConnect.Users.Domain
         Task DeleteUser(string username);
         
         Task<bool> Authenticate(string username, string password);
+
+        Task<IEnumerable<User>> QueryUsers(int page, int pageSize, string username);
     }
 }
