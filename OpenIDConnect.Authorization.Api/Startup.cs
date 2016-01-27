@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
+﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace OpenIDConnect.Authorization.Api
 {
+    using Microsoft.Data.Entity;
+
+    using Newtonsoft.Json.Serialization;
+
+    using OpenIDConnect.Authorization.Data.EntityFramework.Context;
+    using OpenIDConnect.Authorization.Data.EntityFramework.Repositories;
+    using OpenIDConnect.Authorization.Domain.Repositories;
+
     public class Startup
     {
         public Startup(IHostingEnvironment env)
@@ -18,7 +22,8 @@ namespace OpenIDConnect.Authorization.Api
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+
+            this.Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; set; }
@@ -26,20 +31,29 @@ namespace OpenIDConnect.Authorization.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddEntityFramework()
+                .AddSqlServer()
+                .AddDbContext<AuthorizationDbContext>(options =>
+                    options.UseSqlServer(this.Configuration["Data:DefaultConnection:ConnectionString"]));
+
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ContractResolver =
+                    new CamelCasePropertyNamesContractResolver();
+            });
+
+            services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseIISPlatformHandler();
-
             app.UseStaticFiles();
-
             app.UseMvc();
         }
 

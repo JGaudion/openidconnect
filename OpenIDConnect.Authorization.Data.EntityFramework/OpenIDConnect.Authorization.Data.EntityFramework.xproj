@@ -7,7 +7,7 @@
 
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>8bfe3b46-7c35-4492-a549-f1e848316472</ProjectGuid>
+    <ProjectGuid>65c34909-6ecd-419b-97d8-caa102b34409</ProjectGuid>
     <RootNamespace>OpenIDConnect.Authorization.Data.EntityFramework</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
