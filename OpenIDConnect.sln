@@ -23,6 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Clients.Angul
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{78D0DFCA-4F20-4820-9ECE-BD2A507AA1BD}"
 	ProjectSection(SolutionItems) = preProject
+		Documentation\authorization.api.raml = Documentation\authorization.api.raml
 		Documentation\news.api.raml = Documentation\news.api.raml
 	EndProjectSection
 EndProject
@@ -36,9 +37,17 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Users.Data.As
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Clients.AngularMaterial", "OpenIDConnect.Clients.AngularMaterial\OpenIDConnect.Clients.AngularMaterial.csproj", "{9E10E17F-F72B-4B16-A8F4-05E13275669C}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Core.Api", "OpenIDConnect.Core.Api\OpenIDConnect.Core.Api.xproj", "{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authorization", "Authorization", "{D8CE9852-7C38-499E-91C3-111AC3FCE13D}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Authorization.Api", "OpenIDConnect.Authorization.Api\OpenIDConnect.Authorization.Api.xproj", "{3F93DBF0-B1FA-4847-B644-0B366E17F913}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Authorization.Domain", "OpenIDConnect.Authorization.Domain\OpenIDConnect.Authorization.Domain.xproj", "{CFE86B7C-E55C-4FB1-9300-99969AFF544A}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Authorization.Data.EntityFramework", "OpenIDConnect.Authorization.Data.EntityFramework\OpenIDConnect.Authorization.Data.EntityFramework.xproj", "{65C34909-6ECD-419B-97D8-CAA102B34409}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Core.Domain", "OpenIDConnect.Core.Domain\OpenIDConnect.Core.Domain.xproj", "{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Core.Api", "OpenIDConnect.Core.Api\OpenIDConnect.Core.Api.xproj", "{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,14 +107,26 @@ Global
 		{9E10E17F-F72B-4B16-A8F4-05E13275669C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E10E17F-F72B-4B16-A8F4-05E13275669C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E10E17F-F72B-4B16-A8F4-05E13275669C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F93DBF0-B1FA-4847-B644-0B366E17F913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F93DBF0-B1FA-4847-B644-0B366E17F913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F93DBF0-B1FA-4847-B644-0B366E17F913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F93DBF0-B1FA-4847-B644-0B366E17F913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFE86B7C-E55C-4FB1-9300-99969AFF544A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFE86B7C-E55C-4FB1-9300-99969AFF544A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFE86B7C-E55C-4FB1-9300-99969AFF544A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFE86B7C-E55C-4FB1-9300-99969AFF544A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65C34909-6ECD-419B-97D8-CAA102B34409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65C34909-6ECD-419B-97D8-CAA102B34409}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65C34909-6ECD-419B-97D8-CAA102B34409}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65C34909-6ECD-419B-97D8-CAA102B34409}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,5 +135,8 @@ Global
 		{E57986F1-5A2A-4434-9F82-EA42B865E9DC} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
 		{AE4261FD-F26A-4ED3-A65B-D9C13CA7C627} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
 		{EBC2578A-0790-4ADA-863B-3CC747FE40F4} = {E1E7AA16-202B-44E7-B12E-68BAB058A7E7}
+		{3F93DBF0-B1FA-4847-B644-0B366E17F913} = {D8CE9852-7C38-499E-91C3-111AC3FCE13D}
+		{CFE86B7C-E55C-4FB1-9300-99969AFF544A} = {D8CE9852-7C38-499E-91C3-111AC3FCE13D}
+		{65C34909-6ECD-419B-97D8-CAA102B34409} = {D8CE9852-7C38-499E-91C3-111AC3FCE13D}
 	EndGlobalSection
 EndGlobal
