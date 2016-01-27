@@ -10,6 +10,8 @@ namespace OpenIDConnect.Core.Api.Models
 
         public int Count { get; set; }
 
+        public int Total { get; set; }
+
         public IEnumerable<TItem> Items { get; set; }
     }
 }
