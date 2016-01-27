@@ -20,8 +20,7 @@ gulp.task('browserRefresh', function () {
         server: {
             baseDir: 'content'  //lets browser refresh know where the root of the server is
         }
-    })
-
+    });
 });
 
 //Convert sass files to css
@@ -32,7 +31,7 @@ gulp.task('sassToCss', function () {
         //Reload the browser with the converted changes
         .pipe(browserRefresh.reload({
             stream: true
-        }))
+        }));
 });
 
 gulp.task('combo', function () {
@@ -42,7 +41,7 @@ gulp.task('combo', function () {
     .pipe(gulpIf('*.js', minifyJs())) //An IF statement in gulp
     //Find the css files and minify them
     .pipe(gulpIf('*.css', minifyCss()))
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('dist'));
 });
 //All the scripts within the <!--build tags in the html pages will be turned into a single javascript file that the html will then point to
 
@@ -50,16 +49,10 @@ gulp.task('combo', function () {
 gulp.task('clean:dist', function () {
     return del.sync('dist');
 });
-//Clear the cache
-gulp.task('cache:clear', function (callback) {
-    return cache.clearAll(callback);
-});
 
 //Running a sequence of tasks. Tasks in an array will run in parallel, comma seperated ones will run in order
 gulp.task('cleanBuild', function (callback) {
     sequence('clean:dist', //Clean the dist folder first (deletes everything)
         ['sassToCss', 'combo'], //Convert the sass and combine and minify files, putting the output in the dist folder
-        callback)
+        callback);
 });
-
-//If I call a task 'default' it can be run by typing 'gulp', rather than gulp [name]
