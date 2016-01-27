@@ -56,6 +56,20 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 .ToList();
         }
 
+        public async Task<IEnumerable<Claim>> GetUserClaimsOfType(string username, IEnumerable<string> claimTypes)
+        {
+            if (claimTypes == null || !claimTypes.Any())
+            {
+                throw new ArgumentNullException(nameof(claimTypes));
+            }
+
+            var userClaims = await this.GetUserClaims(username);
+
+            return userClaims
+                .Where(c => claimTypes.Any(ct => string.Compare(c.Type, ct, StringComparison.OrdinalIgnoreCase) == 0))
+                .ToList();
+        }
+
         public async Task AddClaimsToUser(string username, IEnumerable<Claim> claims)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -82,6 +96,75 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             {
                 throw new InvalidOperationException("There was an error adding claims to the user");
             }
+        }
+
+        public async Task UpdateClaimsForUser(string username, IEnumerable<Claim> claims)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
+            var user = await this.userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Invalid user specified");
+            }
+
+            var userClaims = await this.userManager.GetClaimsAsync(user);
+                        
+            foreach (var updatedClaim in claims)
+            {
+                var existingClaim = userClaims.Where(c => c.Type == updatedClaim.Type).SingleOrDefault();
+
+                if (existingClaim == null)
+                {
+                    throw new InvalidOperationException("Cannot update claim; there are either none of this type or multiple");
+                }
+
+                await this.userManager.ReplaceClaimAsync(user, existingClaim, new System.Security.Claims.Claim(updatedClaim.Type, updatedClaim.Value));
+            }
+        }
+
+        public async Task DeleteClaimForUser(string username, string claimType, string value)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            if (string.IsNullOrWhiteSpace(claimType))
+            {
+                throw new ArgumentNullException(nameof(claimType));
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            var user = await this.userManager.FindByNameAsync(username);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("Invalid user specified");
+            }
+
+            var userClaims = await this.userManager.GetClaimsAsync(user);
+
+            var claimToRemove = userClaims.SingleOrDefault(c => c.Type == claimType && c.Value == value);
+            if (claimToRemove == null)
+            {
+                throw new InvalidOperationException("Invalid claim specified");
+            }
+
+            await this.userManager.RemoveClaimAsync(user, claimToRemove);
         }
     }
 }

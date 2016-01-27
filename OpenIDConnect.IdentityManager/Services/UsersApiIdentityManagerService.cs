@@ -54,30 +54,100 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IdentityManagerResult> AddUserClaimAsync(string subject, string type, string value)
         {
+            if (string.IsNullOrEmpty(subject))
+            {
+                return new IdentityManagerResult("Subject not specified");
+            }
+
+            if (string.IsNullOrEmpty(type))
+            {
+                return new IdentityManagerResult("Claim type not specified");
+            }
+
+            if (value == null)
+            {
+                return new IdentityManagerResult("Claim value cannot be null");
+            }
+
             using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })
             using (var postResponse = await client.PostAsync($"/api/users/{subject}/claims", new StringContent($"[{{ type: \"{type}\", value: \"{value}\" }}]", Encoding.Unicode, "text/json")))
             {
                 if (!postResponse.IsSuccessStatusCode)
                 {
-                    return new IdentityManagerResult(new[] { $"Unable to add user claim, returned status code {postResponse.StatusCode}" });
+                    return new IdentityManagerResult($"Unable to add user claim, returned status code {postResponse.StatusCode}");
                 }
             }
 
             return IdentityManagerResult.Success;
         }
 
-        public Task<IdentityManagerResult> SetUserPropertyAsync(string subject, string type, string value)
+        public async Task<IdentityManagerResult> SetUserPropertyAsync(string subject, string type, string value)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(subject))
+            {
+                return new IdentityManagerResult("Subject not specified");
+            }
+
+            if (string.IsNullOrEmpty(type))
+            {
+                return new IdentityManagerResult("Claim type not specified");
+            }
+
+            if (value == null)
+            {
+                return new IdentityManagerResult("Claim value cannot be null");
+            }
+
+            var claimsToUpdate = new[] { new ClaimDto { Type = type, Value = value } };
+
+            using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })
+            using (var putResponse = await client.PutAsync($"/api/users/{subject}/claims", new StringContent(JsonConvert.SerializeObject(claimsToUpdate), Encoding.Unicode, "text/json")))
+            {
+                if (!putResponse.IsSuccessStatusCode)
+                {
+                    return new IdentityManagerResult($"Could not delete claim {type} with value {value}: return status code {putResponse.StatusCode}");
+                }
+            }
+
+            return IdentityManagerResult.Success;
         }
 
-        public Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value)
+        public async Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(subject))
+            {
+                return new IdentityManagerResult("Subject not specified");
+            }
+
+            if (string.IsNullOrEmpty(type))
+            {
+                return new IdentityManagerResult("Claim type not specified");
+            }
+
+            if (value == null)
+            {
+                return new IdentityManagerResult("Claim value cannot be null");
+            }
+
+            using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })
+            using (var deleteReponse = await client.DeleteAsync($"/api/users/{subject}/claims?claimType={type}&value={value}"))
+            {
+                if (!deleteReponse.IsSuccessStatusCode)
+                {
+                    return new IdentityManagerResult($"Could not delete claim {type} with value {value}: return status code {deleteReponse.StatusCode}");
+                }
+            }
+
+            return IdentityManagerResult.Success;
         }
 
         public async Task<IdentityManagerResult<UserDetail>> GetUserAsync(string subject)
         {
+            if (string.IsNullOrEmpty(subject))
+            {
+                return new IdentityManagerResult<UserDetail>("Subject not specified");
+            }
+
             UserDto userDto;
             IEnumerable<ClaimDto> claimDtos;
 
@@ -87,7 +157,7 @@ namespace OpenIDConnect.IdentityManager.Services
                 {
                     if (!getResponse.IsSuccessStatusCode)
                     {
-                        return new IdentityManagerResult<UserDetail>(new[] { $"Unable to get user, returned status code {getResponse.StatusCode}" });
+                        return new IdentityManagerResult<UserDetail>($"Unable to get user, returned status code {getResponse.StatusCode}");
                     }
                     userDto = await getResponse.DeserializeJsonContentAsync<UserDto>();
                 }
@@ -96,7 +166,7 @@ namespace OpenIDConnect.IdentityManager.Services
                 {
                     if (!getResponse.IsSuccessStatusCode)
                     {
-                        return new IdentityManagerResult<UserDetail>(new[] { $"Unable to get user claims, returned status code {getResponse.StatusCode}" });
+                        return new IdentityManagerResult<UserDetail>($"Unable to get user claims, returned status code {getResponse.StatusCode}");
                     }
 
                     claimDtos = await getResponse.DeserializeJsonContentAsync<IEnumerable<ClaimDto>>();
@@ -129,7 +199,7 @@ namespace OpenIDConnect.IdentityManager.Services
                 {
                     if (!postResponse.IsSuccessStatusCode)
                     {
-                        return new IdentityManagerResult<CreateResult>(new[] { $"Error creating user, returned status code {postResponse.StatusCode}" });
+                        return new IdentityManagerResult<CreateResult>($"Error creating user, returned status code {postResponse.StatusCode}");
                     }
                 }
             }
@@ -139,12 +209,17 @@ namespace OpenIDConnect.IdentityManager.Services
 
         public async Task<IdentityManagerResult> DeleteUserAsync(string subject)
         {
+            if (string.IsNullOrEmpty(subject))
+            {
+                return new IdentityManagerResult<UserDetail>("Subject not specified");
+            }
+
             using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })
             using (var deleteResponse = await client.DeleteAsync($"/api/users/{subject}"))
             {
                 if (!deleteResponse.IsSuccessStatusCode)
                 {
-                    return new IdentityManagerResult(new[] { $"Error deleting user, returned status code {deleteResponse.StatusCode}" });
+                    return new IdentityManagerResult($"Error deleting user, returned status code {deleteResponse.StatusCode}");
                 }
             }
 
@@ -165,7 +240,7 @@ namespace OpenIDConnect.IdentityManager.Services
             {
                 if (!getResponse.IsSuccessStatusCode)
                 {
-                    return new IdentityManagerResult<QueryResult<UserSummary>>(new[] { $"Error querying users, returned status code {getResponse.StatusCode}" });
+                    return new IdentityManagerResult<QueryResult<UserSummary>>($"Error querying users, returned status code {getResponse.StatusCode}");
                 }
 
                 var queryResult = await getResponse.DeserializeJsonContentAsync<QueryUsersResultDto>();

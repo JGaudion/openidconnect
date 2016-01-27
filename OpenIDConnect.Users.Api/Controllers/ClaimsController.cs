@@ -24,20 +24,6 @@ namespace OpenIDConnect.Users.Api.Controllers
             this.usersClaimsRepository = usersClaimsRepository;
         }
 
-        [HttpGet("{userId}/claims")]
-        public async Task<IActionResult> GetClaim(string userId, [FromQuery] string type = null)
-        {
-            IEnumerable<Claim> claims =
-                string.IsNullOrWhiteSpace(type) ?
-                    await this.usersClaimsRepository.GetUserClaims(userId) :
-                    await this.usersClaimsRepository.GetUserClaimsOfType(userId, type);
-
-            var claimApiModels =
-                claims.Select(c => new ClaimApiModel { Type = c.Type, Value = c.Value });
-                
-            return this.Ok(claimApiModels);
-        }
-
         [HttpPost("{userId}/claims")]
         public async Task<IActionResult> AddClaimToUser(string userId, [FromBody] IEnumerable<ClaimApiModel> claimApiModels)
         {
@@ -47,10 +33,66 @@ namespace OpenIDConnect.Users.Api.Controllers
             }
 
             await this.usersClaimsRepository.AddClaimsToUser(
-                userId, 
+                userId,
                 claimApiModels.Select(c => c.ToDomainModel()));
 
             return this.Ok();       // TODO: return created response
         }
+
+
+        [HttpGet("{username}/claims")]
+        public async Task<IActionResult> GetClaims(string username, [FromQuery]IEnumerable<string> claimTypes)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            IEnumerable<Claim> claims;
+
+            if (claimTypes == null || !claimTypes.Any())
+            {
+                claims = await this.usersClaimsRepository.GetUserClaims(username);
+            }
+            else
+            {
+                claims = await this.usersClaimsRepository.GetUserClaimsOfType(username, claimTypes);
+            }
+
+            return this.Ok(claims.Select(c => new ClaimApiModel { Type = c.Type, Value = c.Value }));
+        }
+
+        [HttpDelete("{username}/claims")]
+        public async Task<IActionResult> DeleteClaim(string username, [FromQuery]string claimType, [FromQuery] string value)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            if (string.IsNullOrWhiteSpace(claimType) || value == null)
+            {
+                //Value can be empty
+                return this.HttpBadRequest();
+            }
+
+            await this.usersClaimsRepository.DeleteClaimForUser(username, claimType, value);
+
+            return this.Ok();
+        }
+
+        [HttpPut("{username}/claims")]
+        public async Task<IActionResult> UpdateClaims(string username, [FromBody]IEnumerable<ClaimApiModel> claims)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            await this.usersClaimsRepository.UpdateClaimsForUser(username, claims.Select(c => new Claim(c.Type, c.Value)));
+
+            return this.Ok();
+        }
+
     }
 }
