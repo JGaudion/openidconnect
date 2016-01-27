@@ -45,6 +45,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Authorization
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Authorization.Data.EntityFramework", "OpenIDConnect.Authorization.Data.EntityFramework\OpenIDConnect.Authorization.Data.EntityFramework.xproj", "{65C34909-6ECD-419B-97D8-CAA102B34409}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Core.Domain", "OpenIDConnect.Core.Domain\OpenIDConnect.Core.Domain.xproj", "{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Core.Api", "OpenIDConnect.Core.Api\OpenIDConnect.Core.Api.xproj", "{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +119,14 @@ Global
 		{65C34909-6ECD-419B-97D8-CAA102B34409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65C34909-6ECD-419B-97D8-CAA102B34409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65C34909-6ECD-419B-97D8-CAA102B34409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D3C5F06-DFF3-4DC1-A136-0B23BE658D48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC167DE-7F9B-47C5-BAB2-9BE71F28AD31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,10 @@ using OpenIDConnect.IdentityServer.MembershipReboot;
 using OpenIDConnect.IdentityServer.MembershipReboot.WrapperClasses;
 using System.Data.Entity;
 using OpenIDConnect.IdentityServer.AspNet.Migrations;
+using OpenIDConnect.IdentityServer.Services;
+using IdentityServer3.Core.Services;
+using OpenIDConnect.IdentityManager.Services;
+using IdentityManager;
 
 namespace OpenIDConnect.Host
 {
@@ -44,6 +48,17 @@ namespace OpenIDConnect.Host
                 .WithParameter("identityManagerUri", identityManagerUri);
         }
 
+        private static void RegisterApiServices(IConfigurationService configService, ContainerBuilder builder)
+        {
+            var usersApiUri = configService.GetSetting<string>("UsersApiUri", null);
+
+            builder.RegisterType<UsersApiUserService>().As<IUserService>()
+                .WithParameter("usersApiUri", usersApiUri);
+
+            builder.RegisterType<UsersApiIdentityManagerService>().As<IIdentityManagerService>()
+                .WithParameter("usersApiUri", usersApiUri);
+        }
+
         private static void RegisterUserStore(IConfigurationService configService, ContainerBuilder builder)
         {
             UserStoreType userStoreType;
@@ -61,9 +76,17 @@ namespace OpenIDConnect.Host
                 case UserStoreType.AdLds:
                     RegisterAdLds(builder);
                     break;
-
+                case UserStoreType.UsersApi:
+                    RegisterApiServices(configService, builder);
+                    break;
                 default:
                     throw new InvalidOperationException("Invalid user store type specified");
+            }
+
+            if (userStoreType != UserStoreType.UsersApi)
+            {
+                builder.RegisterType<DomainUserService>().As<IUserService>();
+                builder.RegisterType<DomainIdentityManagerService>().As<IIdentityManagerService>();
             }
         }
 

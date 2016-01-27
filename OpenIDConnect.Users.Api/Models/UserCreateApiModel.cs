@@ -31,7 +31,7 @@ namespace OpenIDConnect.Users.Api.Models
         internal User ToDomainModel()
         {
             return new User(
-                null,
+                this.Username,
                 this.Username, 
                 this.Claims.Select(c => new Claim(c.Type, c.Value)));
         }

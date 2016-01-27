@@ -10,6 +10,7 @@ using IdentityServer3.EntityFramework;
 using Owin;
 using IdentityServer3.Core.Services.Default;
 using IdentityServer3.Core.Services.InMemory;
+using OpenIDConnect.IdentityServer.Factories;
 
 namespace OpenIDConnect.IdentityServer
 {
@@ -23,7 +24,7 @@ namespace OpenIDConnect.IdentityServer
 
         private readonly string identityAdminUri;
 
-        private readonly IUserAuthenticationService userAuthenticationService;
+        private readonly IUserService userService;
 
         private readonly ExternalIdentityProviderService externalIdentityProviderService;
 
@@ -32,7 +33,7 @@ namespace OpenIDConnect.IdentityServer
             string adminPassword,
             string identityManagerUri,
             string identityAdminUri,
-            IUserAuthenticationService userAuthenticationService,
+            IUserService userService,
             ExternalIdentityProviderService externalIdentityProviderService)
         {
             if (string.IsNullOrWhiteSpace(adminUsername))
@@ -55,9 +56,9 @@ namespace OpenIDConnect.IdentityServer
                 throw new ArgumentNullException("identityAdminUri");
             }
 
-            if (userAuthenticationService == null)
+            if (userService == null)
             {
-                throw new ArgumentNullException(nameof(userAuthenticationService));
+                throw new ArgumentNullException(nameof(userService));
             }
 
             if (externalIdentityProviderService == null)
@@ -69,7 +70,7 @@ namespace OpenIDConnect.IdentityServer
             this.adminPassword = adminPassword;
             this.identityManagerUri = identityManagerUri;
             this.identityAdminUri = identityAdminUri;
-            this.userAuthenticationService = userAuthenticationService;
+            this.userService = userService;
             this.externalIdentityProviderService = externalIdentityProviderService;
         }
 
@@ -96,7 +97,7 @@ namespace OpenIDConnect.IdentityServer
             factory.UserService = new Registration<IUserService>(
                 new CompositeUserService(new IUserService[] 
                 {                    
-                    new ClaimsUserService(new NullClaimsService(), new DomainUserService(userAuthenticationService)),
+                    new ClaimsUserService(new NullClaimsService(), userService),
                     new KnownUserService(this.adminUsername, this.adminPassword)
                 }));
 
