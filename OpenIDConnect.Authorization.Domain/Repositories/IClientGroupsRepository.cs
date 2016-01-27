@@ -12,5 +12,9 @@ namespace OpenIDConnect.Authorization.Domain.Repositories
         Task AddGroup(string clientId, Group group);
 
         Task<Group> GetGroup(string clientId, string groupId);
+
+        Task Update(string clientId, Group group);
+
+        Task Delete(string clientId, string groupId);
     }
 }

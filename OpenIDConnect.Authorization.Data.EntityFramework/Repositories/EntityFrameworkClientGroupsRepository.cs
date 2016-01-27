@@ -75,5 +75,37 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
             var group = client.Groups.FirstOrDefault(g => g.Id == int.Parse(groupId));
             return group?.ToDomainModel();
         }
+
+        public async Task Update(string clientId, Group group)
+        {
+            if (group == null)
+            {
+                throw new ArgumentNullException(nameof(group));
+            }
+
+            var groupDto = GroupDto.FromDomain(group);
+            groupDto.ClientId = clientId;
+
+            this.context.Groups.Update(groupDto);
+            await this.context.SaveChangesAsync();
+        }
+
+        public async Task Delete(string clientId, string groupId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (string.IsNullOrWhiteSpace(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            var groupDto = new GroupDto { Id = int.Parse(groupId) };
+            this.context.Groups.Attach(groupDto);
+            this.context.Groups.Remove(groupDto);
+            await this.context.SaveChangesAsync();
+        }
     }
 }

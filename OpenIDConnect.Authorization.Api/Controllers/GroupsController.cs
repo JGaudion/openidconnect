@@ -37,6 +37,11 @@ namespace OpenIDConnect.Authorization.Api.Controllers
         [HttpPost("{clientId}/groups")]
         public async Task<IActionResult> AddClientGroup(string clientId, [FromBody] GroupApiModel groupApiModel)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return new UnprocessableEntityResult();
+            }
+
             var group = groupApiModel.ToDomainModel();
             await this.clientGroupsRepository.AddGroup(clientId, group);
             return new EntityCreatedResult();
@@ -53,6 +58,27 @@ namespace OpenIDConnect.Authorization.Api.Controllers
 
             var groupApiModel = new GroupApiModel(group);
             return this.Ok(groupApiModel);
+        }
+
+        [HttpPut("{clientId}/groups/{groupId}")]
+        public async Task<IActionResult> UpdateClientGroup(string clientId, string groupId, [FromBody] GroupApiModel groupApiModel)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return new UnprocessableEntityResult();
+            }
+
+            groupApiModel.Id = groupId;
+            var group = groupApiModel.ToDomainModel();
+            await this.clientGroupsRepository.Update(clientId, group);
+            return this.Ok();
+        }
+
+        [HttpDelete("{clientId}/groups/{groupId}")]
+        public async Task<IActionResult> DeleteClientGroup(string clientId, string groupId)
+        {
+            await this.clientGroupsRepository.Delete(clientId, groupId);
+            return this.Ok();
         }
     }
 }

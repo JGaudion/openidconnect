@@ -59,14 +59,16 @@ namespace OpenIDConnect.Authorization.Api.Controllers
         }
 
         [HttpPut("{clientId}")]
-        public async Task<IActionResult> UpdateClient([FromBody] ClientApiModel apiModel)
+        public async Task<IActionResult> UpdateClient(string clientId, [FromBody] ClientApiModel apiModel)
         {
             if (!this.ModelState.IsValid)
             {
                 return new UnprocessableEntityResult();
             }
-            
-            await this.clientsRepository.Update(apiModel.ToDomainModel());
+
+            apiModel.Id = clientId;
+            var client = apiModel.ToDomainModel();
+            await this.clientsRepository.Update(client);
             return new EntityCreatedResult();
         }
 
