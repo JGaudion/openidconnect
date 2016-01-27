@@ -3,6 +3,4 @@
     $scope.go = function (destination) {
         $location.path(destination);
     }
-    console.log("Loaded this con");
-
 }]);
