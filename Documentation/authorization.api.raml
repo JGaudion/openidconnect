@@ -30,12 +30,26 @@ version: 1
                 "claimsUri": "http://<host>/claims"
               }
   put:
-    description: Updates the specified client    
+    description: Updates the specified client 
+    body:
+      application/json:
+        example: |
+          {
+            "id": "clientid",
+            "name": "clientname",
+            "enabled": true,
+            "claimsUri": "http://<host>/claims"                    
+          }
   delete:
-    description: Deletes the specified client    
+    description: Deletes the specified client
 /clients/{clientId}/groups:
   get:
     description: Gets the collection of groups
+    body:
+      application/json:
+        example: |
+          "id": "...",
+          "name": "..."
   post:
     description: Adds a group to the client
 /clients/{clientId}/groups/{groupId}:

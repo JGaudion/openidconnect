@@ -5,6 +5,7 @@
   },
 
   "dependencies": {
+    "EntityFramework.Commands": "7.0.0-rc1-final",
     "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
@@ -17,7 +18,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
     "OpenIDConnect.Authorization.Data.EntityFramework": "1.0.0-*",
     "OpenIDConnect.Authorization.Domain": "1.0.0-*",
-    "OpenIDConnect.Core.Api": "1.0.0-*"
+    "OpenIDConnect.Core.Api": "1.0.0-*",
+    "System.Linq": "4.0.1-rc2-23722"
   },
 
   "commands": {

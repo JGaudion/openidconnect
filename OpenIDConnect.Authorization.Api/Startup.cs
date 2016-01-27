@@ -44,6 +44,7 @@ namespace OpenIDConnect.Authorization.Api
             });
 
             services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
+            services.AddScoped<IClientGroupsRepository, EntityFrameworkClientGroupsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
