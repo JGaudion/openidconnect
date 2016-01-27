@@ -1,29 +1,29 @@
 #%RAML 0.8
 title: User service - manages users and user claims
 version: 1
-/users?filter={filter}&skip={skip}&count={count}:
+/users?username={username}&page={page}&pageSize={pageSize}:
   get:
     description: Retrieves the list of users from the user store
     queryParameters:
-      filter:
+      username:
         type: string
         description: Text to filter the user name on
-      skip:
+      page:
         type: integer
-        description: The number of users to skip
-      count:
+        description: The page of users to return
+      pageSize:
         type: integer
-        description: The number of users to return
+        description: The size of a page
     responses:
       200:
         body:
           application/json:
             example: |
               {
-                "start": "0",
-                "count": "10",
-                "total": "150",
-                "filter": "...",
+                "page": "15",
+                "pageSize": "10",
+                "count": "9",
+                "total": "149",
                 "items": [ {
                   "id": "mtinning"
                 } ]
@@ -80,40 +80,9 @@ version: 1
     description: Deletes the specified user from the user store
     responses:
       204:
-/users/{username}/claims:
-  get:
-    description: Retrieves the specified user's claims
-    responses:
-      200:
-        body:
-          application/json:    
-            example: |
-              [
-                {
-                  "type": "...",
-                  "value": "..."
-                }
-              ]
-  post:
-    description: Adds the claims to the specified user
-    body:
-      application/json:
-        example: |
-          [
-            {
-              "type": "...",
-              "value": "..."
-            },
-            {
-              "type": "...",
-              "value": "..."
-            }
-          ]
-    responses:
-      204:
 /users/{username}/claims?types={claimTypes}:
   get:
-    description: Gets all claims of the specified type from the specified user
+    description: Gets all claims of the specified types from the specified user
     queryParameters:
       claimTypes:
         type:  string
@@ -133,9 +102,53 @@ version: 1
                   "value": "..."                  
                 }
               ]
+/users/{username}/claims:
+  post:
+    description: Adds the claims to the specified user
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "type": "...",
+              "value": "..."
+            },
+            {
+              "type": "...",
+              "value": "..."
+            }
+          ]
+    responses:
+      204:
   put:
     description: Updates the claim for the specified user
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "type": "...",
+              "value": "..."
+            },
+            {
+              "type": "...",
+              "value": "..."
+            }
+          ]
+    responses:
+      200:
+/users/{username}/claims?claimType={claimType}&value={value}:
   delete:
+    description: Deletes the specified claim
+    queryParameters:
+      claimType:
+        type: string
+        description: The type of the claim
+      value:
+        type: string
+        description: The value of the claim
+    responses: 
+      200:
 /users/{username}/authenticate:
   post:
     description: Authenticates the user

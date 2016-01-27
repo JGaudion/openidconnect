@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using OpenIDConnect.Core.Api.Models;
 using System.Linq;
 using OpenIDConnect.Core.Domain.Models;
+using System.Collections.Generic;
+using OpenIDConnect.Users.Domain.Models;
 
 namespace OpenIDConnect.Users.Api.Controllers
 {    
