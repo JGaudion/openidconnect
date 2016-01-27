@@ -1,13 +1,13 @@
 <template>
-  <require from="blur-image"></require>
-
   <section class="au-animate">
     <h2>${heading}</h2>
     <div class="row au-stagger">
       <div repeat.for="client of clients" class="col-sm-6 col-md-3 card-container au-animate">
-        <div class="card">
-          <div class="content">
-            <p class="name">${client.id}</p>
+        <a route-href="route: manageClient; params.bind: { id: client.id || 'undefined' }">
+          <div class="card">
+            <div class="content">
+              <p class="name">${client.id}</p>
+            </div>
           </div>
         </div>
       </div>

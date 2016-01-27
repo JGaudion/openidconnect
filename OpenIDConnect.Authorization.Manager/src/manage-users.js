@@ -3,9 +3,8 @@ import {HttpClient} from 'aurelia-fetch-client';
 import 'fetch';
 
 @inject(HttpClient)
-export class Clients {
-  heading = 'Clients';
-  clients = [];
+export class ManageClientUsers {
+  heading = 'Manage Client Users';
 
   constructor(http) {
     http.configure(config => {
@@ -14,19 +13,11 @@ export class Clients {
       //   .withBaseUrl('https://api.github.com/');
     });
 
-    this.clients = [
-      {
-        id: "angular14"
-      },
-      {
-        id: "AngularMaterial"
-      }
-    ]
-
     this.http = http;
   }
 
-  activate() {
+  activate(params) {
+    this.clientId = params.id;
     // return this.http.fetch('users')
     //   .then(response => response.json())
     //   .then(users => this.users = users);
