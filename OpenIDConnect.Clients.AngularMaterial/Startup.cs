@@ -13,7 +13,7 @@ namespace OpenIDConnect.Clients.AngularMaterial
             var configuration = new HttpConfiguration();
             configuration.MapHttpAttributeRoutes();
 
-            //app.UseWebApi(configuration);
+            app.UseWebApi(configuration);
 
             app.UseNancy();
             app.UseStageMarker(PipelineStage.MapHandler);

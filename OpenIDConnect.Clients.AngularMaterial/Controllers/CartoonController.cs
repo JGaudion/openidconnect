@@ -8,7 +8,7 @@ namespace OpenIDConnect.Clients.AngularMaterial.Controllers
     {
 
         [HttpGet]
-        [Route("content/cartoons")]
+        [Route("api/cartoons")]
         public IHttpActionResult GetCartoons()
         {
             var cartoons = new List<Cartoon>()
