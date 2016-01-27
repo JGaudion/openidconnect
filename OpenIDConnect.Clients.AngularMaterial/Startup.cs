@@ -1,5 +1,6 @@
 ﻿
 using System.Web.Http;
+using Microsoft.Owin.Extensions;
 using Owin;
 
 
@@ -15,6 +16,7 @@ namespace OpenIDConnect.Clients.AngularMaterial
             app.UseWebApi(configuration);
 
             app.UseNancy();
+            app.UseStageMarker(PipelineStage.MapHandler);
         }
     }
 }
