@@ -11,5 +11,11 @@ namespace OpenIDConnect.Authorization.Domain.Repositories
         Task<IEnumerable<Client>> GetClients();
 
         Task<Client> GetClient(string clientId);
+
+        Task Add(Client client);
+
+        Task Update(Client client);
+
+        Task Delete(string clientId);
     }
 }

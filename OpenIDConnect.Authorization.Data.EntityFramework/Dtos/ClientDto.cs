@@ -21,5 +21,16 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Dtos
                 this.Enabled,
                 this.ClaimsUri);
         }
+
+        public static ClientDto FromDomain(Client client)
+        {
+            return new ClientDto
+                {
+                    Id = client.Id,
+                    Name = client.Name,
+                    Enabled = client.Enabled,
+                    ClaimsUri = client.ClaimsUri
+                };
+        }
     }
 }

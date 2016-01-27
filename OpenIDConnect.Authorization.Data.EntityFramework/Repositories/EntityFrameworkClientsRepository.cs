@@ -9,6 +9,7 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
     using Microsoft.Data.Entity;
 
     using OpenIDConnect.Authorization.Data.EntityFramework.Context;
+    using OpenIDConnect.Authorization.Data.EntityFramework.Dtos;
     using OpenIDConnect.Authorization.Domain.Models;
     using OpenIDConnect.Authorization.Domain.Repositories;
 
@@ -32,9 +33,47 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
             return clients.Select(c => c.ToDomainModel()).ToList();
         }
 
-        public Task<Client> GetClient(string clientId)
+        public async Task<Client> GetClient(string clientId)
         {
-            throw new System.NotImplementedException();
+            var client = await this.context.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+            return client?.ToDomainModel();
+        }
+
+        public async Task Add(Client client)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var clientDto = ClientDto.FromDomain(client);
+            this.context.Clients.Add(clientDto);
+            await this.context.SaveChangesAsync();
+        }
+
+        public async Task Update(Client client)
+        {
+            if (client == null)
+            {
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            var clientDto = ClientDto.FromDomain(client);
+            this.context.Clients.Update(clientDto);
+            await this.context.SaveChangesAsync();
+        }
+
+        public async Task Delete(string clientId)
+        {
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            var clientDto = new ClientDto { Id = clientId };
+            this.context.Clients.Attach(clientDto);
+            this.context.Clients.Remove(clientDto);
+            await this.context.SaveChangesAsync();
         }
     }
 }
