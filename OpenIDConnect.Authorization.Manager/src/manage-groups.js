@@ -1,43 +1,44 @@
 import {inject} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
-import 'fetch';
+import {ApiService} from 'api-service';
+import {EventAggregator} from 'aurelia-event-aggregator';
+import {GroupAddedMessage} from 'messages/group-added-message';
 
-@inject(HttpClient)
+@inject(ApiService, EventAggregator)
 export class ManageClientGroups {
   heading = 'Manage Client Groups';
   groups = [];
 
-  constructor(http) {
-    http.configure(config => {
-      // config
-      //   .useStandardConfiguration()
-      //   .withBaseUrl('https://api.github.com/');
+  constructor(api, eventAggregator) {
+    this.api = api;
+    eventAggregator.subscribe(GroupAddedMessage, message => {
+      console.log(this);
+      if (message.clientId === this.clientId) {
+        this.loadGroups();
+      }
     });
+  }
 
-    this.http = http;
+  loadGroups() {
+    return this.api.get('clients/' + this.clientId + '/groups')
+      .then(response => response.json(), response => {
+        console.error("Error getting groups for client " + this.clientId + ": " + JSON.stringify(response))
+        console.log(response);
+        this.errorMessage = "Error getting groups";
+      }).then(groups => this.groups = groups);
   }
 
   activate(params) {
     this.clientId = params.id;
-    // return this.http.fetch('users')
-    //   .then(response => response.json())
-    //   .then(users => this.users = users);
-    console.log("Activate called...");
-    this.groups = [ {
-      "id": "group1"
-    },
-    {
-      "id": "group2"
-    }]
+
+    this.loadGroups();
   }
 
   configureRouter(config, router) {
     config.map([
-      { route: '', name: 'empty', moduleId: 'empty'},
-      { route: ':groupId/edit', name: 'editGroup', moduleId: 'edit-group'}
+      { route: '', name: 'manageGroupsHome', moduleId: 'empty'},
+      { route: ':groupId/edit', name: 'editGroup', moduleId: 'edit-group'},
+      { route: 'new', name: 'newGroup', moduleId: 'new-group', nav: true, title: "New Group" }
     ]);
-
-    console.log("Configure router called....");
 
     this.router = router;
   }
