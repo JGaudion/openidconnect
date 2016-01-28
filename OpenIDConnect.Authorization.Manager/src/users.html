@@ -1,18 +1,18 @@
 <template>
   <section class="au-animate">
     <h2>${heading}</h2>
-    <div if.bind="!hasClients">
-      <p>There are no clients registered.</p>
+    <div if.bind="!hasUsers">
+      <p>There are no users available.</p>
     </div>
-    <div class="row au-stagger" if.bind="hasClients">
-      <div repeat.for="client of clients" class="col-sm-6 col-md-3 card-container au-animate">
+    <div class="row au-stagger" if.bind="hasUsers">
+      <div repeat.for="user of users" class="col-sm-6 col-md-3 card-container au-animate">
         <a route-href="route: manageClient; params.bind: { id: client.id || 'undefined' }">
           <div class="card">
             <div class="content">
-              <p class="name">${client.id}</p>
+              <p class="name">${user.id}</p>
             </div>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   </section>

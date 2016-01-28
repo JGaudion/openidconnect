@@ -7,13 +7,16 @@ version: 1
     queryParameters:
       username:
         type: string
-        description: Text to filter the user name on
+        description: Text to filter the user name on (starts with)
+		required: false
       page:
         type: integer
-        description: The page of users to return
+        description: The page of users to return (must be greater to or equal to 1)
+		required: true
       pageSize:
         type: integer
-        description: The size of a page
+        description: The size of a page (between 1 and 50)
+		required: true
     responses:
       200:
         body:

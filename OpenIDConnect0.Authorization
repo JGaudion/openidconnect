@@ -12,7 +12,7 @@
               <p class="name">${client.id}</p>
             </div>
           </div>
-        </a>
+        </div>
       </div>
     </div>
   </section>

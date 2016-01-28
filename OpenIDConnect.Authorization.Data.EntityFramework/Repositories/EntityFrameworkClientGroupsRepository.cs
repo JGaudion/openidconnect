@@ -23,27 +23,19 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
 
         public async Task<IEnumerable<Group>> GetGroups(string clientId)
         {
-            try
-            {
-                var client =
-                  await this.context.Clients
-                      .Where(c => c.Id == clientId)
-                      .Include(c => c.Groups)
-                      .FirstOrDefaultAsync();
+            var client =
+              await this.context.Clients
+                  .Where(c => c.Id == clientId)
+                  .Include(c => c.Groups)
+                  .FirstOrDefaultAsync();
 
-                if (client == null)
-                {
-                    throw new InvalidOperationException("Invalid client specified");
-                }
-
-                return client.Groups.Select(
-                    g => new Group(g.Id.ToString(), g.Name));
-            }
-            catch (Exception exception)
+            if (client == null)
             {
-                var x = exception.ToString();
-                throw;
+                throw new InvalidOperationException("Invalid client specified");
             }
+
+            return client.Groups.Select(
+                g => new Group(g.Id.ToString(), g.Name));
         }
 
         public async Task AddGroup(string clientId, Group group)

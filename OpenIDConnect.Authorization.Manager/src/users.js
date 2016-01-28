@@ -3,27 +3,27 @@ import {HttpClient} from 'aurelia-fetch-client';
 import 'fetch';
 
 @inject(HttpClient)
-export class Clients {
-  heading = 'Clients';
-  clients = [];
+export class Users {
+  heading = 'Users';
+  users = [];
 
   constructor(http) {
     http.configure(config => {
       config
        .useStandardConfiguration()
-       .withBaseUrl('https://localhost:44392/api/');
+       .withBaseUrl('https://localhost:44353/api/');
     });
 
     this.http = http;
   }
 
   activate() {
-    return this.http.fetch('clients')
+    return this.http.fetch('users?page=1&pageSize=25')
        .then(response => response.json())
-       .then(clients => this.clients = clients);
+       .then(users => this.users = users);
   }
 
-  get hasClients() {
-    return this.clients.length > 0;
+  get hasUsers() {
+    return this.users.length > 0;
   }
 }
