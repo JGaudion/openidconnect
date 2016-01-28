@@ -12,10 +12,10 @@
 }
 
 #client-manage-container {
+  flex: 1;
   display: flex;
   align-items: stretch;
   width: 100%;
-  height: 100%;
 }
 
 #client-manage-menu {
@@ -39,9 +39,4 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-#page-host-router-view {
-  height: 100%;
 }
