@@ -20,7 +20,7 @@ export class EditClient {
     http.configure(config => {
       config
         .useStandardConfiguration()
-        .withBaseUrl('http://localhost:56627');
+        .withBaseUrl('https://localhost:44392');
     });
 
     this.http = http;
