@@ -1,24 +1,17 @@
 import {inject} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
-import 'fetch';
+import {ApiService} from 'api-service';
 
-@inject(HttpClient)
+@inject(ApiService)
 export class Users {
   heading = 'Users';
   users = [];
 
-  constructor(http) {
-    http.configure(config => {
-      config
-       .useStandardConfiguration()
-       .withBaseUrl('https://localhost:44353/api/');
-    });
-
-    this.http = http;
+  constructor(api) {
+    this.api = api;
   }
 
   activate() {
-    return this.http.fetch('users?page=1&pageSize=25')
+    return this.api.get('users?page=1&pageSize=25')
        .then(response => response.json())
        .then(users => this.users = users);
   }

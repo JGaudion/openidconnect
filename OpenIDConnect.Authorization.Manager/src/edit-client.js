@@ -1,9 +1,8 @@
 import {inject} from 'aurelia-framework';
 import {Router} from 'aurelia-router';
-import {HttpClient, json} from 'aurelia-fetch-client';
-import 'fetch';
+import {ApiService} from 'api-service';
 
-@inject(HttpClient, Router)
+@inject(ApiService, Router)
 export class EditClient {
   heading = 'Edit Client';
   submitText = 'Update Client';
@@ -16,14 +15,8 @@ export class EditClient {
   isNewClient = false;
   clientAdded = false;
 
-  constructor(http, router) {
-    http.configure(config => {
-      config
-        .useStandardConfiguration()
-        .withBaseUrl('https://localhost:44392');
-    });
-
-    this.http = http;
+  constructor(api, router) {
+    this.api = api;
     this.router = router;
   }
 
@@ -35,9 +28,9 @@ export class EditClient {
       this.heading = "New Client";
       this.submitText = "Add Client";
     } else {
-      return this.http.fetch('/api/clients/' + this.id)
+      return this.api.get('clients/' + this.id)
         .then(response => response.json(), response => {
-          console.error("Error getting client " + this.id + ": " + JSON.stringify());
+          console.error("Error getting client " + this.id + ": " + JSON.stringify(response));
           this.errorMessage = "Error getting client " + this.id;
         })
         .then(client => {
@@ -56,10 +49,7 @@ export class EditClient {
       claimsUri: this.claimsUri
     };
     if (this.isNewClient) {
-      this.http.fetch('/api/clients', {
-        method: 'post',
-        body: json(client)
-      })
+      this.api.post('clients', client)
         .then(response => {
           this.clientAdded = true;
         }, response => {
@@ -67,10 +57,7 @@ export class EditClient {
           this.errorMessage = "Error creating client";
         });
     } else {
-      this.http.fetch('/api/clients/' + this.id, {
-        method: 'put',
-        body: json(client)
-      })
+      this.api.put('clients/' + this.id, client)
         .then(response => {
           console.log("Client updated!");
         }, response => {
