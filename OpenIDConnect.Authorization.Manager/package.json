@@ -1,6 +1,6 @@
 {
   "name": "authorization-manager",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "An authorization manager built in Aurelia.",
   "keywords": [
     "aurelia",

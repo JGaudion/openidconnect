@@ -9,26 +9,21 @@ export class Clients {
 
   constructor(http) {
     http.configure(config => {
-      // config
-      //   .useStandardConfiguration()
-      //   .withBaseUrl('https://api.github.com/');
+      config
+       .useStandardConfiguration()
+       .withBaseUrl('https://localhost:44392/api/');
     });
-
-    this.clients = [
-      {
-        id: "angular14"
-      },
-      {
-        id: "AngularMaterial"
-      }
-    ]
 
     this.http = http;
   }
 
   activate() {
-    // return this.http.fetch('users')
-    //   .then(response => response.json())
-    //   .then(users => this.users = users);
+    return this.http.fetch('clients')
+       .then(response => response.json())
+       .then(clients => this.clients = clients);
+  }
+
+  get hasClients() {
+    return this.clients.length > 0;
   }
 }
