@@ -4,14 +4,21 @@ namespace OpenIDConnect.Core.Api.Models
 {
     public class PagingResultApiModel<TItem>
     {
-        public int Page { get; set; }
+        private IEnumerable<TItem> items;        
 
-        public int PageSize { get; set; }
+        public PageDetailsApiModel Paging { get; set; }
 
-        public int Count { get; set; }
+        public IEnumerable<TItem> Items
+        {
+            get
+            {
+                return this.items ?? (this.items = new List<TItem>());
+            }
 
-        public int Total { get; set; }
-
-        public IEnumerable<TItem> Items { get; set; }
+            set
+            {
+                this.items = value;
+            }
+        }
     }
 }

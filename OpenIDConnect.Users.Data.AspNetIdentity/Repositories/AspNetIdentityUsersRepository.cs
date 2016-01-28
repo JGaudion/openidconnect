@@ -106,10 +106,7 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             
             var pagedUsers = users.ToPagedList(paging.Page, paging.PageSize);
             var pagingResult = new PagingResult<User>(
-                pagedUsers.PageNumber,
-                pagedUsers.PageSize, 
-                pagedUsers.Count,
-                pagedUsers.TotalItemCount,
+                new PageDetails(pagedUsers.PageNumber, pagedUsers.PageSize, pagedUsers.Count, pagedUsers.PageCount, pagedUsers.TotalItemCount),
                 pagedUsers);
 
             return Task.FromResult(pagingResult);

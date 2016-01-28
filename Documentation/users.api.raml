@@ -23,12 +23,16 @@ version: 1
           application/json:
             example: |
               {
-                "page": "15",
-                "pageSize": "10",
-                "count": "9",
-                "total": "149",
+				"paging": {
+					"currentPage": 1,
+					"pageSize": 25,
+					"itemsOnPage": 24,
+					"totalPages": 1,
+					"totalItems": 24
+				},                
                 "items": [ {
-                  "id": "mtinning"
+                  "id": "...",
+				  "username": "username"
                 } ]
               }
   post:

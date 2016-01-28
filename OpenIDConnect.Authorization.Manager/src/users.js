@@ -20,7 +20,9 @@ export class Users {
   activate() {
     return this.http.fetch('users?page=1&pageSize=25')
        .then(response => response.json())
-       .then(users => this.users = users);
+       .then(paging => {          
+         this.users = paging.items;
+       });
   }
 
   get hasUsers() {
