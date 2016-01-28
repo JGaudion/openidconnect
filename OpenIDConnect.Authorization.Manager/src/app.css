@@ -1,0 +1,22 @@
+.edit-container {
+  margin: 20px 40px;
+}
+
+form {
+  max-width: 600px;
+}
+
+.error {
+  color: red;
+}
+
+.page-host {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-host > router-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
