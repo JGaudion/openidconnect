@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace OpenIDConnect.Authentication.Manager
+namespace OpenIDConnect.Authorization.Manager
 {
     public class Startup
     {
