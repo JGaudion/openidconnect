@@ -45,7 +45,7 @@ namespace OpenIDConnect.Users.Api.Controllers
                 PageSize = domainResult.PageSize,
                 Count = domainResult.Count,
                 Total = domainResult.Total,
-                Items = domainResult.Items.Select(u => new UserApiModel { Id = u.Id })
+                Items = domainResult.Items.Select(u => UserApiModel.FromDomainModel(u))
             };
 
             return this.Ok(result);

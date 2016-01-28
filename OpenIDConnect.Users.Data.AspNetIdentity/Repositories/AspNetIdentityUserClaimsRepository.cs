@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using OpenIDConnect.Users.Domain.Models;
 using Microsoft.AspNet.Identity;
 using OpenIDConnect.Users.Data.AspNetIdentity.Models;
-using OpenIDConnect.Users.Domain;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,9 +55,10 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 .ToList();
         }
 
-        public async Task<IEnumerable<Claim>> GetUserClaimsOfType(string username, IEnumerable<string> claimTypes)
+        public async Task<IEnumerable<Claim>> GetUserClaimsOfTypes(string username, IEnumerable<string> claimTypes)
         {
-            if (claimTypes == null || !claimTypes.Any())
+            var enumerable = claimTypes as string[] ?? claimTypes.ToArray();
+            if (claimTypes == null || !enumerable.Any())
             {
                 throw new ArgumentNullException(nameof(claimTypes));
             }
@@ -66,7 +66,7 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             var userClaims = await this.GetUserClaims(username);
 
             return userClaims
-                .Where(c => claimTypes.Any(ct => string.Compare(c.Type, ct, StringComparison.OrdinalIgnoreCase) == 0))
+                .Where(c => enumerable.Any(ct => string.Compare(c.Type, ct, StringComparison.OrdinalIgnoreCase) == 0))
                 .ToList();
         }
 
@@ -121,7 +121,7 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                         
             foreach (var updatedClaim in claims)
             {
-                var existingClaim = userClaims.Where(c => c.Type == updatedClaim.Type).SingleOrDefault();
+                var existingClaim = userClaims.SingleOrDefault(c => c.Type == updatedClaim.Type);
 
                 if (existingClaim == null)
                 {
