@@ -2,13 +2,18 @@
   <require from="manage-groups.css"></require>
   <div id="manage-groups-container">
     <div id="manage-groups">
-      <div id="groups-list">
-        <div repeat.for="group of groups" class="group-link-container">
-          <a route-href="route: editGroup; params.bind: { groupId: group.id || 'undefined' }">
-            <span>${group.id}</span>
+      <ul class="nav nav-pills nav-stacked">
+        <li repeat.for="group of groups" class="nav-item">
+          <a class="nav-link ${router.currentInstruction.params.groupId == group.Id ? 'active' : ''}" route-href="route: editGroup; params.bind: { groupId: group.id || 'undefined' }">
+            <span>${group.name}</span>
           </a>
-        </div>
-      </div>
+        </li>
+        <li repeat.for="row of router.navigation" class="nav-item">
+          <a class="nav-link ${row.isActive ? 'active' : ''}" href.bind="row.href">
+            <span>${row.title}</span>
+          </a>
+        </li>
+      </ul>
       <div id="groups-edit">
         <router-view></router-view>
       </div>
