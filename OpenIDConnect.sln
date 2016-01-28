@@ -24,7 +24,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{78D0DFCA-4F20-4820-9ECE-BD2A507AA1BD}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation\authorization.api.raml = Documentation\authorization.api.raml
-		Documentation\news.api.raml = Documentation\news.api.raml
+		Documentation\users.api.raml = Documentation\users.api.raml
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OpenIDConnect.Users.Api", "OpenIDConnect.Users.Api\OpenIDConnect.Users.Api.xproj", "{E57986F1-5A2A-4434-9F82-EA42B865E9DC}"
