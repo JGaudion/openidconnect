@@ -26,4 +26,9 @@ router-view {
 #groups-edit {
   flex-grow: 1;
   background: #e7e7e7;
+  display: flex;
+}
+
+#groups-edit > router-view {
+  width: 100%;
 }
