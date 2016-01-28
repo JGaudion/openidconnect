@@ -1,0 +1,18 @@
+<template>
+  <require from="manage-client.css"></require>
+  <div id="manage-client-title-bar">
+    <span class="title">${clientId}</span>
+  </div>
+  <div id="client-manage-container">
+    <div id="client-manage-menu">
+      <a repeat.for="row of router.navigation" href.bind="row.href">
+        <div class="client-manage-nav">
+          ${row.title}
+        </div>
+      </a>
+    </div>
+    <div id="client-manage-bench">
+      <router-view id="manage-client-router-view"></router-view>
+    </div>
+  </div>
+</template>

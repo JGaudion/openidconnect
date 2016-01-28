@@ -1,0 +1,47 @@
+#manage-client-title-bar {
+  width: 100%;
+  background: #eee;
+  padding-top: 20px;
+  flex-basis: 55px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 24px;
+  margin-left: 18px;
+}
+
+#client-manage-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+}
+
+#client-manage-menu {
+  flex-grow: 0;
+  width: 60px;
+  background: #bbb;
+}
+
+#client-manage-bench {
+  flex-grow: 1;
+  background: #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.client-manage-nav {
+  margin: 20px 4px;
+}
+
+#manage-client-router-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#page-host-router-view {
+  height: 100%;
+}
