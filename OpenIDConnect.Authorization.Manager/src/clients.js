@@ -1,34 +1,22 @@
 import {inject} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
-import 'fetch';
+import {ApiService} from 'api-service';
 
-@inject(HttpClient)
+@inject(ApiService)
 export class Clients {
   heading = 'Clients';
   clients = [];
 
-  constructor(http) {
-    http.configure(config => {
-      // config
-      //   .useStandardConfiguration()
-      //   .withBaseUrl('https://api.github.com/');
-    });
-
-    this.clients = [
-      {
-        id: "angular14"
-      },
-      {
-        id: "AngularMaterial"
-      }
-    ]
-
-    this.http = http;
+  constructor(api) {
+    this.api = api;
   }
 
   activate() {
-    // return this.http.fetch('users')
-    //   .then(response => response.json())
-    //   .then(users => this.users = users);
+    return this.api.get('clients')
+       .then(response => response.json())
+       .then(clients => this.clients = clients);
+  }
+
+  get hasClients() {
+    return this.clients.length > 0;
   }
 }

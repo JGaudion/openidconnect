@@ -1,26 +1,20 @@
 import {inject} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
-import 'fetch';
+import {ApiService} from 'api-service';
 
-@inject(HttpClient)
+@inject(ApiService)
 export class EditGroup {
   heading = 'EditGroup';
+  group = {};
 
-  constructor(http) {
-    http.configure(config => {
-      // config
-      //   .useStandardConfiguration()
-      //   .withBaseUrl('https://api.github.com/');
-    });
-
-    this.http = http;
+  constructor(api) {
+    this.api = api;
   }
 
   activate(params) {
     this.clientId = params.id;
-    this.groupId = params.groupId;
-    // return this.http.fetch('users')
-    //   .then(response => response.json())
-    //   .then(users => this.users = users);
+
+    return this.api.get('clients/' + this.clientId + '/groups/' + params.groupId)
+      .then(response => response.json())
+      .then(group => this.group = group);
   }
 }

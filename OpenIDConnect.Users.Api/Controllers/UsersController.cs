@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using OpenIDConnect.Core.Api.Models;
 using System.Linq;
 using OpenIDConnect.Core.Domain.Models;
-using System.Collections.Generic;
-using OpenIDConnect.Users.Domain.Models;
 
 namespace OpenIDConnect.Users.Api.Controllers
-{    
+{
+    using OpenIDConnect.Core.Api.Results;
+
     [Route("api/users")]
     public class UsersController : Controller
     {
@@ -31,18 +31,18 @@ namespace OpenIDConnect.Users.Api.Controllers
         {
             if (!this.ModelState.IsValid)
             {
-                return this.HttpBadRequest();
+                return new UnprocessableEntityResult();
             }
 
-            var domainResult = (await this.usersRepository.QueryUsers(username, new Paging(pagingApiModel.Page, pagingApiModel.PageSize)));
+            var pagingResult = 
+                await this.usersRepository.QueryUsers(
+                    username, 
+                    new Paging(pagingApiModel.Page, pagingApiModel.PageSize));
 
             var result = new PagingResultApiModel<UserApiModel>
             {
-                Page = domainResult.Page,
-                PageSize = domainResult.PageSize,
-                Count = domainResult.Count,
-                Total = domainResult.Total,
-                Items = domainResult.Items.Select(u => new UserApiModel { Id = u.Id })
+                Paging = PageDetailsApiModel.FromDomain(pagingResult.Paging),
+                Items = pagingResult.Items.Select(u => UserApiModel.FromDomainModel(u))
             };
 
             return this.Ok(result);

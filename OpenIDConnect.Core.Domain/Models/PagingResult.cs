@@ -2,25 +2,26 @@
 
 namespace OpenIDConnect.Core.Domain.Models
 {
+    using System;
+    using System.Linq;
+
     public class PagingResult<TItem>
     {
-        public PagingResult(int page, int pageSize, int count, int total, IEnumerable<TItem> items)
+        private IEnumerable<TItem> items;
+
+        public PagingResult(PageDetails pageDetails, IEnumerable<TItem> items)
         {
-            this.Page = page;
-            this.PageSize = pageSize;
-            this.Count = count;
-            this.Total = total;
-            this.Items = items;
+            if (pageDetails == null)
+            {
+                throw new ArgumentNullException(nameof(pageDetails));
+            }
+
+            this.Paging = pageDetails;
+            this.items = items;
         }
 
-        public int Page { get; }
+        public PageDetails Paging { get; }
 
-        public int PageSize { get; }
-
-        public int Count { get; }
-
-        public int Total { get; }
-
-        public IEnumerable<TItem> Items { get; }
+        public IEnumerable<TItem> Items => this.items ?? (this.items = Enumerable.Empty<TItem>());
     }
 }

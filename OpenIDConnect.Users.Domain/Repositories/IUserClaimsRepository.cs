@@ -10,7 +10,7 @@ namespace OpenIDConnect.Users.Domain.Repositories
 
         Task<IEnumerable<Claim>> GetUserClaimsOfType(string username, string claimType);
 
-        Task<IEnumerable<Claim>> GetUserClaimsOfType(string username, IEnumerable<string> claimTypes);
+        Task<IEnumerable<Claim>> GetUserClaimsOfTypes(string username, IEnumerable<string> claimTypes);
 
         Task AddClaimsToUser(string username, IEnumerable<Claim> claims);
 

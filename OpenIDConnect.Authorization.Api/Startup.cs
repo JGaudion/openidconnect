@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OpenIDConnect.Authorization.Api
 {
+    using Microsoft.AspNet.Cors.Infrastructure;
     using Microsoft.Data.Entity;
 
     using Newtonsoft.Json.Serialization;
@@ -43,8 +44,27 @@ namespace OpenIDConnect.Authorization.Api
                     new CamelCasePropertyNamesContractResolver();
             });
 
+            // Add CORS support
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
+
             services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
             services.AddScoped<IClientGroupsRepository, EntityFrameworkClientGroupsRepository>();
+
+
+            //Add Cors support to the service
+            services.AddCors();
+
+            var policy = new CorsPolicy();
+
+            policy.Headers.Add("*");
+            policy.Methods.Add("*");
+            policy.Origins.Add("*");
+            policy.SupportsCredentials = true;
+            services.AddCors(config => config.AddPolicy("cors_policy", policy));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,9 +73,12 @@ namespace OpenIDConnect.Authorization.Api
             loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseCors("AllowAllOrigins");         // TODO: allow collection of allowed origins per client
             app.UseIISPlatformHandler();
             app.UseStaticFiles();
             app.UseMvc();
+
+            app.UseCors("cors_policy");
         }
 
         // Entry point for the application.

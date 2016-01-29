@@ -60,13 +60,107 @@ version: 1
 /clients/{clientId}/groups/{groupId}/claims:
   get:
     description: Gets the claims for the specified group
-/clients/{clientId}/users:
-  get:
   post:
-/clients/{clientId}/users/{userId}:
+/clients/{clientId}/groups/{groupId}/claims/{claimId}:
   get:
+    description: Gets the specified claim within the specified group
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "id": "...",
+                "type": "...",
+                "value": "..."
+              }
   put:
+    description: Updates the specified claim within the specified group
+    body:
+      application/json:
+        example: |
+          {
+            "type": "...",
+            "value": "..."
+          }
   delete:
-/clients/{clientId}/users/{userId}/claims:
+    description: Deletes the specified claim within the specified group
+/clients/{clientId}/groups/{groupId}/users:
   get:
-    description: Gets the list of claims for the specified user in the specified client
+    description: Gets the users belonging to the specified group
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              [
+               {
+                "id": "...",
+                "username": ..."            
+               } 
+              ]
+  post:
+    description: Adds a user to the specified group
+    body:
+      application/json:
+        example: |
+          {
+            "id": "..."
+          }
+/clients/{clientId}/groups/{groupId}/users/{userId}:
+  get:
+    description: Gets the user belonging to the specified group
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "id": "...",
+                "username": "..."                
+              }
+  delete:
+    description: Deletes the user from the specified group    
+/users:
+  get:
+    description: Gets the users
+/users/{userId}/groups:
+  get:
+    description: Gets the collection of groups that the specified user belongs to
+    queryParameters:
+      clientId:
+        description: Filters groups by the specified client id
+        required: false      
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "clientId": "..."
+              "id": "...",
+              "name": "..."
+            },
+            {
+              "clientId": "..."
+              "id": "...",
+              "name": "..."
+            }
+          ]
+/users/{userId}/claims:
+  get:
+    description: Gets the collection of claims that the user has
+    queryParameters:
+      clientId:
+        description: Filters claims by the specified client id
+        required: false
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "clientId": "...",
+              "id": "...",
+              "type": "...",
+              "value": "..."
+            }
+          ]

@@ -1,0 +1,170 @@
+#%RAML 0.8
+title: User service - manages users and user claims
+version: 1
+/users?username={username}&page={page}&pageSize={pageSize}:
+  get:
+    description: Retrieves the list of users from the user store
+    queryParameters:
+      username:
+        type: string
+        description: Text to filter the user name on (contains)
+		required: false
+      page:
+        type: integer
+        description: The page of users to return (must be greater to or equal to 1)
+		required: true
+      pageSize:
+        type: integer
+        description: The size of a page (between 1 and 50)
+		required: true
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+				"paging": {
+					"currentPage": 1,
+					"pageSize": 25,
+					"itemsOnPage": 24,
+					"totalPages": 1,
+					"totalItems": 24
+				},                
+                "items": [ {
+                  "id": "...",
+				  "username": "username"
+                } ]
+              }
+  post:
+    description: Adds a user to the user store
+    body:
+      application/json:       
+        example: |      
+          {
+            "username": "user",
+            "password": "...",
+            "claims": [
+              {
+                "type": "...",
+                "value": "..."
+              },
+              {
+                "type": "...",
+                "value": "..."
+              }
+            ]
+          }
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+              {
+                "username": "user"
+              }
+/users/{username}:
+  get:
+    description: Gets the specified user from the user store
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "username": "user"
+              }
+  put:
+    description: Updates the specified user in the user store
+    body:
+      application/json:
+        example: |
+          {
+            "password": "..."
+          }
+    responses:
+      204:
+  delete:
+    description: Deletes the specified user from the user store
+    responses:
+      204:
+/users/{username}/claims?types={claimTypes}:
+  get:
+    description: Gets all claims of the specified types from the specified user
+    queryParameters:
+      claimTypes:
+        type:  string
+        description: Comma-separated list of claim types requested
+    responses:
+      200:
+        body:          
+          application/json:
+            example: |
+              [
+                {
+                  "type": "test",
+                  "value": "..."
+                },
+                {
+                  "type": "test",
+                  "value": "..."                  
+                }
+              ]
+/users/{username}/claims:
+  post:
+    description: Adds the claims to the specified user
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "type": "...",
+              "value": "..."
+            },
+            {
+              "type": "...",
+              "value": "..."
+            }
+          ]
+    responses:
+      204:
+  put:
+    description: Updates the claim for the specified user
+    body:
+      application/json:
+        example: |
+          [
+            {
+              "type": "...",
+              "value": "..."
+            },
+            {
+              "type": "...",
+              "value": "..."
+            }
+          ]
+    responses:
+      200:
+/users/{username}/claims?claimType={claimType}&value={value}:
+  delete:
+    description: Deletes the specified claim
+    queryParameters:
+      claimType:
+        type: string
+        description: The type of the claim
+      value:
+        type: string
+        description: The value of the claim
+    responses: 
+      200:
+/users/{username}/authenticate:
+  post:
+    description: Authenticates the user
+    body:
+      application/json:
+        example: |
+          {
+            "password": "..."
+          }
+    responses:
+      200:
+      400:

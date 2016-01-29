@@ -229,10 +229,21 @@ namespace OpenIDConnect.IdentityManager.Services
         public async Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
             var filterParam = !string.IsNullOrEmpty(filter) ? $"username={filter}" : string.Empty;
-            var startParam = start != 0 ? $"page={count / start}" : string.Empty;
-            var countParam = count > 0 ? $"pageSize={count}" : string.Empty;
 
-            var queryString = string.Join("&", new[] { filterParam, startParam, countParam }.Where(p => !string.IsNullOrEmpty(p)));
+            if (count < 1)
+            {
+                count = 1;
+            }
+
+            if (start < 1)
+            {
+                start = 1;
+            }
+
+            var page = $"page={start}";
+            var pageSize = $"pageSize={count}";
+
+            var queryString = string.Join("&", new[] { filterParam, page, pageSize }.Where(p => !string.IsNullOrEmpty(p)));
             queryString = string.IsNullOrEmpty(queryString) ? queryString : $"?{queryString}";
 
             using (var client = new HttpClient { BaseAddress = new Uri(this.usersApiUri) })

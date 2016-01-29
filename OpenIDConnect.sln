@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIDConnect.Clients.Angul
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{78D0DFCA-4F20-4820-9ECE-BD2A507AA1BD}"
 	ProjectSection(SolutionItems) = preProject
+		Documentation\authorization.api.raml = Documentation\authorization.api.raml
+		Documentation\users.api.raml = Documentation\users.api.raml
 		Documentation\news.api.raml = Documentation\news.api.raml
 	EndProjectSection
 EndProject

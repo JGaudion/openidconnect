@@ -2,8 +2,8 @@
 <html ng-app="CartoonsApp">
 <head>
     <title></title>
-    <meta charset="utf-8" />
-
+	<meta charset="utf-8" />
+    
     <!--These get concatenated into the file path specified in the comment below-->
     <!-- build:css css/main.min.css -->
     <link rel="stylesheet" href="css/MainStyles.css" />
@@ -16,38 +16,30 @@
     <script src="../node_modules/angular-aria/angular-aria.js"></script>
     <script src="../node_modules/angular-animate/angular-animate.js"></script>
     <script src="../node_modules/angular-material/angular-material.js"></script>
-    <!-- endbuild -->
-    <!-- build:js scripts/tokenmanagermain.min.js -->
-    <!--OIDC-->
-    <script src="../node_modules/oidc-client/dist/oidc-client.js"></script>
     <script src="../node_modules/oidc-token-manager/dist/oidc-token-manager.js"></script>
-    <!-- endbuild -->
-    <!--These get concatenated into the file path specified in the comment below-->
-    <!-- build:js scripts/main.min.js -->
     <!--My scripts-->
     <script src="scripts/Config.js"></script>
     <script src="scripts/CartoonController.js"></script>
-    <script src="scripts/HomeController.js"></script>
-    <script src="scripts/ErrorService.js"></script>
-    <script src="scripts/LoginController.js"></script>
-    <script src="scripts/TokenManager.js"></script>
-    <script src="scripts/CallbackController.js"></script>
-    <script src="scripts/WelcomeController.js"></script>
+    <script src="scripts/HomeController.js"></script>    
+    <script src="scripts/TopBarController.js"></script>    
+    <script src="scripts/OidcService.js"></script>    
+    <script src="scripts/CallbackController.js"></script>    
+    <script src="scripts/CartoonsService.js"></script>    
     <!-- endbuild -->
 </head>
 <body>
     <nav>
-        <md-toolbar class="topBar">
+        <md-toolbar class="topBar" ng-controller="TopBarController as vm">
             <h2>
                 <span>Super Awesome Login App</span>
             </h2>
-            <span flex ng-controller="LoginController as ctrl">
+            <span flex ng-controller="LoginController as vm">
                 <md-button class="md-raised md-cornered md-accent" ng-href="#/home">Home</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/cartoons">Cartoons</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="ctrl.login()">Login</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="ctrl.logout()">Logout</md-button>
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/cartoons">Cartoons</md-button>  
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="vm.login()">Login</md-button>
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="vm.logout()">Logout</md-button>
             </span>
-
+           
         </md-toolbar>
     </nav>
     <content>

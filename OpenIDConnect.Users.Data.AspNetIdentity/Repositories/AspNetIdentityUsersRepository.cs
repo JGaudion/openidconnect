@@ -4,12 +4,14 @@ using OpenIDConnect.Users.Domain;
 using OpenIDConnect.Users.Domain.Models;
 using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq;
 using OpenIDConnect.Core.Domain.Models;
 
 namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
 {
+    using PagedList;
+    using PagedList.EntityFramework;
+
     public class AspNetIdentityUsersRepository : IUsersRepository
     {
         private readonly UserManager<ApplicationUser> userManager;
@@ -97,20 +99,17 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
 
         public Task<PagingResult<User>> QueryUsers(string username, Paging paging)
         {
-            return Task.Run(() =>
-                {
-                    var users = this.userManager.Users
-                                    .Where(u => username == null || u.Id.Contains(username))
-                                    .Select(u => new User(u.Id, u.UserName, u.Claims.Select(c => new Claim(c.ClaimType, c.ClaimValue))));
+            var users =
+                this.userManager.Users
+                    .WhereIf(() => !string.IsNullOrWhiteSpace(username), u => u.Id.Contains(username))
+                    .Select(u => u.ToDomainModel());
+            
+            var pagedUsers = users.ToPagedList(paging.Page, paging.PageSize);
+            var pagingResult = new PagingResult<User>(
+                new PageDetails(pagedUsers.PageNumber, pagedUsers.PageSize, pagedUsers.Count, pagedUsers.PageCount, pagedUsers.TotalItemCount),
+                pagedUsers);
 
-                    var total = users.Count();
-
-                    var selectedUsers = users.Skip(paging.Page * paging.PageSize)
-                                            .Take(paging.PageSize)
-                                            .ToList();
-
-                    return new PagingResult<User>(paging.Page, paging.PageSize, selectedUsers.Count, total, selectedUsers);
-                });
+            return Task.FromResult(pagingResult);
         }
     }
 }

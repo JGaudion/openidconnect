@@ -107,18 +107,27 @@ namespace OpenIDConnect.IdentityServer.Services
             yield return new Client
             {
                 Enabled = true,
-                ClientName = "Cartoons App",
-                ClientId = "cartoonsApp",
+                ClientName = "angularMaterial",
+                ClientId = "angularMaterial",
                 Flow = Flows.Implicit,
                 EnableLocalLogin = true,
-                AllowAccessToAllScopes = true,
+                AllowedScopes = new List<string> {
+                    IdentityServer3.Core.Constants.StandardScopes.OpenId,
+                    IdentityServer3.Core.Constants.StandardScopes.Profile,
+                    "api"
+                },
                 AccessTokenLifetime = 1200,
                 IdentityTokenLifetime = 300,
-                RedirectUris = new List<string> { "https://localhost:44300/callback" },
-                AllowedCorsOrigins = new List<string> { "https://localhost:44300"}, //Only accept browser requests from this url
-                PostLogoutRedirectUris = new List<string> { "https://localhost:44300/bye" },
-                RequireConsent = false,
-                
+                RedirectUris = new List<string> { "http://localhost:57055/#/callback/" },
+                AllowedCorsOrigins = new List<string>
+                {
+                    "http://localhost:57055/"
+                },
+                PostLogoutRedirectUris = new List<string>
+                {
+                    "http://localhost:57055/"
+                },
+                RequireConsent = false
             };
         }
     }

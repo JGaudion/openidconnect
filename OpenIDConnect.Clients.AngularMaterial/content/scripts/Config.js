@@ -1,4 +1,5 @@
-﻿(function () {
+﻿/* global angular */
+(function () {
     'use strict';
 
     angular
@@ -29,12 +30,11 @@
                         templateUrl: '/html/welcome.html',
                         controller : 'WelcomeController'
                     })
-                    .otherwise({
-                        templateUrl: '/html/home.html',
-                        controller: 'HomeController'
+                .when('/callback/:response', {
+                    template: ' ',
+                    controller: 'CallbackController'
                     });
-            }
-            ]);
+        }]);
 
     //Theme
     angular

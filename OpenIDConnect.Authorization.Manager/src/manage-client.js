@@ -1,28 +1,21 @@
+import {ApiService} from 'api-service';
 import {inject} from 'aurelia-framework';
-import {HttpClient} from 'aurelia-fetch-client';
-import 'fetch';
 
-@inject(HttpClient)
+@inject(ApiService)
 export class ManageClient {
   heading = 'ManageClient';
   clientId = "";
 
-  constructor(http) {
-    http.configure(config => {
-      // config
-      //   .useStandardConfiguration()
-      //   .withBaseUrl('https://api.github.com/');
-    });
-
-    this.http = http;
+  constructor(api) {
+    this.api = api;
   }
 
   activate(params) {
     this.clientId = params.id;
 
-    // return this.http.fetch('users')
-    //   .then(response => response.json())
-    //   .then(users => this.users = users);
+    return this.api.get('clients/' + this.clientId)
+      .then(response => response.json())
+      .then(client => this.client = client);
   }
 
   configureRouter(config, router) {

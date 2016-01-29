@@ -47,6 +47,13 @@ namespace OpenIDConnect.Users.Api
                     new CamelCasePropertyNamesContractResolver();
             });
 
+            // Add CORS support
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
+
             services.AddScoped<IUsersRepository, AspNetIdentityUsersRepository>();
             services.AddScoped<IUserClaimsRepository, AspNetIdentityUserClaimsRepository>();
         }
@@ -74,6 +81,7 @@ namespace OpenIDConnect.Users.Api
             {                
             }
 
+            app.UseCors("AllowAllOrigins");         // TODO: allow collection of allowed origins per client
             app.UseIISPlatformHandler();
             app.UseStaticFiles();
             app.UseMvc();
