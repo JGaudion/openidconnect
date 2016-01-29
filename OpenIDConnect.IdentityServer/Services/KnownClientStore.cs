@@ -103,6 +103,32 @@ namespace OpenIDConnect.IdentityServer.Services
                 },
                 RequireConsent = false
             };
+
+            yield return new Client
+            {
+                Enabled = true,
+                ClientName = "angularMaterial",
+                ClientId = "angularMaterial",
+                Flow = Flows.Implicit,
+                EnableLocalLogin = true,
+                AllowedScopes = new List<string> {
+                    IdentityServer3.Core.Constants.StandardScopes.OpenId,
+                    IdentityServer3.Core.Constants.StandardScopes.Profile,
+                    "api"
+                },
+                AccessTokenLifetime = 1200,
+                IdentityTokenLifetime = 300,
+                RedirectUris = new List<string> { "http://localhost:57055/#/callback/" },
+                AllowedCorsOrigins = new List<string>
+                {
+                    "http://localhost:57055/"
+                },
+                PostLogoutRedirectUris = new List<string>
+                {
+                    "http://localhost:57055/"
+                },
+                RequireConsent = false
+            };
         }
     }
 }
