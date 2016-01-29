@@ -19,8 +19,7 @@
     <script src="../node_modules/oidc-token-manager/dist/oidc-token-manager.js"></script>
     <!--My scripts-->
     <script src="scripts/Config.js"></script>
-    <script src="scripts/CartoonController.js"></script>
-    <script src="scripts/HomeController.js"></script>    
+    <script src="scripts/CartoonController.js"></script>  
     <script src="scripts/TopBarController.js"></script>    
     <script src="scripts/OidcService.js"></script>    
     <script src="scripts/CallbackController.js"></script>    
@@ -33,7 +32,7 @@
             <h2>
                 <span>Super Awesome Login App</span>
             </h2>
-            <span flex ng-controller="LoginController as vm">
+            <span flex >
                 <md-button class="md-raised md-cornered md-accent" ng-href="#/home">Home</md-button>
                 <md-button class="md-raised md-cornered md-accent" ng-href="#/cartoons">Cartoons</md-button>  
                 <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="vm.login()">Login</md-button>
