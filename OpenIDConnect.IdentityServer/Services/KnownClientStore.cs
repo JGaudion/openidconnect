@@ -118,14 +118,14 @@ namespace OpenIDConnect.IdentityServer.Services
                 },
                 AccessTokenLifetime = 1200,
                 IdentityTokenLifetime = 300,
-                RedirectUris = new List<string> { "http://localhost:57055/#/callback/" },
+                RedirectUris = new List<string> { "https://localhost:44300/#/callback/" },
                 AllowedCorsOrigins = new List<string>
                 {
-                    "http://localhost:57055/"
+                    "https://localhost:44300/"
                 },
                 PostLogoutRedirectUris = new List<string>
                 {
-                    "http://localhost:57055/"
+                    "https://localhost:44300/"
                 },
                 RequireConsent = false
             };

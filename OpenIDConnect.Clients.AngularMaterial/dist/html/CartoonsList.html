@@ -6,9 +6,9 @@
     <md-list ng-controller="CartoonController as ctrl">
         <md-list-item ng-repeat="cartoon in ctrl.cartoons track by $index" class="stripyCartoons">
             <div layout="column">
-                <div flex ng-bind="cartoon.Title"></div>
+                <div flex ng-bind="cartoon.title"></div>
                 <div flex>
-                    <md-chips ng-model="cartoon.Species" placeholder="Add tag" delete-button-label="Remove">
+                    <md-chips ng-model="cartoon.species" placeholder="Add tag" delete-button-label="Remove">
                     </md-chips>
                 </div>
             </div>

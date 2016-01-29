@@ -2,28 +2,25 @@
 <html ng-app="CartoonsApp">
 <head>
     <title></title>
-    <meta charset="utf-8" />
-
+	<meta charset="utf-8" />
+    
     <!--These get concatenated into the file path specified in the comment below-->
     <link rel="stylesheet" href="css/main.min.css">
     <script src="scripts/angularmain.min.js"></script>
-    <script src="scripts/tokenmanagermain.min.js"></script>
-    <!--These get concatenated into the file path specified in the comment below-->
-    <script src="scripts/main.min.js"></script>
 </head>
 <body>
     <nav>
-        <md-toolbar class="topBar">
+        <md-toolbar class="topBar" ng-controller="TopBarController as vm">
             <h2>
                 <span>Super Awesome Login App</span>
             </h2>
-            <span flex ng-controller="LoginController as ctrl">
+            <span flex >
                 <md-button class="md-raised md-cornered md-accent" ng-href="#/home">Home</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/cartoons">Cartoons</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="ctrl.login()">Login</md-button>
-                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="ctrl.logout()">Logout</md-button>
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/cartoons">Cartoons</md-button>  
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="vm.login()">Login</md-button>
+                <md-button class="md-raised md-cornered md-accent" ng-href="#/" ng-click="vm.logout()">Logout</md-button>
             </span>
-
+           
         </md-toolbar>
     </nav>
     <content>

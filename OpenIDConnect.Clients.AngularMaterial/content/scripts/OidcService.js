@@ -11,8 +11,8 @@
         var settings = {
             authority: 'https://localhost:44333/core',
             client_id: 'angularMaterial',
-            redirect_uri: 'http://localhost:57055/#/callback/',
-            post_logout_redirect_uri: 'http://localhost:57055/',
+            redirect_uri: 'https://localhost:44300/#/callback/',
+            post_logout_redirect_uri: 'https://localhost:44300/',
             response_type: 'id_token token',
             scope: 'openid profile api'
         };
