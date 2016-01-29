@@ -3,12 +3,14 @@ namespace OpenIDConnect.Users.Api.IntegrationTests.Tests
 {
     using System.Net;
 
+    using Ploeh.AutoFixture.Xunit;
+
     using Xunit;
 
     public class Test
     {        
-        [Fact]
-        public void UsersWithValidQueryStringShouldReturn200()
+        [Theory, AutoData]
+        public void UsersWithValidQueryStringShouldReturn200(TestServerFactory testServerFactory)
         {
             using (var testServer = new TestServerFactory().Create())
             {
@@ -18,6 +20,19 @@ namespace OpenIDConnect.Users.Api.IntegrationTests.Tests
                     Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 }                    
             }
+        }
+
+        [Theory]
+        [InlineAutoData(2)]
+        public void Theory()
+        {
+            Assert.Equal(5, 5);
+        }
+
+        [Fact]
+        public void Test2()
+        {
+            Assert.True(true);
         }
     }
 }
