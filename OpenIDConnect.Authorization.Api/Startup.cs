@@ -53,6 +53,7 @@ namespace OpenIDConnect.Authorization.Api
 
             services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
             services.AddScoped<IClientGroupsRepository, EntityFrameworkClientGroupsRepository>();
+            services.AddScoped<IGroupClaimsRepository, EntityFrameworkGroupClaimsRepository> ();
 
 
             //Add Cors support to the service
