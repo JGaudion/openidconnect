@@ -17,7 +17,7 @@
     <AssemblyName>OpenIDConnect.Clients.AngularMaterial</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -154,13 +154,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="content\css\MainStyles.css" />
-    <Content Include="content\css\TestStyles2.css" />
     <Content Include="content\html\CartoonsList.html" />
     <Content Include="content\html\Home.html" />
     <Content Include="content\index.html" />
+    <Content Include="content\scripts\CallbackController.js" />
     <Content Include="content\scripts\CartoonController.js" />
+    <Content Include="content\scripts\CartoonsService.js" />
     <Content Include="content\scripts\Config.js" />
-    <Content Include="content\scripts\HomeController.js" />
+    <Content Include="content\scripts\OidcService.js" />
+    <Content Include="content\scripts\TopBarController.js" />
     <Content Include="gulpfile.js" />
     <Content Include="packages.config" />
     <Content Include="content\scss\MainStyles.scss" />
@@ -202,7 +204,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>49486</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:57055/</IISUrl>
+          <IISUrl>https://localhost:44300/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

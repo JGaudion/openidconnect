@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html ng-app="CustomView" ng-controller="MainController as ctrl">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{{ctrl.model.siteName}}</title>
+    <link rel="stylesheet" href="/CustomView/Styles/CustomViewStyles.css" />
+    <script src="/CustomView/Scripts/angular.js"></script>
+    <script src="/CustomView/Scripts/encoder.js"></script>
+    <script src="/CustomView/Scripts/CustomView.js"></script>
+    <script src="/CustomView/Scripts/AntiForgeryToken.js"></script>
+    <script src="/CustomView/Scripts/encoder.js"></script>
+</head>
+<body lang="en">
+    <div >
+       
+        <ul ng-show="ctrl.model.currentUser" ng-cloak>
+            <li >
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ctrl.model.currentUser}} </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ctrl.model.logoutUrl}}">Logout</a></li>
+                    <li class="divider" ng-show="ctrl.model.loginWithDifferentAccountUrl"></li>
+                    <li><a href="{{ctrl.model.loginWithDifferentAccountUrl}}" ng-show="ctrl.model.loginWithDifferentAccountUrl">Login With Different Account</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div >
+        <div >
+            <h1>This is the Logout page.</h1>
+            <p>Please don't leave, {{ctrl.model.currentUser}}</p>
+        </div>
+    </div>
+
+    <div  ng-cloak>
+        
+        <div >
+            <div >
+                <p>Would you like to logout of {{ctrl.model.siteName}}?</p>
+                <form name="form" method="post" action="{{ctrl.model.logoutUrl}}">
+                    <anti-forgery-token token="ctrl.model.antiForgery"></anti-forgery-token>
+                    <fieldset>
+                        <div class="form-group">
+                            <button class="btn btn-primary">Yes</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script id='modelJson' type='application/json'>
+        {model}
+    </script>
+
+</body>
+</html>
+

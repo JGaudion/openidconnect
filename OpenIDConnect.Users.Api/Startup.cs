@@ -77,8 +77,8 @@ namespace OpenIDConnect.Users.Api
         public void ConfigureServices(IServiceCollection services, IConfigurationRoot configuration)
         {
             services.AddEntityFramework()
-                .AddSqlServer()
-                .AddDbContext<ApplicationDbContext>(options =>
+              .AddSqlServer()
+              .AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
