@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Web.Http;
 using OpenIDConnect.Clients.AngularMaterial.Models;
+using Thinktecture.IdentityModel.WebApi;
 
 namespace OpenIDConnect.Clients.AngularMaterial.Controllers
 {
@@ -9,6 +12,7 @@ namespace OpenIDConnect.Clients.AngularMaterial.Controllers
 
         [HttpGet]
         [Route("api/cartoons")]
+        [ResourceAuthorize(ActionTypes.All, ResourceTypes.Cartoons)]
         public IHttpActionResult GetCartoons()
         {
             var cartoons = new List<Cartoon>()
@@ -31,5 +35,26 @@ namespace OpenIDConnect.Clients.AngularMaterial.Controllers
             return Ok(cartoons);
 
         }
+
+        [HttpGet]
+        [Route("api/characters")]
+        [ResourceAuthorize(ActionTypes.ReadCharacters, ResourceTypes.Cartoons)]
+        public IHttpActionResult GetCharacters()
+        {
+            var characters = new List<string> { "Scrooge McDuck", "Optimus Prime", "Chip", "Dale" };
+
+            return Ok(characters);
+        }
+
+        [HttpGet]
+        [Route("api/info")]
+        [ResourceAuthorize(ActionTypes.View, ResourceTypes.Information)]
+        public IHttpActionResult GetInfo()
+        {
+            var user = (ClaimsPrincipal)User;
+
+            return Json(user.Claims.ToClaimsDictionary());
+        }
+
     }
 }
