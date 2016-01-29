@@ -6,10 +6,10 @@
     </div>
     <div class="row au-stagger" if.bind="hasUsers">
       <div repeat.for="user of users" class="col-sm-6 col-md-3 card-container au-animate">
-        <a route-href="route: manageClient; params.bind: { id: client.id || 'undefined' }">
+        <a route-href="route: manageUser; params.bind: { id: user.username || 'undefined' }">
           <div class="card">
             <div class="content">
-              <p class="name">${user.id}</p>
+              <p class="name">${user.username}</p>
             </div>
           </div>
         </div>

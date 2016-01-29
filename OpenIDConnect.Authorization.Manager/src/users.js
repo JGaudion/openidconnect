@@ -13,7 +13,10 @@ export class Users {
   activate() {
     return this.api.get('users?page=1&pageSize=25')
        .then(response => response.json())
-       .then(users => this.users = users);
+       .then(response => {         
+         this.paging = response.paging;
+         this.users = response.items;
+       });
   }
 
   get hasUsers() {

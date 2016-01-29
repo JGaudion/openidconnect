@@ -34,18 +34,15 @@ namespace OpenIDConnect.Users.Api.Controllers
                 return new UnprocessableEntityResult();
             }
 
-            var domainResult = 
+            var pagingResult = 
                 await this.usersRepository.QueryUsers(
                     username, 
                     new Paging(pagingApiModel.Page, pagingApiModel.PageSize));
 
             var result = new PagingResultApiModel<UserApiModel>
             {
-                Page = domainResult.Page,
-                PageSize = domainResult.PageSize,
-                Count = domainResult.Count,
-                Total = domainResult.Total,
-                Items = domainResult.Items.Select(u => new UserApiModel { Id = u.Id })
+                Paging = PageDetailsApiModel.FromDomain(pagingResult.Paging),
+                Items = pagingResult.Items.Select(u => UserApiModel.FromDomainModel(u))
             };
 
             return this.Ok(result);

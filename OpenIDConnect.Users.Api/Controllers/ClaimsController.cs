@@ -56,7 +56,7 @@ namespace OpenIDConnect.Users.Api.Controllers
             }
             else
             {
-                claims = await this.usersClaimsRepository.GetUserClaimsOfType(username, claimTypes);
+                claims = await this.usersClaimsRepository.GetUserClaimsOfTypes(username, claimTypes);
             }
 
             return this.Ok(claims.Select(c => new ClaimApiModel { Type = c.Type, Value = c.Value }));
