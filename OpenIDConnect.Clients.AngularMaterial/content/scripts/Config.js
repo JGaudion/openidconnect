@@ -8,18 +8,26 @@
     angular
         .module('CartoonsApp')
             .config(['$routeProvider', function ($routeProvider) {
-                $routeProvider.when('/login',
-                    {
-                        templateUrl: '/html/login.html'
-
-                    })
+                $routeProvider
                     .when('/cartoons', {
                         templateUrl: '/html/cartoonslist.html',
                         controller: 'CartoonController'
                     })
                     .when('/home', {
                         templateUrl: '/html/home.html',
-                        controller: 'HomeController'
+                        controller: 'HomeController',
+                        controllerAs : "ctrl"
+                    })
+                    .when('/callback', {
+                        url: '/callback',
+                        controller : 'CallbackController'
+                    })
+                    .when('/bye', {
+                        templateUrl: '/html/bye.html'
+                    })
+                    .when('/welcome', {
+                        templateUrl: '/html/welcome.html',
+                        controller : 'WelcomeController'
                     })
                     .otherwise({
                         templateUrl: '/html/home.html',

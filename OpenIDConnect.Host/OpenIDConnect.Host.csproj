@@ -189,6 +189,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CustomView\Error.html" />
+    <Content Include="CustomView\LoggedOut.html" />
+    <Content Include="CustomView\Login.html" />
+    <Content Include="CustomView\Logout.html" />
+    <Content Include="CustomView\Permissions.html" />
+    <Content Include="CustomView\Scripts\angular.js" />
+    <Content Include="CustomView\Scripts\AntiForgeryToken.js" />
+    <Content Include="CustomView\Scripts\CustomView.js" />
+    <Content Include="CustomView\Scripts\encoder.js" />
+    <Content Include="CustomView\Styles\CustomViewStyles.css" />
+    <Content Include="CustomView\Styles\DefaultViewStyles.css" />
     <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

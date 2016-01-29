@@ -77,7 +77,7 @@ namespace OpenIDConnect.IdentityServer.Services
                         "idadmin"
                     }
             };
-
+            //Our hard coded client apps
             yield return new Client
             {
                 Enabled = true,
@@ -102,6 +102,23 @@ namespace OpenIDConnect.IdentityServer.Services
                     "https://localhost:44303"
                 },
                 RequireConsent = false
+            };
+
+            yield return new Client
+            {
+                Enabled = true,
+                ClientName = "Cartoons App",
+                ClientId = "cartoonsApp",
+                Flow = Flows.Implicit,
+                EnableLocalLogin = true,
+                AllowAccessToAllScopes = true,
+                AccessTokenLifetime = 1200,
+                IdentityTokenLifetime = 300,
+                RedirectUris = new List<string> { "https://localhost:44300/callback" },
+                AllowedCorsOrigins = new List<string> { "https://localhost:44300"}, //Only accept browser requests from this url
+                PostLogoutRedirectUris = new List<string> { "https://localhost:44300/bye" },
+                RequireConsent = false,
+                
             };
         }
     }
