@@ -27,18 +27,15 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
 
         public async Task<IEnumerable<User>> Get(string clientId, string groupId)
         {
-            var group = await
-                this.context.Clients
-                    .Where(c => c.Id == clientId)
-                    .Include(c => c.Groups)                    
+            var group =
+                await
+                this.context.Clients.Where(c => c.Id == clientId)
+                    .SelectMany(c => c.Groups)
+                    .Where(g => g.Id.ToString() == groupId)
+                    .Include(g => g.Users)
                     .FirstOrDefaultAsync();
 
-            if (group == null)
-            {
-                throw new InvalidOperationException("Group not found");
-            }
-
-            throw new NotImplementedException();
+            return group?.Users.Select(u => u.ToDomainModel());
         }
     }
 }
