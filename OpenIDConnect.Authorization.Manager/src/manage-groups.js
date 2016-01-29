@@ -42,4 +42,8 @@ export class ManageClientGroups {
 
     this.router = router;
   }
+
+  isActive(instruction, groupId) {
+    return !!instruction && !!instruction.params.groupId && instruction.params.groupId === groupId;
+  }
 }

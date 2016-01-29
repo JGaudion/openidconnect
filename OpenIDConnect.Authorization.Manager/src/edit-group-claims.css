@@ -1,0 +1,28 @@
+#group-existing-claims {
+  max-width: 800px;
+  margin: 20px;
+}
+
+.edit-group-btn {
+  padding: 5px;
+}
+
+.claims-edit-row {
+  display: flex;
+  align-items: center;
+}
+
+.claims-edit-row > label,
+.claims-edit-row > div {
+  flex: 1;
+  margin-left: 10px;
+}
+
+.claims-edit-row > label {
+  text-align: right;
+  margin-right: 10px;
+}
+
+.claims-edit-row > input {
+  flex: 4;
+}

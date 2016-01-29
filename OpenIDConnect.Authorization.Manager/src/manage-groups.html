@@ -4,7 +4,7 @@
     <div id="manage-groups">
       <ul class="nav nav-pills nav-stacked">
         <li repeat.for="group of groups" class="nav-item">
-          <a class="nav-link ${router.currentInstruction.params.groupId == group.Id ? 'active' : ''}" route-href="route: editGroup; params.bind: { groupId: group.id || 'undefined' }">
+          <a class="nav-link ${isActive(router.currentInstruction, group.id) ? 'active' : ''}" route-href="route: editGroup; params.bind: { groupId: group.id || 'undefined' }">
             <span>${group.name}</span>
           </a>
         </li>
