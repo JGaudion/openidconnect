@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html ng-app="CustomView" ng-controller="MainController as ctrl">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{{ctrl.model.clientName}}</title>
+    <link rel="stylesheet" href="/CustomView/Styles/CustomViewStyles.css" />
+    <script src="/CustomView/Scripts/angular.js"></script>
+    <script src="/CustomView/Scripts/encoder.js"></script>
+    <script src="/CustomView/Scripts/CustomView.js"></script>
+    <script src="/CustomView/Scripts/AntiForgeryToken.js"></script>
+    <script src="/CustomView/Scripts/encoder.js"></script>
+</head>
+<body lang="en">
+    <div>
+        <div>
+            <span>{{ctrl.model.clientName}}</span>
+        </div>
+    </div>
+    <div>
+        <div>
+            <h1>This is the permissions page</h1>
+        </div>
+    </div>
+
+    <div ng-cloak>
+        <div class="page-header">
+            <h1>Set some permissions</h1>
+        </div>
+        <div>
+            <div>
+                <p>Would you like to sign in to {{ctrl.model.clientName}}?</p>
+                <form name="form" method="post" action="{{ctrl.model.loginUrl}}">
+                    <anti-forgery-token token="model.antiForgery"></anti-forgery-token>
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input required name="username" autofocus id="username" type="text" class="form-control" placeholder="Username" ng-model="model.username" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input required id="password" name="password" type="password" class="form-control" placeholder="Password" ng-model="model.password" maxlength="100" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" ng-disabled="form.$invalid">Login</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+
+        <div >
+            <div >
+                <div ng-show="ctrl.model.errorMessage" class="alert alert-danger">
+                    <strong>Error:</strong>
+                    {{ctrl.model.errorMessage}}
+                </div>
+            </div>
+            <div  ng-hide="ctrl.model.clients">
+                <div class="alert alert-info">
+                    You have not given permission to any applications
+                </div>
+            </div>
+        </div>
+        <div class="permissions">
+            <div ng-repeat="client in ctrl.model.clients" class="row permission">
+                <div >
+                    <img ng-src="{{client.clientLogoUrl}}">
+                </div>
+                <div >
+                    <div >{{client.clientName}}</div>
+                    <div ng-show="client.identityPermissions">
+                        <div >Identity Permissions</div>
+                        <ul>
+                            <li ng-repeat="permission in client.identityPermissions" ng-bind="permission.displayName"></li>
+                        </ul>
+                    </div>
+                    <div ng-show="client.resourcePermissions">
+                        <div >Resource Permissions</div>
+                        <ul>
+                            <li ng-repeat="permission in client.resourcePermissions" ng-bind="permission.displayName"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div >
+                    <form name="form" method="post" action="{{ctrl.model.revokePermissionUrl}}" >
+                        <anti-forgery-token token="model.antiForgery"></anti-forgery-token>
+                        <input type="hidden" name="clientId" value="{{client.clientId}}">
+                        <button>Revoke Access</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    
+    <script id='modelJson' type='application/json'>
+        {model}
+    </script>
+
+</body>
+</html>

@@ -1,12 +1,12 @@
 ﻿(function () {
     'use strict';
 
-    angular.module('CartoonsApp')
-        .controller('CartoonController', CartoonController);
+angular.module('CartoonsApp')
+.controller('CartoonController', CartoonController);
 
     CartoonController.$inject = ['$http', 'CartoonsService'];
     function CartoonController($http, CartoonsService) {
-        var ctrl = this;
+    var ctrl = this;
 
         CartoonsService.get().then(function (data) {
             ctrl.cartoons = data;

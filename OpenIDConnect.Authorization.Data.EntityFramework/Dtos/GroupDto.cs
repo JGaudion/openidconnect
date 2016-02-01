@@ -1,10 +1,15 @@
 ﻿namespace OpenIDConnect.Authorization.Data.EntityFramework.Dtos
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     using OpenIDConnect.Authorization.Domain.Models;
     using System.Collections.Generic;
     public class GroupDto
     {
         private ICollection<GroupClaimDto> groupClaims = null;
+
+        private IEnumerable<UserDto> users;
 
         public int Id { get; set; }
 
@@ -23,6 +28,19 @@
             set
             {
                 this.groupClaims = value;
+            }
+        }
+
+        public IEnumerable<UserDto> Users
+        {
+            get
+            {
+                return this.users ?? (this.users = Enumerable.Empty<UserDto>());
+            }
+
+            set
+            {
+                this.users = value;
             }
         }
 

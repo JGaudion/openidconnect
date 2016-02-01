@@ -106,8 +106,10 @@ namespace OpenIDConnect.IdentityServer
                 {                    
                     new ClientConfigurationCorsPolicyService(new ClientConfigurationDbContext("ClientsScopes")),     // TODO: get connection string name from config
                     new InMemoryCorsPolicyService(knownClientStore.GetClients())
-                }));                                    
-
+                }));
+            //We can choose how to display the login screen
+            LoadViewService(factory);
+            
             return new IdentityServerOptions
             {
                 SiteName = "IdentityServer v3",
@@ -118,7 +120,12 @@ namespace OpenIDConnect.IdentityServer
                 },
                 AuthenticationOptions = new AuthenticationOptions
                 {
-                    IdentityProviders = externalIdentityProviderService.UseExternalIdentityProviders
+                    IdentityProviders = externalIdentityProviderService.UseExternalIdentityProviders,
+                    //Registration link on login page
+                    LoginPageLinks = new LoginPageLink[]
+                    {
+                       new LoginPageLink { Text = "Register", Href= "localregistration"}                       
+                    }
                 },
                 Factory = factory
             };
@@ -139,6 +146,32 @@ namespace OpenIDConnect.IdentityServer
                     AllowedScopes = new List<string> { "api" }
                 };
             }
+        }
+
+        /// <summary>
+        /// Method to decide which view service to use
+        /// </summary>
+        private void LoadViewService(IdentityServerServiceFactory factory)
+        {
+            var configService = new ApplicationSettingsConfigurationService();
+            var viewType = configService.GetSetting("ViewService", "Default");
+            switch(viewType)
+            {
+                case "CustomStyle":
+                    //For the default view, but with our own stylesheet
+                    var viewOptions = new DefaultViewServiceOptions();
+                    viewOptions.Stylesheets.Add("/CustomView/Styles/DefaultViewStyles.css");
+                    viewOptions.CacheViews = false;
+                    factory.ConfigureDefaultViewService(viewOptions); //Put the options with custom stylesheet or javascript into the factory      
+                    break;
+                case "FullCustomView":
+                    //For a complete custom view
+                    factory.ViewService = new Registration<IViewService>(typeof(CustomViewService));
+                    break;
+                default:
+                    //Do nothing!
+                    break;
+            }           
         }
     }
 }

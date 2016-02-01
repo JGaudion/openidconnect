@@ -16,14 +16,24 @@ namespace OpenIDConnect.Authorization.Api.Controllers
     {
         private readonly IClientGroupsRepository clientGroupsRepository;
 
-        public GroupsController(IClientGroupsRepository clientGroupsRepository)
+        private readonly IClientUsersRepository clientUsersRepository;
+
+        public GroupsController(
+            IClientGroupsRepository clientGroupsRepository,
+            IClientUsersRepository clientUsersRepository)
         {
             if (clientGroupsRepository == null)
             {
                 throw new ArgumentNullException(nameof(clientGroupsRepository));
             }
 
+            if (clientUsersRepository == null)
+            {
+                throw new ArgumentNullException(nameof(clientUsersRepository));
+            }
+
             this.clientGroupsRepository = clientGroupsRepository;
+            this.clientUsersRepository = clientUsersRepository;
         }
 
         [HttpGet("{clientId}/groups")]
@@ -79,6 +89,14 @@ namespace OpenIDConnect.Authorization.Api.Controllers
         {
             await this.clientGroupsRepository.Delete(clientId, groupId);
             return this.Ok();
+        }
+
+        [HttpGet("{clientId}/groups/{groupId}/users")]
+        public async Task<IActionResult> GetUsersInGroup(string clientId, string groupId)
+        {
+            var users = await this.clientUsersRepository.Get(clientId, groupId);
+            var userApiModels = users.Select(u => UserApiModel.FromDomain(u));
+            return this.Ok(userApiModels);
         }
     }
 }
