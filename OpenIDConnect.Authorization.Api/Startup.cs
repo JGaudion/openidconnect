@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OpenIDConnect.Authorization.Api
 {
+    using Data.UsersApi.Repositories;
     using Microsoft.Data.Entity;
 
     using Newtonsoft.Json.Serialization;
@@ -53,7 +54,11 @@ namespace OpenIDConnect.Authorization.Api
             services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
             services.AddScoped<IClientGroupsRepository, EntityFrameworkClientGroupsRepository>();
             services.AddScoped<IGroupClaimsRepository, EntityFrameworkGroupClaimsRepository> ();
-            services.AddScoped<IClientUsersRepository, EntityFrameworkClientUsersRepository>();
+
+            var usersApiUri = Configuration["Data:UsersApi:Uri"];
+
+            services.AddScoped<IClientUsersRepository, UsersApiClientUsersRepository>(p => new UsersApiClientUsersRepository(usersApiUri));
+            services.AddScoped<IUsersRepository, UsersApiUsersRepository>(p => new UsersApiUsersRepository(usersApiUri, p.GetService<IGroupClaimsRepository>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

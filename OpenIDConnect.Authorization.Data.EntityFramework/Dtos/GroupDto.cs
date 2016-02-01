@@ -4,7 +4,7 @@
     using System.Linq;
 
     using OpenIDConnect.Authorization.Domain.Models;
-    using System.Collections.Generic;
+
     public class GroupDto
     {
         private ICollection<GroupClaimDto> groupClaims = null;
