@@ -10,7 +10,9 @@ namespace OpenIDConnect.Authorization.Api.Controllers
     using OpenIDConnect.Authorization.Api.Models;
     using OpenIDConnect.Authorization.Domain.Repositories;
     using OpenIDConnect.Core.Api.Results;
+    using Microsoft.AspNet.Cors;
 
+    [EnableCors("AllowAllOrigins")]
     [Route("api/clients")]
     public class GroupsController : Controller
     {

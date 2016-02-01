@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.Authorization.Api.Controllers
 {
-    [EnableCors("cors_policy")]
+    [EnableCors("AllowAllOrigins")]
     [Route("api/clients")]
     public class ClaimsController : Controller
     {

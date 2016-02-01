@@ -20,7 +20,6 @@ export class EditGroupClaims {
   }
 
   addNewClaim(newClaim) {
-
     this.api.post('clients/' + this.clientId + '/groups/' + this.groupId + '/claims', newClaim)
       .then(response => response.json())
       .then(addedClaim => {
@@ -36,10 +35,19 @@ export class EditGroupClaims {
   }
 
   updateClaim(updatedClaim) {
+    this.api.put('clients/' + this.clientId + '/groups/' + this.groupId + '/claims/' + updatedClaim.id, updatedClaim)
+      .then(_ => {
+        var existingClaim = this.existingClaims.find(c => c.id == updatedClaim.id);
+        existingClaim.type = updatedClaim.type;
+        existingClaim.value = updatedClaim.value;
+      });
+  }
 
-    var existingClaim = this.existingClaims.find(c => c.id == updatedClaim.id);
-    existingClaim.type = updatedClaim.type;
-    existingClaim.value = updatedClaim.value;
+  deleteClaim(claimToDelete) {
+    this.api.delete('clients/' + this.clientId + '/groups/' + this.groupId + '/claims/' + claimToDelete.id)
+      .then(_ => {
+        this.existingClaims = this.existingClaims.filter(c => c.id !== claimToDelete.id);
+      });
   }
 
   claimModified(existingClaim, newClaim) {

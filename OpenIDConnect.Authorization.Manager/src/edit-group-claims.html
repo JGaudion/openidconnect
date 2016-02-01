@@ -14,9 +14,15 @@
                 Update
         </button>
       </div>
+      <div class="edit-group-btn">
+        <button class="btn btn-secondary"
+                click.trigger="deleteClaim({ id: claim.id })">
+                Delete
+        </button>
+      </div>
     </div>
     <h4>Available Claims</h4>
-    <div class="claims-edit-row">
+    <div class="claims-edit-row claims-add-row">
       <label class="form-control-label" for="claimType">Type</label>
       <input type="text" class="form-control" class="form-control" id="claimType" ref="claimType"></input>
       <label class="form-control-label" for="claimValue">Value</label>
@@ -26,6 +32,8 @@
                 click.trigger="addNewClaim({ type: claimType.value, value: claimValue.value })">
                 Add Claim
         </button>
+      </div>
+      <div class="edit-group-padding">
       </div>
     </div>
   </div>
