@@ -13,6 +13,7 @@ namespace OpenIDConnect.Authorization.Api.Controllers
     using Microsoft.AspNet.Cors;
     using Core.Api.Models;
     using Core.Domain.Models;
+
     [EnableCors("AllowAllOrigins")]
     [Route("api/clients")]
     public class GroupsController : Controller
@@ -113,7 +114,7 @@ namespace OpenIDConnect.Authorization.Api.Controllers
             return this.Ok(userApiModels);
         }
 
-        [HttpGet("{clientId}/groups/{groupId}/users")]
+        [HttpPost("{clientId}/groups/{groupId}/users")]
         public async Task<IActionResult> AddUserToGroup(string clientId, string groupId, [FromBody] UserApiModel user)
         {
             if (!this.ModelState.IsValid)

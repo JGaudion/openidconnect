@@ -24,3 +24,8 @@ form {
 .nav-link.active {
   background: #eee;
 }
+
+.editing-page {
+  max-width: 600px;
+  margin: 20px;
+}

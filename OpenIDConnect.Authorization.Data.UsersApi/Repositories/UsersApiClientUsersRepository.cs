@@ -26,7 +26,7 @@ namespace OpenIDConnect.Authorization.Data.UsersApi.Repositories
             var newClaim = new Claim("group", $"{clientId}:{groupId}");
 
             using (var client = CreateClient())
-            using (var postResponse = await client.PostAsync($"users/{user.Id}/claims", ToJsonStringContent(newClaim)))
+            using (var postResponse = await client.PostAsync($"users/{user.Id}/claims", ToJsonStringContent(new[] { newClaim })))
             {
                 if (!postResponse.IsSuccessStatusCode)
                 {
@@ -87,7 +87,7 @@ namespace OpenIDConnect.Authorization.Data.UsersApi.Repositories
         public async Task RemoveUserFromGroup(string clientId, string groupId, string userId)
         {
             using (var client = CreateClient())
-            using (var deleteResponse = await client.DeleteAsync($"user/{userId}/claims?claimType=group&value={clientId}:{groupId}"))
+            using (var deleteResponse = await client.DeleteAsync($"users/{userId}/claims?claimType=group&value={clientId}:{groupId}"))
             {
                 if (!deleteResponse.IsSuccessStatusCode)
                 {

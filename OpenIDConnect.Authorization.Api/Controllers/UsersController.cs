@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNet.Cors;
+using Microsoft.AspNet.Mvc;
 using OpenIDConnect.Authorization.Api.Models;
 using OpenIDConnect.Authorization.Domain.Repositories;
 using OpenIDConnect.Core.Api.Models;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace OpenIDConnect.Authorization.Api.Controllers
 {
+    [EnableCors("AllowAllOrigins")]
     [Route("api/users")]
     public class UsersController : Controller
     {

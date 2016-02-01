@@ -1,0 +1,40 @@
+<template>
+  <require from="edit-group-claims.css"></require>
+  <div id="group-existing-claims">
+    <h4>Existing Claims</h4>
+    <div repeat.for="claim of existingClaims" class="claims-edit-row">
+      <label class="form-control-label" for="claimType">Type</label>
+      <input type="text" class="form-control" value.one-way="claim.type" class="form-control" id="claimType" ref="claimType"></input>
+      <label class="form-control-label" for="claimValue">Value</label>
+      <input type="text" class="form-control" value.one-way="claim.value" class="form-control" id="claimValue" ref="claimValue"></input>
+      <div class="edit-group-btn">
+        <button type="submit" class="btn btn-secondary"
+                click.trigger="updateClaim({ id: claim.id, type: claimType.value, value: claimValue.value })"
+                disabled.bind="!claimModified({ type: claim.type, value: claim.value }, { type: claimType.value, value: claimValue.value })">
+                Update
+        </button>
+      </div>
+      <div class="edit-group-btn">
+        <button class="btn btn-secondary"
+                click.trigger="deleteClaim({ id: claim.id })">
+                Delete
+        </button>
+      </div>
+    </div>
+    <h4>Available Claims</h4>
+    <div class="claims-edit-row claims-add-row">
+      <label class="form-control-label" for="claimType">Type</label>
+      <input type="text" class="form-control" class="form-control" id="claimType" ref="claimType"></input>
+      <label class="form-control-label" for="claimValue">Value</label>
+      <input type="text" class="form-control" class="form-control" id="claimValue" ref="claimValue"></input>
+      <div class="edit-group-btn">
+        <button type="submit" class="btn btn-secondary"
+                click.trigger="addNewClaim({ type: claimType.value, value: claimValue.value })">
+                Add Claim
+        </button>
+      </div>
+      <div class="edit-group-padding">
+      </div>
+    </div>
+  </div>
+</template>

@@ -27,7 +27,7 @@ namespace OpenIDConnect.Users.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers(string username, [FromQuery] PagingApiModel pagingApiModel)
+        public async Task<IActionResult> GetUsers(string username, string claimType, string claimValue, [FromQuery] PagingApiModel pagingApiModel)
         {
             if (!this.ModelState.IsValid)
             {
@@ -36,7 +36,9 @@ namespace OpenIDConnect.Users.Api.Controllers
 
             var pagingResult = 
                 await this.usersRepository.QueryUsers(
-                    username, 
+                    username,
+                    claimType,
+                    claimValue, 
                     new Paging(pagingApiModel.Page, pagingApiModel.PageSize));
 
             var result = new PagingResultApiModel<UserApiModel>

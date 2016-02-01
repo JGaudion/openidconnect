@@ -37,7 +37,7 @@ namespace OpenIDConnect.Authorization.Data.UsersApi.Repositories
         public async Task<PagingResult<User>> GetUsers(Paging paging)
         {
             using (var client = CreateClient())
-            using (var getResponse = await client.GetAsync($"users?pageSize={paging.PageSize}"))
+            using (var getResponse = await client.GetAsync($"users?pageSize={paging.PageSize}&page={paging.Page}"))
             {
                 if (!getResponse.IsSuccessStatusCode)
                 {

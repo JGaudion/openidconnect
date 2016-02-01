@@ -97,11 +97,13 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
                 password);
         }
 
-        public Task<PagingResult<User>> QueryUsers(string username, Paging paging)
+        public Task<PagingResult<User>> QueryUsers(string username, string claimType, string claimValue, Paging paging)
         {
             var users =
                 this.userManager.Users
                     .WhereIf(() => !string.IsNullOrWhiteSpace(username), u => u.Id.Contains(username))
+                    .WhereIf(() => !string.IsNullOrWhiteSpace(claimType) && !string.IsNullOrWhiteSpace(claimValue), 
+                                u => u.Claims.Any(c => c.ClaimType == claimType && c.ClaimValue.Contains(claimValue)))
                     .Select(u => u.ToDomainModel());
             
             var pagedUsers = users.ToPagedList(paging.Page, paging.PageSize);

@@ -87,7 +87,9 @@ namespace OpenIDConnect.Users.Data.AspNetIdentity.Repositories
             {
                 throw new InvalidOperationException("Invalid user specified");
             }
-
+            
+            var userClaims = await this.userManager.GetClaimsAsync(user);
+            
             var identityResult = await this.userManager.AddClaimsAsync(
                 user,
                 claims.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)));
