@@ -19,7 +19,7 @@
 
         manager.processTokenCallbackAsync(hash)
             .then(function () {
-                $location.path('/');
+                $location.url('/');
             });
 
         return self;

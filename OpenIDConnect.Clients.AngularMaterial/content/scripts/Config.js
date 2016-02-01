@@ -11,17 +11,24 @@
             .config(['$routeProvider', function ($routeProvider) {
                 $routeProvider
                     .when('/cartoons', {
-                        templateUrl: '/html/cartoonslist.html',
+                        templateUrl: '/html/Cartoonslist.html',
                         controller: 'CartoonController'
-                    })                   
+                    })
                     .when('/callback', {
                         url: '/callback',
                         controller : 'CallbackController'
-                    })               
+                    })
                     .when('/callback/:response', {
                         template: ' ',
                         controller: 'CallbackController'
-                        });
+                    })
+                    .when('/home',{
+                        templateUrl: '/html/home.html'
+                    })
+                    .when('/characters', {
+                        templateUrl: '/html/Characters.html',
+                        controller: 'CharactersController'
+                    });
         }]);
 
     //Theme
