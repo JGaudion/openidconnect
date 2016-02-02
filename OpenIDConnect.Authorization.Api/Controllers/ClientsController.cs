@@ -1,6 +1,5 @@
-﻿namespace OpenIDConnect.Authorization.Api.Controllers
-{
-    using Microsoft.AspNet.Cors;
+﻿﻿namespace OpenIDConnect.Authorization.Api.Controllers
+{    
     using Microsoft.AspNet.Mvc;
     using OpenIDConnect.Authorization.Api.Models;
     using OpenIDConnect.Authorization.Domain.Repositories;
@@ -8,8 +7,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
-    [EnableCors("cors_policy")]
+    
     [Route("api/clients")]
     public class ClientsController : Controller
     {
