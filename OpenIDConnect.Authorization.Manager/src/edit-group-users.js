@@ -25,7 +25,7 @@ export class EditGroupUsers {
       .then(response => response.json(), response => console.error(response))
       .then(users => {
         this.currentUsers = users.items;
-      })
+      });
   }
 
   addUser(user) {
