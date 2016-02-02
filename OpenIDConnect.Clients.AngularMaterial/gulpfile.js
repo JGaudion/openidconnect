@@ -21,7 +21,7 @@ gulp.task('clean', function () {
 });
 
 gulp.task('sass', function(){
-    gulp.src(sassFiles)
+    return gulp.src(sassFiles)
         .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(cssnano())
         .pipe(flatten())
@@ -29,7 +29,16 @@ gulp.task('sass', function(){
 });
 
 gulp.task('sass:watch', function () {
-  gulp.watch(sassFiles, ['sass']);
+    return gulp.watch(sassFiles, ['sass']);
+});
+
+gulp.task('html', function(){
+    return gulp.src(htmlFiles)
+        .pipe(gulp.dest(outputFolder));
+});
+
+gulp.task('html:watch', function(){
+    return gulp.watch(htmlFiles, ['html']);
 });
 
 gulp.task('buildPage', function () {
