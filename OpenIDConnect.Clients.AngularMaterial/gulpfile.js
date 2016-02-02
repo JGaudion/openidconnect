@@ -8,6 +8,7 @@ var cssnano = require('gulp-cssnano');
 var del = require('del');
 var sequence = require('run-sequence');
 var gulpIf = require('gulp-if');
+var flatten = require('gulp-flatten');
 
 var outputFolder = 'dist';
 var contentFolder = 'content';
@@ -16,13 +17,14 @@ var cssOutputFolder = outputFolder + '/css';
 var htmlFiles = contentFolder + '/**/*.html';
 
 gulp.task('clean', function () {
-    return del([outputFolder, cssBuildFolder]);
+    return del([outputFolder]);
 });
 
 gulp.task('sass', function(){
     gulp.src(sassFiles)
         .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
         .pipe(cssnano())
+        .pipe(flatten())
         .pipe(gulp.dest(cssOutputFolder));
 });
 
