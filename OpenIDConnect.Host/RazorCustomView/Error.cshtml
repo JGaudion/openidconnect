@@ -1,18 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = null;
+
+}
+<!DOCTYPE html>
 <html ng-app="CustomView" ng-controller="MainController as ctrl">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>{{ctrl.model.clientName}}</title>
+    <title>@Model.SiteName</title>
     <link rel="stylesheet" href="/CustomView/Styles/CustomViewStyles.css" />
-    <script src="/CustomView/Scripts/angular.js"></script>
-    <script src="/CustomView/Scripts/encoder.js"></script>
-    <script src="/CustomView/Scripts/CustomView.js"></script>
-    <script src="/CustomView/Scripts/AntiForgeryToken.js"></script>
+
 </head>
 <body lang="en">
     <div>
         <div>
-            <span>{{ctrl.model.clientName}}</span>
+            <span>@Model.SiteName</span>
         </div>
     </div>
     <div>
@@ -26,16 +27,14 @@
             <h1>Errors</h1>
         </div>
         <div>
-            <div ng-show="ctrl.model.errorMessage">
-                {{ctrl.model.errorMessage}}
+            <div>
+                @Model.ErrorMessage
             </div>
         </div>
 
         
     </div>
-    <script id='modelJson' type='application/json'>
-        {model}
-    </script>
+  
 
 </body>
 </html>
