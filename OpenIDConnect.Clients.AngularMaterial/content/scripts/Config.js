@@ -28,6 +28,10 @@
                     .when('/characters', {
                         templateUrl: '/html/Characters.html',
                         controller: 'CharactersController'
+                    })
+                    .when('/tokenInformation', {
+                        templateUrl: '/html/TokenInformation.html',
+                        controller: 'TokenInformationController'
                     });
         }]);
 
