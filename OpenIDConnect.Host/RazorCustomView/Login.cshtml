@@ -1,21 +1,22 @@
-﻿<!DOCTYPE html>
-<html ng-app="CustomView" ng-controller="MainController as ctrl">
+﻿@{
+    Layout = null;
+    var token = Model.AntiForgery;
+}
+
+<!DOCTYPE html>
+<html ng-app="CustomView" ng-model="razorModel">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>{{ctrl.model.clientName}}</title>
+    <title>@Model.ClientName</title>
     <link rel="stylesheet" href="/CustomView/Styles/CustomViewStyles.css" />
-    <script src="/CustomView/Scripts/angular.js"></script>
-    <script src="/CustomView/Scripts/encoder.js"></script>
-    <script src="/CustomView/Scripts/CustomView.js"></script>
-    <script src="/CustomView/Scripts/AntiForgeryToken.js"></script>
+    <script src="/RazorCustomView/Scripts/angular.js"></script>
+
 </head>
 <body lang="en">
     <div>
         <div>
-            <span>{{ctrl.model.clientName}}</span>
-           
-           
-            <!--<div>{{ctrl.model}}</div>-->
+            <span>@Model.ClientName</span>
+
         </div>
     </div>
     <div>
@@ -24,15 +25,18 @@
         </div>
     </div>
 
-    <div ng-cloak>
-        <div >
+    <div>
+        <div>
             <h1>Login / Sign In</h1>
         </div>
         <div>
             <div>
-                <p>Would you like to sign in to {{ctrl.model.clientName}}?</p>
-                <form name="form" method="post" action="{{ctrl.model.loginUrl}}">
-                    <anti-forgery-token token="ctrl.model.antiForgery"></anti-forgery-token>
+              
+              
+                <p>Would you like to sign in to @Model.ClientName ?</p>
+                <form name="form" method="post" action="@Model.LoginUrl">
+                    @*Anti-forgery token*@
+                    <input type='hidden' name='@token.Name' value='@token.Value'>
                     <fieldset>
                         <div class="form-group">
                             <label for="username">Username</label>
@@ -50,25 +54,26 @@
             </div>
         </div>
 
-        <div ng-show="ctrl.model.externalProviders">
-            <div >
-                <div >
-                    <h3 >External Login</h3>
+        @if (Model.ExternalProviders != null)
+        {
+  
+            <div>
+                <div>
+                    <h3>External Login</h3>
                 </div>
-                <div >
-                    <ul >
-                        <li ng-repeat="provider in ctrl.model.externalProviders">
-                            <a  href="{{provider.href}}">{{provider.text}}</a>
+                <div>
+                    <ul>
+                        @foreach (var p in Model.ExternalProviders)
+                        {
+                        <li >
+                            <a href="@p.Href">@p.Text</a>
                         </li>
+                        }
                     </ul>
                 </div>
             </div>
-        </div>
+        }
     </div>
-    <script id='modelJson' type='application/json'>
-        {model}
-    </script>
-
-</body>
+ </body>
 </html>
 
