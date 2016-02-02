@@ -1,15 +1,15 @@
-﻿
+@import '../../node_modules/angular-material/angular-material.scss';
 
 $oddRows :rgb(0,150,136);
 $evenRows: rbg(255,255,255);
 
 
-.stripyCartoons:nth-child(even){   
+.stripyCartoons:nth-child(even){
     background-color:$evenRows;
 }
-.stripyCartoons:nth-child(odd){   
+.stripyCartoons:nth-child(odd){
     background-color:$oddRows;
-   
+
 }
 
  md-list-item
@@ -56,5 +56,3 @@ md-grid-list
     min-height:400px;
     margin:10px;
 }
-
-
