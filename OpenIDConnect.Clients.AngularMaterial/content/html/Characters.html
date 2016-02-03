@@ -1,0 +1,10 @@
+<md-content ng-controller="CharactersController as vm">
+
+    <div>{{vm.error}}</div>
+
+    <md-list>
+        <md-list-item ng-repeat="character in vm.characters">
+            {{character}}
+        </md-list-item>
+    </md-list>
+</md-content>

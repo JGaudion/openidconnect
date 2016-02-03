@@ -38,7 +38,7 @@ namespace OpenIDConnect.Clients.AngularMaterial.Controllers
 
         [HttpGet]
         [Route("api/characters")]
-        [ResourceAuthorize(ActionTypes.ReadCharacters, ResourceTypes.Cartoons)]
+        [ResourceAuthorize(ActionTypes.ReadCharacters, ResourceTypes.Characters)]
         public IHttpActionResult GetCharacters()
         {
             var characters = new List<string> { "Scrooge McDuck", "Optimus Prime", "Chip", "Dale" };
