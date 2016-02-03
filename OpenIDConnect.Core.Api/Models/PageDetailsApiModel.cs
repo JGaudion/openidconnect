@@ -25,5 +25,10 @@
                     TotalItems = paging.TotalItems
                 };
         }
+
+        public PageDetails ToDomain()
+        {
+            return new PageDetails(this.CurrentPage, this.PageSize, this.ItemsOnPage, this.TotalPages, this.TotalItems);
+        }
     }
 }

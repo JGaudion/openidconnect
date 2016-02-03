@@ -7,6 +7,8 @@
 
     public class GroupDto
     {
+        private ICollection<GroupClaimDto> groupClaims = null;
+
         private IEnumerable<UserDto> users;
 
         public int Id { get; set; }
@@ -16,6 +18,18 @@
         public string ClientId { get; set; }
 
         public ClientDto Client { get; set; }
+
+        public ICollection<GroupClaimDto> GroupClaims
+        {
+            get
+            {
+                return this.groupClaims ?? (this.groupClaims = new List<GroupClaimDto>());
+            }
+            set
+            {
+                this.groupClaims = value;
+            }
+        }
 
         public IEnumerable<UserDto> Users
         {

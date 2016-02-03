@@ -16,6 +16,6 @@ namespace OpenIDConnect.Users.Domain
         
         Task<bool> Authenticate(string username, string password);
 
-        Task<PagingResult<User>> QueryUsers(string username, Paging paging);
+        Task<PagingResult<User>> QueryUsers(string username, string claimType, string claimValue, Paging paging);
     }
 }

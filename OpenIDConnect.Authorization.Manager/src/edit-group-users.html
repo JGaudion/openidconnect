@@ -1,0 +1,52 @@
+<template>
+  <require from="edit-group-users.css"></require>
+  <div class="editing-page">
+    <div>
+      <h4>Current Users</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+          </tr>
+          <tr repeat.for="user of currentUsers">
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>
+              <div class="edit-group-btn">
+                <button type="submit" class="btn btn-secondary"
+                        click.trigger="removeUser(user)">
+                        Remove
+                </button>
+              </div>
+            </td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div>
+      <h4>All Users</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th></th>
+          </tr>
+          <tr repeat.for="user of allUsers">
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>
+              <div class="edit-group-btn">
+                <button type="submit" class="btn btn-secondary"
+                        click.trigger="addUser(user)">
+                        Add
+                </button>
+              </div>
+            </td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+</template>

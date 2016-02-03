@@ -1,0 +1,13 @@
+#edit-group-heading {
+  margin-left: 20px;
+}
+
+#edit-group-edit-pane {
+  flex: 1;
+  display: flex;
+}
+
+#edit-group-edit-pane > router-view {
+  flex: 1;
+  background: #eee;
+}

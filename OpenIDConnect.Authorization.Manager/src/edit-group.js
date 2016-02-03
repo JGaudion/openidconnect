@@ -17,4 +17,13 @@ export class EditGroup {
       .then(response => response.json())
       .then(group => this.group = group);
   }
+
+  configureRouter(config, router) {
+    config.map([
+      { route: ['claims', ''], name: 'editGroupClaims', moduleId: 'edit-group-claims', title: "Claims", nav: true},
+      { route: 'users', name: 'editGroupUsers', moduleId: 'edit-group-users', title: "Users", nav: true}
+    ]);
+
+    this.router = router;
+  }
 }

@@ -88,6 +88,15 @@ version: 1
 /clients/{clientId}/groups/{groupId}/users:
   get:
     description: Gets the users belonging to the specified group
+    queryParameters:
+      page:
+        type: integer
+        description: The page of users to return (must be greater to or equal to 1)
+        required: true
+      pageSize:
+        type: integer
+        description: The size of a page (between 1 and 50)
+        required: true
     responses:
       200:
         body:
@@ -124,6 +133,15 @@ version: 1
 /users:
   get:
     description: Gets the users
+    queryParameters:
+      page:
+        type: integer
+        description: The page of users to return (must be greater to or equal to 1)
+        required: true
+      pageSize:
+        type: integer
+        description: The size of a page (between 1 and 50)
+        required: true
 /users/{userId}/groups:
   get:
     description: Gets the collection of groups that the specified user belongs to
@@ -137,13 +155,11 @@ version: 1
           [
             {
               "clientId": "..."
-              "id": "...",
-              "name": "..."
+              "id": "..."
             },
             {
               "clientId": "..."
-              "id": "...",
-              "name": "..."
+              "id": "..."
             }
           ]
 /users/{userId}/claims:

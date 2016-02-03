@@ -17,5 +17,10 @@ namespace OpenIDConnect.Authorization.Api.Models
                 Username = user.Username
             };
         }
+
+        public User ToDomain()
+        {
+            return new User(this.Id, this.Username);
+        }
     }
 }

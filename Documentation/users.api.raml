@@ -1,38 +1,46 @@
 #%RAML 0.8
 title: User service - manages users and user claims
 version: 1
-/users?username={username}&page={page}&pageSize={pageSize}:
+/users:
   get:
     description: Retrieves the list of users from the user store
     queryParameters:
       username:
         type: string
         description: Text to filter the user name on (contains)
-		required: false
+        required: false
+      claimType:
+        type: string
+        description: Specify that the user must have this claim type
+        required: false
+      claimValue:
+        type: string
+        description: Text to filter the claim value on. Only valid with claimType specified
+        required: false
       page:
         type: integer
         description: The page of users to return (must be greater to or equal to 1)
-		required: true
+        required: true
       pageSize:
         type: integer
         description: The size of a page (between 1 and 50)
-		required: true
+        required: true
     responses:
       200:
         body:
           application/json:
             example: |
               {
-				"paging": {
-					"currentPage": 1,
-					"pageSize": 25,
-					"itemsOnPage": 24,
-					"totalPages": 1,
-					"totalItems": 24
-				},                
+              "paging": {
+              "currentPage": 1,
+              "pageSize": 25,
+              "itemsOnPage": 24,
+              "totalPages": 1,
+              "totalItems": 24
+              },                
                 "items": [ {
                   "id": "...",
-				  "username": "username"
+                  "username": "username"
                 } ]
               }
   post:
@@ -87,7 +95,7 @@ version: 1
     description: Deletes the specified user from the user store
     responses:
       204:
-/users/{username}/claims?types={claimTypes}:
+/users/{username}/claims:
   get:
     description: Gets all claims of the specified types from the specified user
     queryParameters:
@@ -109,7 +117,6 @@ version: 1
                   "value": "..."                  
                 }
               ]
-/users/{username}/claims:
   post:
     description: Adds the claims to the specified user
     body:
@@ -144,16 +151,15 @@ version: 1
           ]
     responses:
       200:
-/users/{username}/claims?claimType={claimType}&value={value}:
   delete:
     description: Deletes the specified claim
     queryParameters:
       claimType:
         type: string
-        description: The type of the claim
+        description: The type of the claim to delete
       value:
         type: string
-        description: The value of the claim
+        description: The value of the claim to delete
     responses: 
       200:
 /users/{username}/authenticate:

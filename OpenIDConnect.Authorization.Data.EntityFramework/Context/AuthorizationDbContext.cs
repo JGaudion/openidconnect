@@ -18,6 +18,8 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Context
 
         public DbSet<GroupDto> Groups { get; set; }
 
+        public DbSet<GroupClaimDto> GroupClaims { get; set; }
+
         public AuthorizationDbContext()
         {                        
             this.Database.EnsureCreated();
@@ -47,6 +49,18 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Context
                         group.Property(g => g.Name).IsRequired().HasMaxLength(200);
                         group.Property(g => g.ClientId).IsRequired().HasMaxLength(200);
                         group.HasOne(g => g.Client).WithMany(c => c.Groups).HasForeignKey(g => g.ClientId);
+                        group.HasMany(g => g.GroupClaims).WithOne(c => c.Group).HasForeignKey(c => c.GroupId);
+                    });
+
+            modelBuilder.Entity<GroupClaimDto>(
+                group =>
+                    {
+                        group.ForSqlServerToTable("GroupClaim");
+                        group.HasKey(g => g.Id);
+                        group.Property(g => g.Id).IsRequired().UseSqlServerIdentityColumn();
+                        group.Property(g => g.Type).IsRequired().HasMaxLength(200);
+                        group.Property(g => g.Value).IsRequired().HasMaxLength(200);
+                        group.HasOne(g => g.Group).WithMany(c => c.GroupClaims).HasForeignKey(g => g.GroupId);
                     });
         }        
     }    

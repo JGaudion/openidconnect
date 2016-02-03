@@ -5,7 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace OpenIDConnect.Authorization.Api
-{    
+{
+    using Data.UsersApi.Repositories;
     using Microsoft.Data.Entity;
 
     using Newtonsoft.Json.Serialization;
@@ -52,7 +53,12 @@ namespace OpenIDConnect.Authorization.Api
 
             services.AddScoped<IClientsRepository, EntityFrameworkClientsRepository>();
             services.AddScoped<IClientGroupsRepository, EntityFrameworkClientGroupsRepository>();
-            services.AddScoped<IClientUsersRepository, EntityFrameworkClientUsersRepository>();
+            services.AddScoped<IGroupClaimsRepository, EntityFrameworkGroupClaimsRepository> ();
+
+            var usersApiUri = Configuration["Data:UsersApi:Uri"];
+
+            services.AddScoped<IClientUsersRepository, UsersApiClientUsersRepository>(p => new UsersApiClientUsersRepository(usersApiUri));
+            services.AddScoped<IUsersRepository, UsersApiUsersRepository>(p => new UsersApiUsersRepository(usersApiUri, p.GetService<IGroupClaimsRepository>()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +70,7 @@ namespace OpenIDConnect.Authorization.Api
             app.UseCors("AllowAllOrigins");         // TODO: allow collection of allowed origins per client
             app.UseIISPlatformHandler();
             app.UseStaticFiles();
-            app.UseMvc();            
+            app.UseMvc();
         }
 
         // Entry point for the application.
