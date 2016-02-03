@@ -2,7 +2,6 @@
 
 var gulp = require('gulp');
 var sass = require('gulp-sass');
-var useref = require('gulp-useref');
 var cssnano = require('gulp-cssnano');
 var del = require('del');
 var flatten = require('gulp-flatten');
@@ -51,7 +50,7 @@ gulp.task('js', function(){
 });
 
 gulp.task('js:watch', function(){
-    return gulp.watch(jsFiles), ['js'];
+    return gulp.watch(jsFiles, ['js']);
 });
 
 gulp.task('watch', ['sass:watch', 'js:watch', 'html:watch']);
