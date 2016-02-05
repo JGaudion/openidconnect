@@ -10,7 +10,11 @@ namespace OpenIDConnect.Authorization.Api.Controllers
     using OpenIDConnect.Authorization.Api.Models;
     using OpenIDConnect.Authorization.Domain.Repositories;
     using OpenIDConnect.Core.Api.Results;
+    using Microsoft.AspNet.Cors;
+    using Core.Api.Models;
+    using Core.Domain.Models;
 
+    [EnableCors("AllowAllOrigins")]
     [Route("api/clients")]
     public class GroupsController : Controller
     {
@@ -92,11 +96,54 @@ namespace OpenIDConnect.Authorization.Api.Controllers
         }
 
         [HttpGet("{clientId}/groups/{groupId}/users")]
-        public async Task<IActionResult> GetUsersInGroup(string clientId, string groupId)
+        public async Task<IActionResult> GetUsersInGroup(string clientId, string groupId, [FromQuery] PagingApiModel paging)
         {
-            var users = await this.clientUsersRepository.Get(clientId, groupId);
-            var userApiModels = users.Select(u => UserApiModel.FromDomain(u));
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            var result = await this.clientUsersRepository.GetUsers(clientId, groupId, new Paging(paging.Page, paging.PageSize));
+
+            var userApiModels = new PagingResultApiModel<UserApiModel>
+            {
+                Items = result.Items.Select(u => UserApiModel.FromDomain(u)),
+                Paging = PageDetailsApiModel.FromDomain(result.Paging)
+            };
+
             return this.Ok(userApiModels);
         }
+
+        [HttpPost("{clientId}/groups/{groupId}/users")]
+        public async Task<IActionResult> AddUserToGroup(string clientId, string groupId, [FromBody] UserApiModel user)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.HttpBadRequest();
+            }
+
+            await this.clientUsersRepository.AddUserToGroup(clientId, groupId, user.ToDomain());
+
+            return this.Ok();
+        }
+
+        [HttpGet("{clientId}/groups/{groupId}/users/{userId}")]
+        public async Task<IActionResult> GetUser(string clientId, string groupId, string userId)
+        {
+            var user = await this.clientUsersRepository.GetUser(clientId, groupId, userId);
+
+            return this.Ok(UserApiModel.FromDomain(user));
+        }
+
+        [HttpDelete("{clientId}/groups/{groupId}/users/{userId}")]
+        public async Task<IActionResult> RemoveUserFromGroup(string clientId, string groupId, string userId)
+        {
+            await this.clientUsersRepository.RemoveUserFromGroup(clientId, groupId, userId);
+
+            return this.Ok();
+        }
+
     }
 }
+
+

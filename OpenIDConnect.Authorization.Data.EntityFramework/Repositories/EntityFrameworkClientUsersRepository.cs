@@ -1,6 +1,6 @@
 namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
 {
-    using System;    
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -10,7 +10,7 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
     using OpenIDConnect.Authorization.Data.EntityFramework.Context;
     using OpenIDConnect.Authorization.Domain.Models;
     using OpenIDConnect.Authorization.Domain.Repositories;
-
+    using Core.Domain.Models;
     public class EntityFrameworkClientUsersRepository : IClientUsersRepository
     {
         private readonly AuthorizationDbContext context;
@@ -23,19 +23,26 @@ namespace OpenIDConnect.Authorization.Data.EntityFramework.Repositories
             }
 
             this.context = context;
-        } 
+        }
 
-        public async Task<IEnumerable<User>> Get(string clientId, string groupId)
+        public Task AddUserToGroup(string clientId, string groupId, User user)
         {
-            var group =
-                await
-                this.context.Clients.Where(c => c.Id == clientId)
-                    .SelectMany(c => c.Groups)
-                    .Where(g => g.Id.ToString() == groupId)
-                    .Include(g => g.Users)
-                    .FirstOrDefaultAsync();
+            throw new NotImplementedException();
+        }
 
-            return group?.Users.Select(u => u.ToDomainModel());
+        public Task<User> GetUser(string clientId, string groupId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PagingResult<User>> GetUsers(string clientId, string groupId, Paging paging)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveUserFromGroup(string clientId, string groupId, string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
